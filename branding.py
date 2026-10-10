@@ -16,7 +16,7 @@ SHIELD_SVG = """
 CSS = """
 <style>
 .si2-head{display:flex;align-items:center;gap:14px;padding:4px 0 14px;border-bottom:1px solid #D8DFE7;margin-bottom:18px}
-.si2-head h1{font-size:1.7rem;margin:0;padding:0;line-height:1.2;color:#0B1B2B}
+.si2-title{font-size:1.7rem;font-weight:700;margin:0;line-height:1.2;color:#0B1B2B}
 .si2-head p{margin:2px 0 0;color:#4A5868;font-size:.95rem}
 .si2-pill{display:inline-block;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
   color:#2B4CF2;border:1px solid #2B4CF2;border-radius:999px;padding:1px 10px;margin-left:8px;vertical-align:middle}
@@ -35,11 +35,9 @@ def page(title: str, subtitle: str) -> None:
     """Set up the page and draw the SI² header. Call first in every app."""
     st.set_page_config(page_title=f"{title} | SI²", page_icon="🛡️", layout="wide")
     st.markdown(_html(CSS), unsafe_allow_html=True)
-    st.markdown(
-        _html(f"""<div class="si2-head">{SHIELD_SVG}
-        <div><h1>{title}<span class="si2-pill">Demo</span></h1><p>{subtitle}</p></div></div>"""),
-        unsafe_allow_html=True,
-    )
+    # st.html renders the header as HTML directly, with no Markdown step that could turn it into a code block.
+    st.html(_html(f"""<div class="si2-head">{SHIELD_SVG}
+        <div><div class="si2-title">{title}<span class="si2-pill">Demo</span></div><p>{subtitle}</p></div></div>"""))
 
 
 def note_synthetic() -> None:
