@@ -1,4 +1,6 @@
 """SI² look and feel shared by every demo app."""
+import base64
+
 import streamlit as st
 
 WEBSITE = "https://si2insure.com"
@@ -12,6 +14,8 @@ SHIELD_SVG = """
   <text x="88" y="60" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="22" fill="#2B4CF2">2</text>
 </svg>
 """
+
+LOGO_URI = "data:image/svg+xml;base64," + base64.b64encode(SHIELD_SVG.strip().encode()).decode()
 
 CSS = """
 <style>
@@ -36,7 +40,7 @@ def page(title: str, subtitle: str) -> None:
     st.set_page_config(page_title=f"{title} | SI²", page_icon="🛡️", layout="wide")
     st.markdown(_html(CSS), unsafe_allow_html=True)
     # st.html renders the header as HTML directly, with no Markdown step that could turn it into a code block.
-    st.html(_html(f"""<div class="si2-head">{SHIELD_SVG}
+    st.html(_html(f"""<div class="si2-head"><img src="{LOGO_URI}" width="44" height="50" alt="SI² logo">
         <div><div class="si2-title">{title}<span class="si2-pill">Demo</span></div><p>{subtitle}</p></div></div>"""))
 
 
