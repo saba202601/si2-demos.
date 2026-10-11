@@ -1,252 +1,347 @@
-"""Field catalog: layouts, aliases and pick lists for each bureau spec.
+"""SI² P&C fraud catalog: what the fraud is, who commits it, where it shows up, how to catch it,
+how to stop it before money moves, and how to keep watching for it.
 
-The catalog JSON is produced by `specparse` from the WCIO PDFs. This module adds what an SME
-needs on top: record keys and names, generated aliases, NCCI state codes, a confidence score for
-each parsed pick list, and a layout QA (gaps / overlaps per record).
+Each row has an id. Rows with engine_rule = "Yes" have a working detection rule in fraud/engine.py.
 """
-from __future__ import annotations
-
-import collections
-import json
-import re
-from functools import lru_cache
-from pathlib import Path
-
 import pandas as pd
 
-DATA = Path(__file__).parent / "data"
+COLUMNS = [
+    "fraud_id", "domain", "fraud_type", "description", "perpetrator", "countries", "country_notes", "line", "lob",
+    "module", "object", "lifecycle_stage", "red_flags", "detection_method", "detection_rule", "data_needed",
+    "prevention_control", "trigger_action", "monitoring_kpi", "severity", "owner", "engine_rule",
+]
 
-SPEC_INFO = {
-    "WCSTAT": {"title": "Unit Statistical Reporting", "record_length": 250, "frequency": "Per unit report level"},
-    "WCPOLS": {"title": "Policy Reporting", "record_length": 300, "frequency": "Per policy transaction"},
-    "WCIND": {"title": "Indemnity Data Call", "record_length": 300, "frequency": "Quarterly"},
-    "WCMED": {"title": "Medical Data Call", "record_length": 350, "frequency": "Quarterly"},
-}
-
-LINES_OF_BUSINESS = {
-    "Workers Compensation": ["WCSTAT", "WCPOLS", "WCIND", "WCMED"],
-    "Commercial Auto": [],
-    "General Liability": [],
-    "Homeowners": [],
-}
-
-# NCCI state codes used in WCIO specifications (two-digit numeric).
-NCCI_STATE = {
-    "AL": "01", "AZ": "02", "AR": "03", "CA": "04", "CO": "05", "CT": "06", "DE": "07", "DC": "08", "FL": "09",
-    "GA": "10", "ID": "11", "IL": "12", "IN": "13", "IA": "14", "KS": "15", "KY": "16", "LA": "17", "ME": "18",
-    "MD": "19", "MA": "20", "MI": "21", "MN": "22", "MS": "23", "MO": "24", "MT": "25", "NE": "26", "NV": "27",
-    "NH": "28", "NJ": "29", "NM": "30", "NY": "31", "NC": "32", "ND": "33", "OH": "34", "OK": "35", "OR": "36",
-    "PA": "37", "RI": "38", "SC": "39", "SD": "40", "TN": "41", "TX": "42", "UT": "43", "VT": "44", "VA": "45",
-    "WA": "46", "WV": "47", "WI": "48", "WY": "49", "HI": "52", "AK": "54",
-}
-STATE_FROM_CODE = {v: k for k, v in NCCI_STATE.items()}
-
-# Record keys used for the four files this workbench generates.
-RECORD_NAMES = {
-    "WCSTAT": {"0": "Link Data", "1": "Header", "2": "Name", "3": "Address", "4": "Exposure", "5": "Loss",
-               "6": "Unit Total", "9": "File Control"},
-    "WCPOLS": {"00": "Link Data", "01": "Header", "02": "Name", "03": "Address", "04": "State Premium",
-               "05": "Exposure"},
-    "WCIND": {"FILE CONTROL RECORD": "File Control (03)", "TRANSACTIONAL RECORD": "Transactional (01)",
-              "QUARTERLY RECORD": "Quarterly (02)", "KEY FIELD CHANGE RECORD": "Key Field Change (04)"},
-    "WCMED": {"FILE CONTROL RECORD": "File Control (SUBCTRLREC)", "MEDICAL DATA CALL RECORD": "Medical Data Call",
-              "KEY FIELD CHANGE RECORD": "Key Field Change"},
-}
-
-# Pick lists whose PDF tables wrap badly; curated from the same spec pages so the SME sees clean values.
-CURATED_CODES = {
-    ("WCIND", "TRANSACTIONAL RECORD", "BENEFIT TYPE CODE"): [
-        ("01", "Death Benefits"), ("02", "Permanent Total Disability Benefits"),
-        ("03", "Scheduled Permanent Partial Disability Benefits"),
-        ("04", "Unscheduled Permanent Partial Disability Benefits"), ("05", "Temporary Total Disability Benefits"),
-        ("09", "Disfigurement Benefits"), ("11", "Temporary Partial Disability Benefits"),
-        ("12", "Employers Liability"), ("15", "Supplemental Benefits"), ("20", "Claimant Legal Amount Paid"),
-        ("30", "Indemnity Recovery Reimbursement Amount—Third Party Actions"),
-        ("31", "Indemnity Recovery Reimbursement Amount—State Administered Funds"),
-        ("48", "Penalties, Assessments, Interest"), ("49", "Indemnity and Medical Combined"),
-        ("50", "Other Specified Indemnity Benefits"), ("60", "Vocational Rehabilitation—Evaluation Benefit Costs"),
-        ("61", "Vocational Rehabilitation—Education Benefit Costs"),
-        ("62", "Vocational Rehabilitation—Maintenance Benefit Costs"),
-        ("63", "Vocational Rehabilitation—Payment NOC"), ("79", "Lump Sum Including Multiple Indemnity"),
-        ("99", "Other Indemnity Benefits Not Otherwise Specified")],
-    ("WCIND", "TRANSACTIONAL RECORD", "LUMP SUM INDICATOR"): [
-        ("Y", "Claim has been settled by an agreement to a lump sum amount"),
-        ("N", "Claim has not been settled by an agreement to a lump sum amount")],
-    ("WCMED", "MEDICAL DATA CALL RECORD", "TRANSACTION CODE"): [
-        ("01", "Original"), ("02", "Cancellation"), ("03", "Replacement")],
-    ("WCMED", "MEDICAL DATA CALL RECORD", "CLAIMANT GENDER CODE"): [("1", "Male"), ("2", "Female"), ("3", "Other")],
-    ("WCIND", "QUARTERLY RECORD", "ATTORNEY OR AUTHORIZED REPRESENTATIVE INDICATOR"): [
-        ("Y", "Claimant is represented by an attorney or authorized representative"),
-        ("N", "Claimant is not represented by an attorney or authorized representative")],
-    ("WCIND", "QUARTERLY RECORD", "CLAIMANT GENDER CODE"): [("1", "Male"), ("2", "Female"), ("3", "Other")],
-}
-
-ABBREV = {
-    "NUMBER": ["NO", "NUM", "NBR", "NUMBER"], "IDENTIFIER": ["ID", "IDENT"], "DATE": ["DT", "DATE"],
-    "AMOUNT": ["AMT", "AMOUNT"], "CODE": ["CD", "CODE"], "POLICY": ["POL", "POLICY"], "CLAIM": ["CLM", "CLAIM"],
-    "EFFECTIVE": ["EFF"], "EXPIRATION": ["EXP"], "CLASSIFICATION": ["CLASS", "CLS"], "INCURRED": ["INC", "INCD"],
-    "INDEMNITY": ["IND", "INDEM"], "MEDICAL": ["MED"], "PREMIUM": ["PREM"], "EXPOSURE": ["EXPO"],
-    "STATE": ["ST", "STATE"], "INSURED": ["INSD", "INS"], "ADDRESS": ["ADDR"], "TRANSACTION": ["TRAN", "TRANS", "TXN"],
-    "MODIFICATION": ["MOD"], "EXPERIENCE": ["EXPER", "XMOD"], "FEDERAL EMPLOYER IDENTIFICATION NUMBER": ["FEIN", "EIN", "TAX ID"],
-    "ALLOCATED LOSS ADJUSTMENT EXPENSE": ["ALAE"], "ACCIDENT": ["ACC", "LOSS"], "CARRIER": ["CARR", "CO"],
-    "PAID": ["PD", "PAID"], "WEEKLY WAGE": ["AWW"],
-}
+ALL = "US, Canada, UK, India, Global"
+P, C = "Personal", "Commercial"
+PC = "Personal, Commercial"
 
 
-def _norm(s: str) -> str:
-    return re.sub(r"[^A-Z0-9 ]", " ", s.upper()).strip()
+def row(fid, domain, ftype, desc, perp, countries, notes, line, lob, module, obj, stage, flags, method, rule, data,
+        prevent, action, kpi, sev, owner, engine="No"):
+    return dict(zip(COLUMNS, [fid, domain, ftype, desc, perp, countries, notes, line, lob, module, obj, stage, flags,
+                              method, rule, data, prevent, action, kpi, sev, owner, engine]))
 
 
-def make_aliases(name: str) -> list[str]:
-    """Generate the aliases a source system commonly uses for a bureau field name."""
-    base = _norm(name)
-    words = [w for w in base.split() if w not in {"OF", "THE", "AND", "OR", "FOR", "TO", "BY"}]
-    out = {"_".join(words), "".join(w[0] for w in words) if len(words) > 1 else words[0] if words else ""}
-    for phrase, alts in ABBREV.items():
-        if phrase in base:
-            for a in alts:
-                out.add(re.sub(r"\s+", "_", base.replace(phrase, a)))
-    short = []
-    for w in words:
-        alts = ABBREV.get(w)
-        short.append(alts[0] if alts else w)
-    out.add("_".join(short))
-    return sorted(a for a in out if a and a != "_")[:8]
+ROWS = [
+    # ------------------------------------------------------------------ policy & underwriting
+    row("FR-P01", "Policy & underwriting", "Rate evasion (garaging / territory)",
+        "False garaging or risk address to get a cheaper territory.", "Insured", ALL,
+        "US: urban drivers using rural relatives' addresses. UK: postcode manipulation.", PC, "PA, CA, HO",
+        "Policy admin, Rating", "Vehicle, Location, Party", "Quote / bind / renewal",
+        "Garaging ZIP rural while mailing, billing, claim or telematics locations are urban.", "Rule",
+        "Risk ZIP territory = Rural AND (mailing ZIP or loss ZIP) territory = Urban.",
+        "Risk ZIP, mailing ZIP, loss location, territory table", "Address verification at quote; telematics or photo inspection",
+        "Step-up verification; re-rate", "Territory mismatch rate by agent", 3, "Underwriting", "Yes"),
+    row("FR-P02", "Policy & underwriting", "Material misrepresentation of use",
+        "Home declared owner-occupied but rented out short-term or run as a business.", "Insured", ALL,
+        "US: short-term rentals in FL, TX, CA coastal markets.", P, "HO", "Policy admin", "Building, Location",
+        "Bind / renewal", "Short-term rental listing at the address; many guests; business licence at address.",
+        "External data", "Declared usage = Owner occupied AND rental listing found for the address.",
+        "Usage, address, rental listing data", "Rental-listing search before bind and at renewal",
+        "Step-up verification; endorse or non-renew", "Listings found per 1,000 HO policies", 3, "Underwriting", "Yes"),
+    row("FR-P03", "Policy & underwriting", "Application fraud (protection / safety)",
+        "False sprinkler, alarm, roof or safety certification to qualify or cut premium.", "Insured, Agent", ALL,
+        "", C, "CP, HO", "Policy admin, Inspection", "Building", "Bind", "Declared protection contradicted by inspection.",
+        "Rule", "Sprinkler declared = Y AND inspection sprinkler = N.", "Declarations, inspection report",
+        "Inspection before bind above a TIV threshold", "Block bind until verified", "Inspection contradictions by agent",
+        4, "Underwriting", "Yes"),
+    row("FR-P04", "Policy & underwriting", "Concealed loss history",
+        "Prior claims hidden on the application.", "Insured, Agent", ALL,
+        "US: CLUE-type loss histories. UK: CUE. India: NCB certificate checks.", PC, "HO, PA, CP", "Policy admin",
+        "Party", "Quote / bind", "Declared 0 prior claims; external loss history shows 2+.", "External data",
+        "Prior claims declared < prior claims found.", "Application, loss-history report",
+        "Automatic loss-history pull at quote", "Re-rate; rescind if material", "Undisclosed-loss rate", 3, "Underwriting", "Yes"),
+    row("FR-P05", "Policy & underwriting", "Fronting (undisclosed operator)",
+        "Low-risk person named as insured while a high-risk driver or operator actually uses the risk.", "Insured", ALL,
+        "Common in young-driver auto (UK: 'fronting'; US: undisclosed household drivers).", PC, "PA, CA",
+        "Policy admin, Claims", "Vehicle, Party", "Mid-term / claim", "Claims repeatedly name a driver not on the policy.",
+        "Rule", "2+ claims where driver is not a listed driver.", "Listed drivers, claim driver", "Driver household check at bind",
+        "Refer SIU; endorse driver", "Unlisted-driver claims per 100 auto claims", 3, "Underwriting / Claims", "Yes"),
+    row("FR-P06", "Policy & underwriting", "Post-loss / backdated coverage",
+        "Coverage bought or backdated after the loss already happened.", "Insured, Agent, Underwriter", ALL, "", PC,
+        "All", "Policy admin, Claims", "Policy", "Bind / first notice of loss", "Issue date after loss date; loss within days of inception.",
+        "Rule", "Policy issue date > loss date.", "Issue date, effective date, loss date",
+        "No retroactive effective dates without supervisor approval", "Hold payment; refer SIU",
+        "Claims on policies issued after the loss", 5, "Underwriting / SIU", "Yes"),
+    row("FR-P07", "Policy & underwriting", "Ghost broking / fake policies",
+        "Fake or doctored policies sold to consumers by an unlicensed intermediary.", "Third party (ghost broker)",
+        "UK, India, US", "UK: ghost broking on social media.", P, "PA", "Distribution", "Party, Policy",
+        "Quote / bind", "Many policies with one email or phone; cancelled after documents issued.", "Network",
+        "Same contact details across many unrelated insureds; cancel within 30 days of issue.", "Contact details, cancellations",
+        "Contact-data reuse checks at quote", "Block bind", "Shared-contact policies", 4, "Distribution"),
+    row("FR-P08", "Policy & underwriting", "Identity theft / synthetic identity",
+        "Policy bought with a stolen or invented identity, usually to stage claims or launder money.", "Third party",
+        ALL, "", P, "PA, HO", "Policy admin, Billing", "Party", "Quote / bind", "ID fails verification; new identity with no history.",
+        "External data", "Identity verification score below threshold.", "Identity verification service",
+        "Identity check at bind", "Block bind", "Failed ID checks", 4, "Underwriting"),
+    row("FR-P09", "Policy & underwriting", "Payroll / class misreporting (WC premium fraud)",
+        "Employer under-reports payroll or puts workers in cheaper class codes.", "Insured (employer)", "US, Canada",
+        "US: workers compensation premium audit.", C, "WC", "Policy admin, Premium audit", "Party, Location",
+        "Bind / audit", "Payroll per employee far below industry; claims from classes not on policy.", "Anomaly",
+        "Claims in a class code not on the policy; payroll per head < peer floor.", "Payroll, class codes, claims",
+        "Premium audit; payroll verification", "Re-audit; refer SIU", "Audit additional premium", 4, "Premium audit"),
+    # ------------------------------------------------------------------ billing & premium
+    row("FR-B01", "Billing & premium", "Premium diversion by agent",
+        "Agent collects premium and keeps it, sometimes issuing fake certificates.", "Agent", ALL, "", PC, "All",
+        "Billing, Agency", "Payment, Policy", "Collection", "Agent-collected premium not remitted after 30 days.", "Rule",
+        "Collected by agent AND not remitted AND age > 30 days.", "Agent collections, remittances",
+        "Direct bill; trust-account reconciliation", "Hold commissions; refer SIU", "Unremitted premium by agent", 4,
+        "Billing / Agency", "Yes"),
+    row("FR-B02", "Billing & premium", "Refund diversion",
+        "Cancellation refund sent to an account that did not pay the premium, often after a bank-detail change.",
+        "Employee (billing), Third party", ALL, "", PC, "All", "Billing", "Payment, Party", "Cancellation / refund",
+        "Refund account differs from payer account; same clerk changed bank details and approved refund.", "Rule",
+        "Refund to_acct != payer acct OR approver = person who changed bank details.", "Refunds, payments, bank-change log",
+        "Refund only to the original payment method; dual approval", "Block refund", "Refunds to new accounts", 4,
+        "Billing", "Yes"),
+    row("FR-B03", "Billing & premium", "Premium chargeback / NSF after claim",
+        "Premium paid by card or cheque that is reversed after the claim is paid.", "Insured", ALL, "", P, "PA, HO",
+        "Billing, Claims", "Payment", "Collection / claim payment", "Premium reversed after a claim payment.", "Rule",
+        "Premium status in (Chargeback, NSF) AND a claim payment exists on the policy.", "Premium payments, claim payments",
+        "Clear funds before paying claims on new policies", "Hold payment; recover", "Chargebacks after claim", 3,
+        "Billing", "Yes"),
+    row("FR-B04", "Billing & premium", "Premium finance fraud",
+        "Inflated or fictitious policies financed through a premium finance company.", "Agent, Insured", "US",
+        "", C, "All", "Billing, Distribution", "Policy, Payment", "Bind", "Finance agreement premium exceeds policy premium.",
+        "Rule", "Financed amount > billed premium.", "Premium finance notices", "Reconcile finance notices to policies",
+        "Refer SIU", "Mismatched finance notices", 3, "Billing"),
+    row("FR-B05", "Billing & premium", "Commission churning / twisting",
+        "Agent rewrites or replaces policies to earn new-business commission.", "Agent", ALL, "", PC, "All",
+        "Agency, Policy admin", "Policy", "Renewal / rewrite", "High cancel-and-rewrite rate on one agent's book.", "Anomaly",
+        "Rewrite rate > 3x peer average.", "Policy transactions, commissions", "Commission claw-back rules",
+        "Hold commissions", "Rewrite rate by agent", 2, "Agency"),
+    # ------------------------------------------------------------------ claims
+    row("FR-C01", "Claims", "Loss outside policy period",
+        "Loss happened before cover started or after it ended.", "Insured, Claimant", ALL, "", PC, "All",
+        "Claims, Policy admin", "Policy", "First notice of loss", "Loss date before effective or after expiration date.",
+        "Rule", "Loss date < effective date OR > expiration date.", "Policy period, loss date",
+        "Coverage verification at FNOL", "Block payment", "Out-of-period claims", 5, "Claims", "Yes"),
+    row("FR-C02", "Claims", "Loss after cancellation", "Claim on a policy that was already cancelled.",
+        "Insured", ALL, "", PC, "All", "Claims, Policy admin", "Policy", "First notice of loss",
+        "Loss date after cancellation date.", "Rule", "Status = Cancelled AND loss date > cancel date.",
+        "Policy status, cancel date", "Coverage verification at FNOL", "Block payment", "Claims on cancelled policies", 5,
+        "Claims", "Yes"),
+    row("FR-C03", "Claims", "Payment beyond limit", "Claim payments total more than the coverage limit.",
+        "Employee (adjuster), Insured", ALL, "", PC, "All", "Claims", "Payment, Coverage", "Payment",
+        "Paid to date > limit.", "Rule", "Sum of payments > coverage limit.", "Limits, claim payments",
+        "Hard limit check in the payment system", "Block payment", "Over-limit payment attempts", 4, "Claims", "Yes"),
+    row("FR-C04", "Claims", "Deductible not applied", "Loss paid without taking the deductible.",
+        "Employee (adjuster), Insured", ALL, "", PC, "HO, CP, PA", "Claims", "Payment, Coverage", "Payment",
+        "Deductible applied = 0 on a policy with a deductible.", "Rule", "Policy deductible > 0 AND deductible applied = 0.",
+        "Deductible, payments", "System-applied deductible", "Hold payment", "Payments missing deductible", 3, "Claims", "Yes"),
+    row("FR-C05", "Claims", "Duplicate claim / double dipping",
+        "Same loss claimed on two policies or with two insurers.", "Insured", ALL,
+        "Industry claim databases (US ISO ClaimSearch, UK CUE, India IIB) find cross-carrier duplicates.", PC, "All",
+        "Claims", "Party, Building, Vehicle", "First notice of loss", "Same insured, object and loss date on 2+ claims.",
+        "Rule", "Same claimant + same object description + same loss date on different claims.",
+        "Claims, objects, industry claim index", "Search claim index at FNOL", "Hold payment; refer SIU",
+        "Duplicate hits", 4, "Claims / SIU", "Yes"),
+    row("FR-C06", "Claims", "Duplicate / phantom vendor invoice",
+        "Vendor bills twice or bills for work not done.", "Vendor", ALL, "", PC, "All", "Claims, Vendor management",
+        "Payment, Invoice", "Payment", "Same invoice number paid twice.", "Rule", "Invoice number paid more than once.",
+        "Invoices, payments", "Duplicate-invoice block in AP", "Block payment; recover", "Duplicate invoices", 3,
+        "Claims / Finance", "Yes"),
+    row("FR-C07", "Claims", "Deductible forgiveness / estimate inflation",
+        "Contractor inflates the bill by the deductible so the insured pays nothing.", "Vendor, Insured", "US, Canada",
+        "US-FL: roofing contractors; assignment-of-benefits abuse (AOB restricted for FL policies issued from 2023).",
+        P, "HO", "Claims, Vendor management", "Building, Invoice", "Estimate / payment",
+        "Vendor invoice − adjuster estimate ≈ deductible.", "Rule", "|invoice − estimate − deductible| ≤ 5% of deductible.",
+        "Invoices, adjuster estimates, deductible", "Pay to adjuster estimate; insured signs deductible acknowledgement",
+        "Hold payment; refer SIU", "Invoice-over-estimate gap by vendor", 3, "Claims", "Yes"),
+    row("FR-C08", "Claims", "Staged accident ring",
+        "Organised groups stage crashes ('swoop and squat', induced rear-ends) and feed claims to the same lawyers, clinics and shops.",
+        "Claimant, Attorney, Medical provider, Vendor", "US, Canada, UK",
+        "UK: crash-for-cash. US-FL/NY: PIP clinic rings. Canada-ON: staged collisions.", P, "PA, CA", "Claims",
+        "Party, Vehicle", "First notice of loss / medical", "Claimants share phones or addresses; same attorney, clinic and body shop.",
+        "Network", "Cluster of 3+ claims linked by shared phone, address, attorney or provider.",
+        "Party contacts, attorneys, vendors", "Network scoring at FNOL; independent medical exams", "Refer SIU; hold payment",
+        "Ring clusters detected", 5, "SIU", "Yes"),
+    row("FR-C09", "Claims", "Early attorney / claims-management involvement",
+        "Representation within days of a minor loss, often a sign of soliciting or build-up.", "Attorney, Claimant",
+        "US, UK, Canada", "UK: claims-management companies. US: early letters of representation.", PC, "PA, CA, GL, HO",
+        "Claims, Litigation", "Party", "First notice of loss", "Attorney date within 3 days of loss on a low reserve.",
+        "Rule", "Attorney within 3 days of loss AND reserve < 10,000.", "Attorney date, reserve",
+        "Fast contact with claimant; early settlement offer", "Refer SIU (soft)", "Early-representation rate by attorney", 2,
+        "Claims / Litigation", "Yes"),
+    row("FR-C10", "Claims", "Weather-mismatch / pre-existing damage",
+        "Wind or hail claim with no storm at that place and date, or damage that existed before.", "Insured, Vendor",
+        "US, Canada", "US-FL/TX: roof claims after named storms.", PC, "HO, CP", "Claims", "Building",
+        "First notice of loss", "No weather event for ZIP and date; old roof already damaged at inspection.",
+        "External data", "Cause in (Wind, Hail) AND no CAT event for loss ZIP within 3 days; plus roof age / inspection.",
+        "Weather data, inspections, roof age", "Weather verification at FNOL; aerial imagery", "Hold payment; refer SIU",
+        "Weather-mismatch claims", 4, "Claims", "Yes"),
+    row("FR-C11", "Claims", "Arson for profit", "Owner burns the property to collect insurance.", "Insured",
+        ALL, "", PC, "CP, HO", "Claims, Policy admin", "Building", "First notice of loss",
+        "Limit increased shortly before; financial distress; vacant; total loss.", "Rule",
+        "Fire claim AND limit increase within 120 days AND (NSF premium OR vacant).", "Policy changes, billing, claim notes",
+        "Cause-and-origin investigation on large fires", "Hold payment; refer SIU", "Fire claims with recent limit increase",
+        5, "SIU", "Yes"),
+    row("FR-C12", "Claims", "Inflated contents", "Value or quantity of stolen or damaged items overstated.",
+        "Insured", ALL, "", P, "HO", "Claims", "Building, Party", "Settlement", "Contents claimed > 30% of dwelling limit on theft.",
+        "Rule", "Contents claimed / limit > 0.30.", "Contents schedule, limit", "Receipts or photos for high-value items",
+        "Step-up verification", "Contents-to-limit ratio", 3, "Claims", "Yes"),
+    row("FR-C13", "Claims", "Owner give-up / phantom theft",
+        "Vehicle reported stolen but hidden, sold or dumped by the owner.", "Insured", ALL, "", P, "PA", "Claims",
+        "Vehicle", "First notice of loss", "Late theft report; loan in arrears; vehicle later found burned.",
+        "Rule", "Theft reported > 3 days after loss.", "Theft date, report date, recovery",
+        "Telematics; check finance arrears", "Refer SIU", "Late theft reports", 3, "Claims"),
+    row("FR-C14", "Claims", "Total-loss / salvage fraud", "Salvage vehicles rebuilt and re-insured, or VIN cloned.",
+        "Third party, Vendor", "US, Canada", "", P, "PA", "Claims, Salvage", "Vehicle", "Bind / total loss",
+        "VIN previously total-lossed.", "External data", "VIN has prior total-loss brand.", "VIN history",
+        "VIN history at bind", "Block bind", "Branded-VIN hits", 3, "Underwriting"),
+    row("FR-C15", "Claims", "Payee account takeover", "Bank details changed just before a large claim payment.",
+        "Third party, Employee", ALL, "", PC, "All", "Claims, Billing", "Party, Payment", "Payment",
+        "Bank change within 3 days before payment.", "Rule", "Payment to an account changed ≤ 3 days earlier.",
+        "Bank-change log, payments", "Call-back verification on bank changes", "Hold payment", "Payments after bank change",
+        4, "Claims / Finance", "Yes"),
+    row("FR-C16", "Claims", "Post-termination workers comp claim",
+        "Injury reported after notice of termination, dated before it.", "Claimant", "US, Canada", "", C, "WC", "Claims",
+        "Party", "First notice of loss", "Report after termination; loss just before; no witnesses.", "Rule",
+        "Report date > termination date AND loss date within 7 days before termination.", "Employer termination data",
+        "Employer statement; recorded statement", "Refer SIU", "Post-termination claims", 3, "Claims", "Yes"),
+    row("FR-C17", "Claims", "Repeat claimant", "Same person on several injury claims against different insureds.",
+        "Claimant", ALL, "", PC, "PA, GL", "Claims", "Party", "First notice of loss", "3+ claims in 3 years.", "Rule",
+        "Claimant on ≥ 3 claims.", "Claims, party index", "Industry index search", "Refer SIU", "Repeat claimants", 3, "SIU", "Yes"),
+    row("FR-C18", "Claims", "Medical upcoding / phantom treatment",
+        "Providers bill more expensive or unnecessary treatment.", "Medical provider", "US, Canada, India",
+        "US-FL/NY: PIP. India: motor injury claims.", PC, "PA, WC, GL", "Claims, Medical bill review", "Invoice",
+        "Medical bill", "Same treatment pattern for every patient; high bill per claimant.", "Anomaly",
+        "Provider bill per claim > 2x peer average.", "Medical bills", "Bill review; fee schedules", "Hold payment",
+        "Provider outliers", 4, "Medical bill review"),
+    row("FR-C19", "Claims", "Excluded peril paid as covered",
+        "Flood, wear-and-tear or other excluded cause recorded as a covered peril.", "Insured, Vendor, Employee",
+        ALL, "", PC, "HO, CP", "Claims", "Building, Coverage", "Coverage decision",
+        "Cause changes after inspection; flood zone with 'wind' damage only below waterline.", "Text",
+        "Claim notes mention excluded terms while cause is covered.", "Claim notes, cause codes",
+        "Coverage review on cause changes", "Hold payment", "Cause-code changes", 3, "Claims"),
+    row("FR-C20", "Claims", "Aggregate / per-occurrence deductible manipulation",
+        "Several occurrences combined or split to dodge a per-occurrence or aggregate deductible.", "Insured, Broker",
+        ALL, "", C, "CP, GL", "Claims", "Coverage", "Settlement", "Related losses split into separate claims under the deductible.",
+        "Rule", "Same insured, same cause, ≤ 7 days apart, each just under deductible.", "Claims, deductibles",
+        "Occurrence definition review", "Hold payment", "Split-occurrence alerts", 3, "Claims"),
+    # ------------------------------------------------------------------ reinsurance
+    row("FR-R01", "Reinsurance", "Double ceding / double recovery",
+        "Same risk or loss recovered from more than one treaty or reinsurer.", "Cedent", "Global",
+        "Cross-market data gaps between reinsurers.", C, "All", "Reinsurance", "Treaty, Claim", "Recovery billing",
+        "Total recoveries billed on a claim > paid loss.", "Rule", "Σ recovery billed per claim > paid loss.",
+        "Cessions, claim payments", "Cession register with one claim → treaty allocation", "Block recovery bill",
+        "Over-ceded claims", 5, "Reinsurance", "Yes"),
+    row("FR-R02", "Reinsurance", "Recovery outside treaty period",
+        "Loss billed to a treaty that was not in force on the loss date.", "Cedent", "Global", "", C, "All",
+        "Reinsurance", "Treaty, Claim", "Recovery billing", "Loss date outside treaty dates.", "Rule",
+        "Loss date < treaty start OR > treaty end.", "Treaties, claims", "Treaty attachment check",
+        "Block recovery bill", "Out-of-period cessions", 4, "Reinsurance", "Yes"),
+    row("FR-R03", "Reinsurance", "Aggregate deductible misapplied",
+        "Aggregate stop-loss recovery billed before the annual aggregate deductible is used up.", "Cedent", "Global",
+        "", C, "All", "Reinsurance", "Treaty", "Recovery billing", "Retained losses for the year < AAD.", "Rule",
+        "Recovery billed > 0 AND retained treaty-year losses < AAD.", "Treaty terms, retained losses",
+        "AAD erosion ledger", "Block recovery bill", "AAD erosion vs billing", 4, "Reinsurance", "Yes"),
+    row("FR-R04", "Reinsurance", "Fronting scheme / offshore shell reinsurer",
+        "Risk fronted 100% to an under-capitalised or unregulated reinsurer that cannot pay.", "Reinsurer, MGA",
+        "Global", "", C, "All", "Reinsurance", "Treaty, Reinsurer", "Placement", "Unrated, offshore, capital < limit, no collateral.",
+        "Rule", "Reinsurer rating = NR AND (capital < treaty limit OR no collateral).", "Reinsurer financials, collateral",
+        "Security committee approval; collateral requirements", "Block placement", "Exposure to unrated reinsurers", 5,
+        "Reinsurance", "Yes"),
+    row("FR-R05", "Reinsurance", "Misrepresented risk pool (bordereau)",
+        "Cedent under-reports catastrophe concentration or loss history to reinsurers.", "Cedent", "Global", "", C,
+        "HO, CP", "Reinsurance", "Treaty, Building", "Placement / bordereau", "Bordereau TIV < policy-system TIV in coastal ZIPs.",
+        "Rule", "Bordereau TIV / actual TIV < 0.8 for any ZIP.", "Bordereau, policy exposures",
+        "Bordereau reconciled to policy system", "Hold renewal; restate bordereau", "Bordereau variance", 4,
+        "Reinsurance", "Yes"),
+    row("FR-R06", "Reinsurance", "Reinsurer collections manipulation",
+        "Recoveries written off, offset or commuted to hide unpaid balances or kickbacks.", "Employee, Reinsurer",
+        "Global", "", C, "All", "Reinsurance, Finance", "Treaty", "Collection",
+        "Large write-offs; commutation well below expected value.", "Anomaly", "Commutation < 60% of actuarial value.",
+        "Collections, commutations", "Dual approval for write-offs", "Refer audit", "Aged recoverables", 3, "Finance"),
+    # ------------------------------------------------------------------ internal (employee) and corporate
+    row("FR-I01", "Internal (employee)", "Ghost policy by underwriter",
+        "Employee issues a fake policy to themselves or an accomplice, then files a claim on it.", "Employee (underwriter)",
+        ALL, "", PC, "All", "Policy admin, Claims", "Policy, Party", "Bind / claim",
+        "Manual issue; insured shares employee phone, address or bank; no premium; early claim.", "Network",
+        "Insured contact or bank = employee's AND issued manually.", "Employee master, parties, premium",
+        "Maker-checker on manual issue; employee data screening", "Block payment; refer SIU", "Employee-linked policies",
+        5, "SIU / Internal audit", "Yes"),
+    row("FR-I02", "Internal (employee)", "Underwriter–agent collusion (rate overrides)",
+        "Underwriter gives one agent's business large unjustified discounts.", "Employee (underwriter), Agent", ALL, "",
+        PC, "All", "Rating, Policy admin", "Policy", "Bind", "Overrides concentrated on one underwriter–agent pair.",
+        "Anomaly", "Override ≤ −20% AND same underwriter–agent pair ≥ 3 times.", "Rating overrides",
+        "Override authority limits; peer review", "Refer audit", "Override concentration", 3, "Underwriting", "Yes"),
+    row("FR-I03", "Internal (employee)", "Ghost claim / payment to employee",
+        "Adjuster creates or redirects a claim payment to their own account.", "Employee (adjuster)", ALL, "", PC,
+        "All", "Claims, Finance", "Payment", "Payment", "Payee account = employee account.", "Network",
+        "Payee bank account matches any employee bank account.", "Employee master, payments",
+        "Payee screening against employee master", "Block payment; refer SIU", "Employee-linked payments", 5,
+        "SIU / Internal audit", "Yes"),
+    row("FR-I04", "Internal (employee)", "Payment splitting under authority",
+        "Payments split to stay just under the adjuster's authority limit.", "Employee (adjuster)", ALL, "", PC, "All",
+        "Claims", "Payment", "Payment", "2+ same-day payments each 90–100% of authority.", "Rule",
+        "Same claim, same day, ≥ 2 payments between 90% and 100% of authority.", "Payments, authority limits",
+        "Cumulative authority check", "Hold payment", "Near-limit payment clusters", 4, "Claims", "Yes"),
+    row("FR-I05", "Internal (employee)", "Vendor steering / kickbacks",
+        "Adjuster sends work to one vendor in return for kickbacks.", "Employee (adjuster), Vendor", ALL, "", PC, "All",
+        "Claims, Vendor management", "Invoice, Party", "Assignment", "One vendor gets most of an adjuster's jobs.", "Anomaly",
+        "Within a trade: one vendor gets ≥ 60% of an adjuster's ≥ 6 jobs and fair rotation would give that < 1% of the time.", "Vendor assignments", "Rotation / managed repair network",
+        "Refer audit", "Vendor concentration by adjuster", 3, "Claims / Internal audit", "Yes"),
+    row("FR-I06", "Internal (employee)", "Data theft / sale of customer data",
+        "Employee sells claimant or policyholder data to runners or ghost brokers.", "Employee", ALL, "", PC, "All",
+        "All modules", "Party", "Any", "Bulk record views unrelated to assigned work.", "Anomaly",
+        "Records viewed > 5x peer average without assignment.", "Access logs", "Least-privilege access; DLP",
+        "Refer security", "Unassigned record views", 4, "Security"),
+    row("FR-I07", "Corporate / insurer conduct", "Reserve manipulation",
+        "Case reserves understated or overstated to manage results or reinsurance recoveries.", "Employee, Management",
+        ALL, "", PC, "All", "Claims, Finance, Reinsurance", "Claim", "Reserving",
+        "Reserves cut just before quarter end then raised after.", "Anomaly",
+        "Reserve change pattern around period ends.", "Reserve history", "Independent reserve review", "Refer audit",
+        "Reserve development", 4, "Actuarial / Audit"),
+    row("FR-I08", "Corporate / insurer conduct", "Systematic underpayment of valid claims",
+        "Valid claims routinely underpaid or denied (insurer-side misconduct; regulators treat this as unfair claims practice).",
+        "Insurer", ALL, "", PC, "All", "Claims", "Claim", "Settlement", "Settlements far below estimates; high reopen and complaint rates.",
+        "Anomaly", "Paid / estimate < 60% on covered claims; complaint ratio outlier.", "Payments, estimates, complaints",
+        "Claim quality audits", "Refer compliance", "Complaint ratio, reopen rate", 4, "Compliance"),
+    row("FR-V01", "Vendor & provider", "Storm chasers / solicitation",
+        "Contractors canvass after a storm, sign homeowners up and inflate claims.", "Vendor", "US",
+        "US-FL/TX after hurricanes and hail.", P, "HO", "Claims, Vendor management", "Building, Invoice",
+        "First notice of loss", "Out-of-area vendor; many claims in days after an event; same estimate templates.",
+        "Anomaly", "Vendor claim count in 14 days post-event > 5x baseline.", "Vendor, claims, CAT events",
+        "Preferred vendor programme; licence checks", "Step-up verification", "New vendors after CAT", 3, "Claims"),
+    row("FR-V02", "Vendor & provider", "Parts substitution",
+        "Shop bills for OEM parts but fits cheaper aftermarket or used parts.", "Vendor", ALL, "", PC, "PA, CA",
+        "Claims", "Vehicle, Invoice", "Repair", "OEM parts billed; re-inspection finds aftermarket.", "External data",
+        "Re-inspection mismatch.", "Invoices, re-inspection", "Random re-inspections", "Recover", "Re-inspection fail rate",
+        2, "Claims"),
+]
 
 
-def record_key(f: dict) -> str:
-    return f["page_record"] if f["spec"] in ("WCSTAT", "WCPOLS") else f["record_title"]
+PRODUCTS = {"HO": "HO-3 Homeowners", "PA": "Personal Auto", "CP": "Commercial Property", "CA": "Commercial Auto",
+            "WC": "Workers Compensation", "GL": "Commercial General Liability"}
 
 
-BORROW = {"TYPE OF SETTLEMENT CODE": "TYPE OF SETTLEMENT CODE", "ACT—LOSS CONDITION CODE": "LOSS COVERAGE ACT CODE"}
-DEC = re.compile(r"assumed decimal(?: point)? between\s+positions\s+(\d+)\s*(?:and|-|–)\s*(\d+)", re.I)
+def _products(lob: str) -> str:
+    if lob.strip() == "All":
+        return "All products"
+    return ", ".join(PRODUCTS.get(x.strip(), x.strip()) for x in lob.split(","))
 
 
-def _decimals(f: dict) -> int:
-    """Implied decimals from the spec text ("assumed decimal point between positions 89 and 90")."""
-    d = f.get("description", "").lower()
-    if "payroll" in d and "whole dollar" in d:
-        return 0          # payroll exposure is whole dollars; decimals apply only to non-payroll bases
-    m = DEC.search(f.get("description", ""))
-    if m:
-        return max(0, f["end"] - int(m.group(1)))
-    return int(f.get("implied_decimals", 0) or 0)
-
-
-def _codes_confidence(codes: list[dict], length: int) -> float:
-    if not codes:
-        return 0.0
-    ok = sum(1 for c in codes if len(c["code"]) <= max(length, 2) and not re.search(r"\b\d{2}\s+[A-Z][a-z]", c["description"]))
-    return round(ok / len(codes), 2)
-
-
-CONNECT = re.compile(r"(\bBY|\bOF|\bAND|\bOR|\bFOR|\bTO|\bTHE|-|–|/)$")
-CONT = re.compile(r"^([A-Z0-9][A-Z0-9 \-–/&()'’,.]+?)(?=\s+[A-Z][a-z]|\s*$)")
-
-
-def _full_name(f: dict) -> tuple[str, str]:
-    """Rejoin field titles that wrap onto the next line of the PDF."""
-    name, desc = re.sub(r"\s+\d+$", "", f["name"].upper().strip()), f.get("description", "")
-    m = CONT.match(desc)
-    if m and len(m.group(1)) > 3 and not name.startswith("RESERVED") and "RECORD" not in m.group(1) \
-            and "ENDORSEMENT" not in m.group(1):
-        seg = m.group(1).strip()
-        words = seg.split()
-        if CONNECT.search(name) or (2 <= len(words) <= 4 and not seg.startswith(("N/A", "NOT ", "OPTIONAL", "FOR ", "NCCI"))
-                                    and not any(w in name for w in words)):
-            return re.sub(r"\s+\d+\b", "", f"{name} {seg}").strip(), desc[m.end():].strip()
-    return name, desc
-
-
-@lru_cache(maxsize=1)
 def load() -> pd.DataFrame:
-    raw = json.loads((DATA / "catalog.json").read_text())
-    rows = []
-    for f in raw:
-        f = dict(f)
-        f["name"], f["description"] = _full_name(f)
-        key = record_key(f)
-        codes = [dict(c, na_states="" if re.search(rf"\b{re.escape(c['code'])} - ", c["description"]) else c["na_states"])
-                 for c in f.get("codes", [])]
-        cur = CURATED_CODES.get((f["spec"], key, f["name"]))
-        source = "PDF"
-        if cur:
-            codes = [{"code": c, "description": d, "na_states": "", "reserved": False} for c, d in cur]
-            source = "PDF + SME curated"
-        rows.append({
-            "spec": f["spec"], "record_key": key,
-            "record_name": RECORD_NAMES.get(f["spec"], {}).get(key, f["record_title"].title()),
-            "field_no": f["field_no"], "name": f["name"], "class": f["class"], "start": f["start"],
-            "end": f["end"], "length": f["length"], "format": f.get("format", ""),
-            "implied_decimals": _decimals(f), "signed": f.get("signed", False),
-            "constant": f.get("constant", ""), "not_applicable": f.get("not_applicable", ""),
-            "optional": f.get("optional", ""), "description": f.get("description", ""),
-            "codes": codes, "pick_list_source": source if codes else "",
-            "pick_list_confidence": 1.0 if cur else _codes_confidence(codes, f["length"]),
-            "aliases": make_aliases(f["name"]),
-        })
-    df = pd.DataFrame(rows)
-    df["field_id"] = df.spec + "|" + df.record_key + "|" + df.start.astype(str)
-    # A one-value "pick list" on a long free-format field is description text, not a code list.
-    junk = df.codes.apply(len).eq(1) & (df.length > 2) & df.apply(
-        lambda r: bool(r.codes) and len(r.codes[0]["code"]) != r.length, axis=1)
-    df.loc[junk, "codes"] = df.loc[junk, "codes"].apply(lambda _: [])
-    df.loc[junk, ["pick_list_source", "pick_list_confidence"]] = ["", 0.0]
-    # Borrow a clean pick list from WCSTAT for the same field name when the parsed one is weak.
-    good = {r["name"]: r["codes"] for _, r in df[(df.spec == "WCSTAT") & (df.pick_list_confidence >= 0.9)].iterrows()
-            if r["codes"]}
-    weak = df.spec.isin(["WCIND", "WCMED"]) & df.name.isin(BORROW) & df.name.map(lambda n: BORROW.get(n) in good)
-    df.loc[weak, "codes"] = df.loc[weak, "name"].map(lambda n: good[BORROW[n]])
-    df.loc[weak, "pick_list_source"] = "Borrowed from WCSTAT (SME verify)"
-    df.loc[weak, "pick_list_confidence"] = 0.9
+    df = pd.DataFrame(ROWS, columns=COLUMNS)
+    df.insert(COLUMNS.index("lob") + 1, "product", df.lob.apply(_products))
+    df["severity"] = df.severity.astype(int)
     return df
 
 
-def record_fields(spec: str, key: str) -> pd.DataFrame:
-    df = load()
-    return df[(df.spec == spec) & (df.record_key == key)].sort_values("start").reset_index(drop=True)
-
-
-def records_for(spec: str) -> pd.DataFrame:
-    df = load()
-    g = df[df.spec == spec].groupby("record_key", sort=False)
-    out = g.agg(record_name=("record_name", "first"), fields=("name", "size"), last_position=("end", "max"),
-                pick_lists=("codes", lambda s: sum(1 for c in s if c))).reset_index()
-    return out
-
-
-def layout_qa(spec: str) -> pd.DataFrame:
-    """Gaps and overlaps per record, so the SME knows exactly what to review."""
-    df = load()
-    rec_len = SPEC_INFO[spec]["record_length"]
-    out = []
-    for key, g in df[df.spec == spec].groupby("record_key", sort=False):
-        g = g.sort_values("start")
-        pos, issues = 1, []
-        for _, f in g.iterrows():
-            if f.start > pos:
-                issues.append(f"gap {pos}-{f.start - 1}")
-            elif f.start < pos and not (f["name"] == "LINK DATA" or f.start == 1):
-                issues.append(f"overlap at {f.start}")
-            pos = max(pos, f.end + 1)
-        if key not in ("0", "00") and pos - 1 < rec_len - 1:
-            issues.append(f"ends at {pos - 1} of {rec_len}")
-        out.append({"record_key": key, "record_name": g.record_name.iloc[0], "fields": len(g),
-                    "status": "Complete" if not issues else "Review", "issues": "; ".join(issues)})
-    return pd.DataFrame(out)
-
-
-def pick_list(field_row) -> dict[str, str]:
-    return {c["code"]: c["description"] for c in field_row["codes"]}
-
-
-def summary() -> pd.DataFrame:
-    df = load()
-    rows = []
-    for spec, info in SPEC_INFO.items():
-        d = df[df.spec == spec]
-        rows.append({"spec": spec, "title": info["title"], "records": d.record_key.nunique(), "fields": len(d),
-                     "pick_lists": int((d.codes.str.len() > 0).sum()),
-                     "pick_list_values": int(d.codes.str.len().sum()),
-                     "date_formats": int((d.format != "").sum())})
-    return pd.DataFrame(rows)
+SUGGESTED_COLUMNS = {
+    "perpetrator": "Who commits it: insured, claimant, agent, vendor, attorney, employee, cedent, reinsurer, insurer",
+    "country_notes": "How the scheme shows up in each country and the local data sources (CUE, ISO ClaimSearch, IIB …)",
+    "lifecycle_stage": "Where in the policy / claim / reinsurance lifecycle it happens, so the control sits at that gate",
+    "red_flags": "Plain-language indicators an underwriter, adjuster or auditor can recognise",
+    "detection_method": "Rule, anomaly, network (link analysis), text or external data",
+    "detection_rule": "The exact machine test the engine runs",
+    "data_needed": "Data elements and external sources the rule depends on",
+    "prevention_control": "Control that stops it before money moves",
+    "trigger_action": "Block, hold payment, step-up verification, refer SIU, recover",
+    "monitoring_kpi": "What to trend on the dashboard",
+    "severity": "1 (nuisance) to 5 (large or criminal)",
+    "product": "Products the scheme hits (derived from line of business)",
+    "owner": "Accountable team",
+    "engine_rule": "Whether SI² has a working rule for it in this demo",
+}

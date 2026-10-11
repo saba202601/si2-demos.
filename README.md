@@ -11,6 +11,7 @@ All data is synthetic. Codes, record layouts and rating factors are illustrative
 | `app_rating.py` | Rating Engine | https://si2-rating.streamlit.app |
 | `app_claims.py` | Claims Triage | https://si2-claims.streamlit.app |
 | `app_migration.py` | Legacy-to-Cloud Migration Workbench | https://si2-migrate.streamlit.app |
+| `app_fraud.py` | Fraud Engine | https://si2-fraud.streamlit.app |
 
 Shared code lives in `si2_common/` (branding, access code, synthetic data, rule evaluator).
 
@@ -41,6 +42,14 @@ ANTHROPIC_MODEL = "claude-sonnet-5-5"
 | `legacy.py` | Reads COBOL copybooks (PIC, COMP-3, OCCURS, 88-levels) and fixed-width data, DB tables, code tables, PDF forms, notes and COBOL programs; classifies uploaded files |
 | `engine.py` | Discovery inventory, canonical model with synonyms, source → canonical → destination matching, pick-list value maps, transform, load (SQLite), reconciliation and the PREMCALC business-rule test |
 | `samples/` | INSURE/400 demo legacy system and the cloud destination schema and pick lists |
+
+## Fraud Engine (`fraud/`)
+
+| File | What it does |
+|---|---|
+| `catalog.py` | 50 P&C fraud types (policy, billing, claims, reinsurance, internal, vendor, insurer conduct) by country, line, LOB, product, module, object and perpetrator, with red flags, detection rule, prevention control, trigger action and monitoring KPI |
+| `data.py` | Synthetic book (US, Canada, UK, India): policies, objects, parties, employees, agents, vendors, billing, claims, payments, invoices, reinsurance, with 92 planted scenarios and an answer key |
+| `engine.py` | 34 live rules (rules, anomaly, network rings, external data), risk scoring, gate actions, evaluation against the answer key, monthly monitoring |
 
 ## Run on your computer
 
