@@ -1,0 +1,35 @@
+table,field,type,length,required,key,pick_list,description
+policy,policy_number,string,20,Y,Y,,Unique policy number
+policy,line_of_business,picklist,30,Y,,LineOfBusiness,Line of business
+policy,policy_status,picklist,20,Y,,PolicyStatus,Current policy status
+policy,effective_date,date,10,Y,,,Policy effective date
+policy,expiration_date,date,10,Y,,,Policy expiration date
+policy,base_state,string,2,Y,,,Primary state
+policy,written_premium,decimal,12,Y,,,Written premium
+policy,payment_plan,picklist,20,N,,PaymentPlan,Billing payment plan
+policy,producer_code,string,10,Y,,,Producer (agent) code
+party,policy_number,string,20,Y,Y,,Policy number
+party,full_name,string,80,Y,,,Insured full name (First Last)
+party,email,string,120,N,,,Insured email
+party,phone,string,20,N,,,Insured phone
+party,mailing_address,string,200,N,,,Insured mailing address
+producer,producer_code,string,10,Y,Y,,Producer code
+producer,producer_name,string,80,Y,,,Producer name
+producer,producer_state,string,2,N,,,Producer state
+coverage,policy_number,string,20,Y,Y,,Policy number
+coverage,coverage_type,picklist,30,Y,Y,CoverageType,Coverage type
+coverage,limit_amount,decimal,12,N,,,Coverage limit
+coverage,deductible_amount,decimal,12,N,,,Deductible
+coverage,coverage_premium,decimal,12,Y,,,Coverage premium
+claim,claim_number,string,20,Y,Y,,Claim number
+claim,policy_number,string,20,Y,,,Policy number
+claim,loss_date,date,10,Y,,,Date of loss
+claim,loss_cause,picklist,30,Y,,LossCause,Cause of loss
+claim,claim_status,picklist,20,Y,,ClaimStatus,Claim status
+claim,outstanding_reserve,decimal,12,Y,,,Outstanding reserve
+claim,repair_estimate,decimal,12,N,,,Repair estimate from adjuster notes
+claim,attorney_involved,boolean,1,N,,,Attorney involvement from notes
+claim_payment,claim_number,string,20,Y,Y,,Claim number
+claim_payment,payment_sequence,integer,3,Y,Y,,Payment sequence
+claim_payment,payment_date,date,10,Y,,,Payment date
+claim_payment,payment_amount,decimal,12,Y,,,Payment amount

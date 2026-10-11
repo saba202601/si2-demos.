@@ -10,6 +10,7 @@ All data is synthetic. Codes, record layouts and rating factors are illustrative
 | `app_rules.py` | Business Rule Engine | https://si2-rules.streamlit.app |
 | `app_rating.py` | Rating Engine | https://si2-rating.streamlit.app |
 | `app_claims.py` | Claims Triage | https://si2-claims.streamlit.app |
+| `app_migration.py` | Legacy-to-Cloud Migration Workbench | https://si2-migrate.streamlit.app |
 
 Shared code lives in `si2_common/` (branding, access code, synthetic data, rule evaluator).
 
@@ -32,6 +33,14 @@ Optional secrets for the workbench (Streamlit Cloud → app → Settings → Sec
 ANTHROPIC_API_KEY = "sk-ant-..."
 ANTHROPIC_MODEL = "claude-sonnet-5-5"
 ```
+
+## Legacy-to-Cloud Migration Workbench (`migrate/`)
+
+| File | What it does |
+|---|---|
+| `legacy.py` | Reads COBOL copybooks (PIC, COMP-3, OCCURS, 88-levels) and fixed-width data, DB tables, code tables, PDF forms, notes and COBOL programs; classifies uploaded files |
+| `engine.py` | Discovery inventory, canonical model with synonyms, source → canonical → destination matching, pick-list value maps, transform, load (SQLite), reconciliation and the PREMCALC business-rule test |
+| `samples/` | INSURE/400 demo legacy system and the cloud destination schema and pick lists |
 
 ## Run on your computer
 

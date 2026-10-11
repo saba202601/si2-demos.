@@ -1,0 +1,28 @@
+pick_list,code,description
+LineOfBusiness,PersonalAuto,Personal Auto
+LineOfBusiness,Homeowners,Homeowners
+LineOfBusiness,WorkersComp,Workers Compensation
+PolicyStatus,InForce,In force (active)
+PolicyStatus,Cancelled,Cancelled
+PolicyStatus,Expired,Expired
+PolicyStatus,NonRenewed,Non-renewed
+PaymentPlan,Annual,Paid in full annually
+PaymentPlan,SemiAnnual,Two installments
+PaymentPlan,Quarterly,Four installments
+PaymentPlan,Monthly,Monthly installments
+CoverageType,BodilyInjury,Bodily injury liability
+CoverageType,PropertyDamage,Property damage liability
+CoverageType,Collision,Collision
+CoverageType,Comprehensive,Comprehensive
+CoverageType,Dwelling,Dwelling
+CoverageType,PersonalLiability,Personal liability
+CoverageType,WCEmployersLiability,Workers compensation and employers liability
+LossCause,Collision,Collision
+LossCause,Theft,Theft
+LossCause,Fire,Fire
+LossCause,Water,Water damage
+LossCause,Hail,Hail
+LossCause,WorkplaceInjury,Workplace injury
+ClaimStatus,Open,Open
+ClaimStatus,Closed,Closed
+ClaimStatus,Reopened,Reopened

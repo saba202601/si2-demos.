@@ -1,0 +1,607 @@
+"""SI² Legacy-to-Cloud Migration Workbench.
+
+Legacy sources (COBOL copybooks + data, DB tables, code tables, PDF forms, notes, COBOL programs)
+-> discovery inventory -> canonical model (fields, synonyms, pick lists) -> Source → Canonical → Destination
+mapping with SME queue -> pick-list value maps -> transform -> inject into the cloud database
+-> legacy vs cloud tests (counts, control totals, integrity, sample records, COBOL business rule) -> SME approval.
+"""
+import datetime as dt
+import io
+import zipfile
+from pathlib import Path
+
+import pandas as pd
+import streamlit as st
+
+from migrate import engine as E
+from migrate import legacy
+from si2_common import branding, gate
+
+branding.page("Legacy-to-Cloud Migration Workbench",
+              "Discover every legacy data element, build the canonical model, map, migrate, test and approve.")
+gate.require_access()
+
+STEPS = ["Overview", "1 · Legacy sources", "2 · Destination", "3 · Discovery inventory",
+         "4 · Canonical model & synonyms", "5 · Source → Canonical → Destination", "6 · Pick-list values",
+         "7 · Transform & inject", "8 · Test legacy vs cloud", "9 · SME approval", "Audit trail"]
+CHOICE_NONE = ""
+
+
+# ------------------------------------------------------------------------------------------ state
+@st.cache_data(show_spinner=False)
+def _demo():
+    return legacy.load_samples()
+
+
+def log(who, event, detail=""):
+    st.session_state.audit.append({"time": dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "by": who,
+                                   "event": event, "detail": detail})
+
+
+def sme():
+    return st.session_state.get("sme_name") or "SME"
+
+
+def set_source(src, label):
+    ss = st.session_state
+    ss.src, ss.src_label = src, label
+    ss.syn_edits, ss.map_ov, ss.rejected, ss.val_ov = {}, {}, set(), {}
+    ss.loaded, ss.tests_signed, ss.approved = None, {}, None
+    ss.inv = E.discover(src)
+    recompute()
+    log("SI²", "Legacy sources connected", f"{label}: {len(src['entities'])} entities, {len(ss.inv)} elements")
+
+
+def recompute():
+    """Canonical model -> matching -> value maps, applying every SME decision so far."""
+    ss = st.session_state
+    canon = E.build_canonical(ss.src["dest_schema"], ss.src["dest_picklists"])
+    for cid, syn in ss.syn_edits.items():
+        canon.loc[canon.canonical_id == cid, "synonyms"] = syn
+    m = E.match(ss.inv, canon, ss.map_ov)
+    rej = m.element_id.isin(ss.rejected) & ~m.element_id.isin(ss.map_ov)
+    m.loc[rej, ["canonical_id", "status", "method", "destination_fields"]] = ["", "Needs SME review", "SME rejected", ""]
+    vm = E.value_maps(ss.inv, m, canon, ss.src["dest_picklists"], ss.val_ov)
+    ss.canon, ss.m, ss.vm = canon, m, vm
+    ss.cov = E.coverage(m, canon, vm)
+
+
+def init():
+    if "ready" in st.session_state:
+        return
+    st.session_state.audit = []
+    set_source(_demo(), "SI² demo legacy system INSURE/400")
+    st.session_state.ready = True
+
+
+def invalidate_load(reason):
+    ss = st.session_state
+    if ss.loaded is not None:
+        ss.loaded, ss.tests_signed, ss.approved = None, {}, None
+        st.info(f"Mapping changed ({reason}). Transform & inject again before testing.")
+
+
+def sample_pack() -> bytes:
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        for p in sorted(legacy.SAMPLES.rglob("*")):
+            if p.is_file():
+                z.write(p, p.relative_to(legacy.SAMPLES))
+    return buf.getvalue()
+
+
+def fw_ruler(width):
+    tens = "".join(f"{i // 10 % 10}" if i % 10 == 0 else " " for i in range(1, width + 1))
+    ones = "".join(str(i % 10) for i in range(1, width + 1))
+    return tens + "\n" + ones
+
+
+def pass_badge(df, col="result", ok=("PASS", "MATCH")):
+    if df is None or df.empty:
+        return "—"
+    bad = int((~df[col].isin(ok)).sum())
+    return "✅ all pass" if bad == 0 else f"❌ {bad} failing"
+
+
+def styled(df, col="result"):
+    def color(v):
+        if v in ("PASS", "MATCH", "Auto-mapped", "SME approved"):
+            return "color:#0A7A3D;font-weight:600"
+        if v in ("FAIL", "MISMATCH", "Needs SME review"):
+            return "color:#B42318;font-weight:600"
+        return ""
+    cols = [c for c in ([col] if isinstance(col, str) else col) if c in df.columns]
+    return df.style.map(color, subset=cols) if cols else df
+
+
+init()
+ss = st.session_state
+
+with st.sidebar:
+    st.markdown("**Workflow**")
+    step = st.radio("Step", STEPS, label_visibility="collapsed", key="step")
+    st.divider()
+    st.text_input("SME name", key="sme_name", placeholder="Your name for approvals")
+    st.caption(f"Source: {ss.src_label}")
+    st.metric("Mapping complete", f"{ss.cov['pct']}%")
+    q = int((ss.m.status == "Needs SME review").sum()) + int((ss.vm.status == "Needs SME review").sum())
+    st.caption(f"SME queue: {q} item(s)")
+
+# ------------------------------------------------------------------------------------------ Overview
+if step == "Overview":
+    src = ss.src
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Legacy entities", len(src["entities"]))
+    c2.metric("Data elements found", len(ss.inv))
+    c3.metric("Canonical elements", len(ss.canon))
+    c4.metric("Mapping complete", f"{ss.cov['pct']}%")
+    st.subheader("How it works")
+    st.graphviz_chart("""
+digraph G { rankdir=LR; bgcolor="transparent";
+ node [shape=box, style="rounded,filled", fillcolor="#FFFFFF", color="#0B1B2B", fontname="Helvetica", fontsize=10];
+ edge [color="#2B4CF2"];
+ src [label="Legacy system\\nCOBOL copybooks + VSAM\\nDB2 tables · code tables\\nPDF forms · notes\\nCOBOL programs"];
+ inv [label="Discovery\\nelements · types\\npick lists · aliases"];
+ dst [label="Cloud destination\\nschema + pick lists"];
+ can [label="SI² canonical\\nmodel + synonyms", fillcolor="#E7ECFE"];
+ map [label="Source → Canonical\\n→ Destination\\nwith confidence"];
+ q [label="SME validates\\nfields · synonyms\\nvalues → 100%", fillcolor="#E7ECFE"];
+ load [label="Transform &\\ninject to cloud"]; test [label="Test legacy vs cloud\\ncounts · totals\\nsamples · COBOL rule"];
+ ok [label="SME approval\\n+ audit", fillcolor="#E7ECFE"];
+ src -> inv -> map; dst -> can -> map -> q -> load -> test -> ok; q -> can [style=dashed, label=" synonyms"]; }""",
+                      width="stretch")
+    st.markdown(
+        "The demo starts connected to **INSURE/400**, a fictional legacy policy and claims system: two COBOL "
+        "copybooks with fixed-width VSAM extracts (one with an `OCCURS` payment group), DB2 agent and coverage "
+        "tables, a code table, 12 scanned policy-change **PDF forms**, adjuster **notes** and the **PREMCALC** COBOL "
+        "program. The destination is a cloud policy and claims platform with six tables and six pick lists.\n\n"
+        "Walk the steps on the left. SI² finds every element and pick list, generates the canonical model from the "
+        "destination, and maps everything it can. **You** settle the queue (edit synonyms, confirm fields and values) "
+        "until mapping reaches 100%. Then SI² transforms and injects the data, tests legacy against cloud, and you approve.")
+    st.download_button("Download the INSURE/400 sample files", sample_pack(), "SI2_INSURE400_samples.zip",
+                       help="Upload these in step 1 to try the upload path, or replace them with your own files.")
+
+# ------------------------------------------------------------------------------------------ 1. Legacy sources
+elif step == STEPS[1]:
+    st.subheader("Legacy sources")
+    mode = st.radio("Connection", ["SI² demo legacy system INSURE/400 (connected)", "Upload legacy files"],
+                    horizontal=True, key="conn_mode")
+    if mode.startswith("Upload"):
+        st.markdown("Upload any mix of: COBOL copybooks (`.cpy`) with their data files (same name, `.dat`), database "
+                    "tables (`.csv`), a code table (`TABLE_ID, CODE, DESCRIPTION`), PDF forms (`Label: value`), notes "
+                    "(`.txt`, `claim|date|author|text`) and COBOL programs (`.cbl`). You can include the destination "
+                    "schema and pick-list CSVs too.")
+        up = st.file_uploader("Legacy files", accept_multiple_files=True, key="uploads",
+                              type=["cpy", "dat", "txt", "csv", "pdf", "cbl", "cob"])
+        if up and st.button("Read uploaded files", type="primary"):
+            src, msgs = legacy.load_uploads({f.name: f.getvalue() for f in up}, fallback=_demo())
+            if not src["entities"]:
+                st.error("No legacy data could be read from those files.")
+            else:
+                set_source(src, f"Uploaded files ({len(up)})")
+                for x in msgs:
+                    st.write("• " + x)
+                st.success("Sources read. Continue to Discovery inventory.")
+    elif ss.src_label.startswith("Uploaded") and st.button("Reconnect the demo system"):
+        set_source(_demo(), "SI² demo legacy system INSURE/400")
+        st.rerun()
+
+    src = ss.src
+    summary = pd.DataFrame([{"entity": k, "source type": v["type"], "records": len(v["df"]),
+                             "elements": len([c for c in v["df"].columns if c != "FORM_FILE"])}
+                            for k, v in src["entities"].items()])
+    st.dataframe(summary, hide_index=True, width="stretch")
+    tabs = st.tabs(["COBOL copybooks & data", "Database tables", "PDF forms", "Notes", "COBOL programs"])
+    with tabs[0]:
+        if not src["layouts"]:
+            st.caption("No copybooks connected.")
+        for name, lay in src["layouts"].items():
+            st.markdown(f"**{name}** · {int(lay.end.max())}-byte record")
+            show = lay.assign(pick_list=lay.pick_list.apply(lambda d: ", ".join(f"{k}={v}" for k, v in d.items())))
+            st.dataframe(show[["name", "pic", "type", "length", "decimals", "start", "end", "occurrence",
+                               "occurs_group", "pick_list"]], hide_index=True, width="stretch")
+            raw = src["entities"][name].get("raw", {})
+            if raw:
+                width = int(lay.end.max())
+                st.code(fw_ruler(width) + "\n" + "\n".join(list(raw.values())[:8]), language=None)
+            st.dataframe(src["entities"][name]["df"].head(20), hide_index=True, width="stretch")
+            for ent in [e for e in src["entities"] if e.startswith(name + ".")]:
+                st.markdown(f"`OCCURS` group **{ent}** → child rows")
+                st.dataframe(src["entities"][ent]["df"].head(12), hide_index=True, width="stretch")
+    with tabs[1]:
+        for ent, v in src["entities"].items():
+            if v["type"] == "DB2 table":
+                st.markdown(f"**{ent}** · {len(v['df'])} rows")
+                st.dataframe(v["df"].head(15), hide_index=True, width="stretch")
+        if len(src["code_table"]):
+            st.markdown("**CODE_TABLE** (legacy pick lists)")
+            st.dataframe(src["code_table"], hide_index=True, width="stretch")
+    with tabs[2]:
+        f = src["entities"].get("POLICY_CHANGE_FORMS")
+        if f is None:
+            st.caption("No PDF forms connected.")
+        else:
+            st.caption("Fields read from each scanned policy-change request. Email, phone and mailing address exist only here.")
+            st.dataframe(f["df"], hide_index=True, width="stretch")
+    with tabs[3]:
+        notes = [k for k, v in src["entities"].items() if v["type"] == "Free-text notes"]
+        for k in notes:
+            st.caption("Repair estimate and attorney involvement are extracted from the free text.")
+            st.dataframe(src["entities"][k]["df"], hide_index=True, width="stretch")
+        if not notes:
+            st.caption("No notes connected.")
+    with tabs[4]:
+        if src["program"]:
+            st.code(src["program"], language="cobol")
+            st.markdown("**Business-rule statements found**")
+            st.dataframe(pd.DataFrame(legacy.cobol_rules(src["program"])), hide_index=True, width="stretch")
+            st.caption("SI² translates PREMCALC into Python for the legacy side and SQL for the cloud side, and "
+                       "runs both in step 8 to prove the migrated data gives the same business result.")
+        else:
+            st.caption("No COBOL programs connected.")
+
+# ------------------------------------------------------------------------------------------ 2. Destination
+elif step == STEPS[2]:
+    st.subheader("Cloud destination")
+    st.markdown("The destination schema and pick lists come from the target platform. Upload them in step 1 "
+                "(`table, field, type, length, required, key, pick_list, description` and `pick_list, code, description`) "
+                "or use the demo cloud platform.")
+    ds = ss.src["dest_schema"]
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Tables", ds.table.nunique())
+    c2.metric("Fields", len(ds))
+    c3.metric("Pick lists", ss.src["dest_picklists"].pick_list.nunique())
+    t1, t2, t3 = st.tabs(["Data elements", "Pick lists and values", "Generated DDL"])
+    with t1:
+        st.dataframe(ds, hide_index=True, width="stretch")
+    with t2:
+        for pl, g in ss.src["dest_picklists"].groupby("pick_list", sort=False):
+            used = ", ".join(ds[ds.pick_list == pl].apply(lambda r: f"{r.table}.{r.field}", axis=1))
+            st.markdown(f"**{pl}** · used by `{used}`")
+            st.dataframe(g[["code", "description"]], hide_index=True, width="stretch")
+    with t3:
+        st.code(E.ddl(ds), language="sql")
+
+# ------------------------------------------------------------------------------------------ 3. Discovery
+elif step == STEPS[3]:
+    st.subheader("Discovery inventory")
+    inv = ss.inv
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Elements", len(inv))
+    c2.metric("With pick lists", int((inv.pick_list != "").sum()))
+    c3.metric("Pick-list values", int(inv.pick.apply(len).sum()))
+    c4.metric("Source types", inv.source_type.nunique())
+    st.caption("Every element SI² found: data type and length (from the copybook PIC or inferred from the data), "
+               "pick list (from 88-levels, the code table or the values), business alias (abbreviations expanded) and samples.")
+    ents = ["All"] + list(inv.entity.unique())
+    pick = st.selectbox("Entity", ents, key="inv_ent")
+    view = inv if pick == "All" else inv[inv.entity == pick]
+    st.dataframe(view[["entity", "source_type", "element", "alias", "data_type", "pic", "length", "pick_list",
+                       "pick_values", "distinct", "null_pct", "samples"]], hide_index=True, width="stretch")
+    st.download_button("Download inventory (CSV)", view.drop(columns=["tokens", "prefix", "pick"]).to_csv(index=False),
+                       "legacy_inventory.csv", "text/csv")
+
+# ------------------------------------------------------------------------------------------ 4. Canonical
+elif step == STEPS[4]:
+    st.subheader("Canonical model & synonyms")
+    st.markdown("Generated from the destination: one canonical element per business concept (keys shared across "
+                "tables become one element), with its pick list and synonyms. **Edit the synonyms** to teach SI² your "
+                "legacy vocabulary, then re-run matching. Abbreviations in synonyms are expanded the same way as "
+                "legacy names (e.g. `OS RSV` = outstanding reserve).")
+    can = ss.canon
+    ed = st.data_editor(
+        can[["canonical_id", "entity", "attribute", "data_type", "pick_list", "required", "synonyms",
+             "destination_fields"]],
+        disabled=["canonical_id", "entity", "attribute", "data_type", "pick_list", "required", "destination_fields"],
+        column_config={"synonyms": st.column_config.TextColumn("synonyms (comma separated)", width="large")},
+        hide_index=True, width="stretch", key="canon_editor")
+    if st.button("Save synonyms and re-run matching", type="primary"):
+        changed = 0
+        for r in ed.itertuples():
+            orig = can.loc[can.canonical_id == r.canonical_id, "synonyms"].iat[0]
+            if r.synonyms != orig:
+                ss.syn_edits[r.canonical_id] = r.synonyms
+                changed += 1
+                log(sme(), "Synonyms updated", f"{r.canonical_id}: {r.synonyms}")
+        before = ss.cov["pct"]
+        recompute()
+        invalidate_load("synonyms edited")
+        st.success(f"{changed} canonical element(s) updated. Mapping {before}% → {ss.cov['pct']}%.")
+    with st.expander("Canonical pick lists"):
+        st.dataframe(ss.src["dest_picklists"], hide_index=True, width="stretch")
+    with st.expander("Abbreviation dictionary SI² uses on legacy names"):
+        st.dataframe(pd.DataFrame(sorted(E.ABBR.items()), columns=["abbreviation", "expands to"]),
+                     hide_index=True, width="stretch")
+
+# ------------------------------------------------------------------------------------------ 5. Mapping
+elif step == STEPS[5]:
+    st.subheader("Source → Canonical → Destination")
+    cov = ss.cov
+    cols = st.columns(len(cov["parts"]) + 1)
+    cols[0].metric("Overall", f"{cov['pct']}%")
+    for c, (k, (a, b)) in zip(cols[1:], cov["parts"].items()):
+        c.metric(k, f"{a}/{b}")
+    if cov["missing_required"]:
+        st.warning("Required destination fields with no legacy source yet: " + ", ".join(cov["missing_required"]))
+    t1, t2 = st.tabs(["SME mapping queue", "Lineage view"])
+    with t1:
+        flt = st.radio("Show", ["Needs SME review", "All"], horizontal=True, key="map_flt")
+        m = ss.m if flt == "All" else ss.m[ss.m.status == "Needs SME review"]
+        if m.empty:
+            st.success("Nothing waiting. Every legacy element is mapped or marked not migrated.")
+        else:
+            options = [CHOICE_NONE, E.NOT_MIGRATED] + list(ss.canon.canonical_id)
+            samples = ss.inv.set_index("element_id").samples
+            view = m.assign(samples=m.element_id.map(samples), approve=m.status != "Needs SME review",
+                            canonical_id=m.canonical_id.where(m.canonical_id != "", ""))
+            ed = st.data_editor(
+                view[["element_id", "canonical_id", "approve", "suggested", "confidence", "status", "alias",
+                      "samples", "data_type"]],
+                column_config={
+                    "canonical_id": st.column_config.SelectboxColumn("canonical element", options=options, width="medium"),
+                    "approve": st.column_config.CheckboxColumn("approve"),
+                    "confidence": st.column_config.ProgressColumn("confidence", min_value=0, max_value=100, format="%d%%"),
+                },
+                disabled=["element_id", "suggested", "alias", "data_type", "samples", "confidence", "status"],
+                hide_index=True, width="stretch", key=f"map_editor_{flt}")
+            c1, c2 = st.columns(2)
+            if c1.button("Save SME decisions", type="primary"):
+                n = 0
+                for r, o in zip(ed.itertuples(), view.itertuples()):
+                    if r.approve and r.canonical_id:
+                        if r.canonical_id != o.canonical_id or o.status == "Needs SME review" or o.element_id in ss.rejected:
+                            ss.map_ov[r.element_id] = r.canonical_id
+                            ss.rejected.discard(r.element_id)
+                            n += 1
+                            log(sme(), "Mapping approved", f"{r.element_id} → {r.canonical_id}")
+                    elif not r.approve and o.status != "Needs SME review":
+                        ss.map_ov.pop(r.element_id, None)
+                        ss.rejected.add(r.element_id)
+                        n += 1
+                        log(sme(), "Mapping rejected", r.element_id)
+                recompute()
+                invalidate_load("field mapping")
+                st.success(f"{n} decision(s) saved. Mapping is {ss.cov['pct']}%.")
+                st.rerun()
+            if c2.button("Approve every suggestion ≥ 60%"):
+                pend = ss.m[(ss.m.status == "Needs SME review") & (ss.m.confidence >= 60) & (ss.m.suggested != "")]
+                for r in pend.itertuples():
+                    ss.map_ov[r.element_id] = r.suggested
+                    log(sme(), "Mapping approved (bulk)", f"{r.element_id} → {r.suggested}")
+                recompute()
+                invalidate_load("field mapping")
+                st.rerun()
+        st.caption("Tick **approve** to accept the canonical element shown (change it from the list first if needed). "
+                   f"Choose **{E.NOT_MIGRATED}** for data that stays in the archive. Untick an auto-mapped row to reject it.")
+    with t2:
+        mv = E.mapping_view(ss.inv, ss.m, ss.canon, ss.vm)
+        st.dataframe(styled(mv, "Status"), hide_index=True, width="stretch")
+        ent = st.selectbox("Draw lineage for", list(ss.src["entities"]), key="lin_ent")
+        sub = ss.m[(ss.m.entity == ent)]
+        dot = ['digraph L { rankdir=LR; bgcolor="transparent"; node [shape=box, style="rounded,filled", '
+               'fontname="Helvetica", fontsize=9]; edge [color="#2B4CF2"];']
+        for r in sub.itertuples():
+            s_id = f'"s:{r.element}"'
+            dot.append(f'{s_id} [label="{r.element}", fillcolor="#FFFFFF"];')
+            if r.canonical_id and r.canonical_id != E.NOT_MIGRATED:
+                dot.append(f'"c:{r.canonical_id}" [label="{r.canonical_id}", fillcolor="#E7ECFE"];')
+                style = "" if r.status != "Needs SME review" else ', style=dashed, color="#B42318"'
+                dot.append(f'{s_id} -> "c:{r.canonical_id}" [label="{r.confidence}%"{style}];')
+                for f in r.destination_fields.split(", "):
+                    dot.append(f'"d:{f}" [label="{f}", fillcolor="#EAF7EF"];')
+                    dot.append(f'"c:{r.canonical_id}" -> "d:{f}";')
+            else:
+                dot.append(f'{s_id} -> "x" [color="#9AA5B1"]; "x" [label="not migrated / pending", fillcolor="#F2F4F7"];')
+        dot.append("}")
+        st.graphviz_chart("\n".join(dot), width="stretch")
+        st.caption("Legacy element → canonical element → destination field(s). Dashed red = waiting for the SME.")
+
+# ------------------------------------------------------------------------------------------ 6. Values
+elif step == STEPS[6]:
+    st.subheader("Pick-list values")
+    vm = ss.vm
+    if vm.empty:
+        st.info("No mapped pick-list elements yet.")
+    else:
+        pend = int((vm.status == "Needs SME review").sum())
+        st.metric("Values waiting for the SME", pend)
+        st.caption("Legacy values come from COBOL 88-levels and the code table; destination codes come from the "
+                   "cloud pick lists. Pick the destination code and tick approve.")
+        pls = ss.src["dest_picklists"]
+        decisions = []
+        for eid, g in vm.groupby("element_id", sort=False):
+            pl = g.pick_list.iat[0]
+            label = f"{eid} → {pl}" + (f"  ·  {int((g.status == 'Needs SME review').sum())} to review"
+                                       if (g.status == "Needs SME review").any() else "  ·  ✓")
+            with st.expander(label, expanded=(g.status == "Needs SME review").any()):
+                v = g.assign(approve=g.status != "Needs SME review",
+                             destination_code=g.destination_code.where(g.destination_code != "", g.suggested))
+                ed = st.data_editor(
+                    v[["legacy_value", "legacy_meaning", "suggested", "confidence", "destination_code", "approve", "status"]],
+                    column_config={"destination_code": st.column_config.SelectboxColumn(
+                        "destination code", options=[""] + list(pls[pls.pick_list == pl].code)),
+                        "confidence": st.column_config.ProgressColumn("confidence", min_value=0, max_value=100, format="%d%%")},
+                    disabled=["legacy_value", "legacy_meaning", "suggested", "confidence", "status"],
+                    hide_index=True, width="stretch", key=f"vm_{eid}")
+                decisions.append((eid, v, ed))
+        if st.button("Save value decisions", type="primary"):
+            n = 0
+            for eid, v, ed in decisions:
+                for r, o in zip(ed.itertuples(), v.itertuples()):
+                    key = (eid, r.legacy_value)
+                    if r.approve and r.destination_code and (o.status == "Needs SME review" or r.destination_code != o.destination_code):
+                        ss.val_ov[key] = r.destination_code
+                        n += 1
+                        log(sme(), "Value mapping approved", f"{eid} '{r.legacy_value}' ({r.legacy_meaning}) → {r.destination_code}")
+            recompute()
+            invalidate_load("value mapping")
+            st.success(f"{n} value decision(s) saved. Mapping is {ss.cov['pct']}%.")
+            st.rerun()
+
+# ------------------------------------------------------------------------------------------ 7. Transform & inject
+elif step == STEPS[7]:
+    st.subheader("Transform & inject into the cloud")
+    ready = ss.cov["pct"] >= 100
+    if not ready:
+        st.warning(f"Mapping is {ss.cov['pct']}%. Finish the SME queue (steps 4–6) to reach 100% before injecting.")
+    if st.button("Transform and inject", type="primary", disabled=not ready):
+        canonical, dest, issues = E.transform(ss.src, ss.inv, ss.m, ss.canon, ss.vm, ss.src["dest_schema"])
+        errs = E.validate(dest, ss.src["dest_schema"], ss.src["dest_picklists"])
+        if len(errs):
+            ss.loaded = {"canonical": canonical, "dest": dest, "issues": issues, "errors": errs, "con": None}
+            log("SI²", "Load blocked by validation", f"{int(errs.failed_rows.sum())} failing values")
+        else:
+            con = E.load(dest, ss.src["dest_schema"])
+            ss.loaded = {"canonical": canonical, "dest": dest, "issues": issues, "errors": errs, "con": con,
+                         "at": dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+            ss.tests_signed, ss.approved = {}, None
+            log(sme(), "Data injected into cloud database",
+                ", ".join(f"{t} {len(d)}" for t, d in dest.items()))
+    L = ss.loaded
+    if L:
+        if len(L["errors"]):
+            st.error("Destination validation failed, nothing was injected. Fix the mapping and try again.")
+            st.dataframe(L["errors"], hide_index=True, width="stretch")
+        else:
+            st.success(f"Injected at {L['at']}: " + " · ".join(f"{t} {len(d)} rows" for t, d in L["dest"].items()))
+        if len(L["issues"]):
+            st.markdown("**Transformation notes**")
+            st.dataframe(L["issues"], hide_index=True, width="stretch")
+        t1, t2, t3 = st.tabs(["Canonical database", "Cloud destination tables", "Downloads"])
+        with t1:
+            st.caption("`_lineage` shows which legacy sources contributed to each canonical record.")
+            for name, df in L["canonical"].items():
+                st.markdown(f"**{name}** · {len(df)} rows")
+                st.dataframe(df.head(50), hide_index=True, width="stretch")
+        with t2:
+            for t, df in L["dest"].items():
+                st.markdown(f"**{t}** · {len(df)} rows")
+                st.dataframe(df.head(50), hide_index=True, width="stretch")
+        with t3:
+            buf = io.BytesIO()
+            with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+                for t, df in L["dest"].items():
+                    z.writestr(f"destination/{t}.csv", df.to_csv(index=False))
+                for t, df in L["canonical"].items():
+                    z.writestr(f"canonical/{t}.csv", df.to_csv(index=False))
+                z.writestr("mapping.csv", E.mapping_view(ss.inv, ss.m, ss.canon, ss.vm).to_csv(index=False))
+                z.writestr("value_maps.csv", ss.vm.to_csv(index=False))
+            st.download_button("Canonical + destination tables and mapping (ZIP)", buf.getvalue(),
+                               "SI2_migration_output.zip")
+            if L["con"] is not None:
+                st.download_button("Cloud database load script (SQL)", "\n".join(L["con"].iterdump()),
+                                   "SI2_cloud_load.sql", "text/plain")
+    else:
+        st.info("Nothing injected yet.")
+
+# ------------------------------------------------------------------------------------------ 8. Test
+elif step == STEPS[8]:
+    st.subheader("Test legacy vs cloud")
+    L = ss.loaded
+    if not L or L.get("con") is None:
+        st.info("Inject the data first (step 7).")
+    else:
+        con = L["con"]
+        rec = E.reconcile(ss.src, ss.m, con)
+        t1, t2, t3, t4 = st.tabs(["Counts & control totals", "Referential integrity", "Sample record",
+                                  "COBOL business rule"])
+        with t1:
+            st.markdown(f"**Record counts** {pass_badge(rec['counts'])}")
+            st.dataframe(styled(rec["counts"]), hide_index=True, width="stretch")
+            st.markdown(f"**Control totals** {pass_badge(rec['totals'])}")
+            st.dataframe(styled(rec["totals"]), hide_index=True, width="stretch")
+        with t2:
+            st.markdown(f"**Foreign keys in the cloud database** {pass_badge(rec['integrity'])}")
+            st.dataframe(styled(rec["integrity"]), hide_index=True, width="stretch")
+        with t3:
+            ents = [e for e, v in ss.src["entities"].items() if not e.count(".")]
+            ent = st.selectbox("Legacy entity", ents, key="smp_ent")
+            df = ss.src["entities"][ent]["df"]
+            kc = [c for c in df.columns if c != "FORM_FILE"][0]
+            key = st.selectbox(f"Record ({kc})", list(df[kc].astype(str)), key=f"smp_key_{ent}")
+            raw, cmp_ = E.sample_compare(ss.src, ss.inv, ss.m, ss.canon, ss.vm, con, ent, key)
+            if raw:
+                lay = ss.src["layouts"].get(ent)
+                st.markdown("**Legacy record as stored (fixed width)**")
+                st.code(fw_ruler(int(lay.end.max())) + "\n" + raw, language=None)
+            if cmp_.empty:
+                st.caption("This entity does not feed a table keyed by its first field. Pick another entity.")
+            else:
+                st.markdown(f"**Legacy → expected → cloud** {pass_badge(cmp_[cmp_.result != 'Not migrated'])}")
+                st.dataframe(styled(cmp_), hide_index=True, width="stretch")
+        with t4:
+            if not ss.src["program"] or "POLMAST" not in ss.src["entities"]:
+                st.caption("Needs the PREMCALC program and the POLMAST policy master.")
+                ep = None
+            else:
+                st.markdown("PREMCALC `CALC-EARNED-PREM` runs on the **legacy** record (Python translation of the COBOL, "
+                            "cancelled = 88-level `PM-STAT-CANCELLED`) and as **SQL on the cloud database** (cancelled = "
+                            "`policy_status = 'Cancelled'`). Same answer for every policy proves the data *and* the "
+                            "pick-list decisions keep the business meaning.")
+                val = st.date_input("Valuation date", dt.date(2026, 6, 30), key="val_date")
+                ep = E.earned_premium_test(ss.src, con, val)
+                c1, c2, c3 = st.columns(3)
+                c1.metric("Policies tested", len(ep))
+                c2.metric("Matches", int((ep.result == "MATCH").sum()))
+                c3.metric("Legacy vs cloud earned", f"${ep.legacy_earned.sum():,.2f}",
+                          f"{ep.cloud_earned.sum() - ep.legacy_earned.sum():+,.2f}")
+                bad = ep[ep.result != "MATCH"]
+                if len(bad):
+                    st.error(f"{len(bad)} policies give a different earned premium in the cloud. Look at the legacy "
+                             "status: the value mapping changed the business meaning.")
+                    st.dataframe(styled(bad), hide_index=True, width="stretch")
+                with st.expander("All policies"):
+                    st.dataframe(styled(ep), hide_index=True, width="stretch")
+        st.divider()
+        st.markdown("**SME test sign-off**")
+        checks = {"Counts & control totals": pass_badge(rec["counts"]) + " / " + pass_badge(rec["totals"]),
+                  "Referential integrity": pass_badge(rec["integrity"]),
+                  "Sample records reviewed": "SME review",
+                  "COBOL business rule": pass_badge(ep) if ep is not None else "—"}
+        for name, status in checks.items():
+            c1, c2, c3 = st.columns([3, 2, 2])
+            c1.write(name)
+            c2.write(status)
+            signed = ss.tests_signed.get(name)
+            if signed:
+                c3.write(f"✅ {signed}")
+            elif "❌" in status:
+                c3.write("Fix before signing")
+            elif c3.button("Sign off", key=f"sign_{name}"):
+                ss.tests_signed[name] = f"{sme()} · {dt.datetime.now():%Y-%m-%d %H:%M}"
+                log(sme(), "Test signed off", f"{name}: {status}")
+                st.rerun()
+
+# ------------------------------------------------------------------------------------------ 9. Approval
+elif step == STEPS[9]:
+    st.subheader("SME approval")
+    L = ss.loaded
+    items = [("Mapping 100% (fields, synonyms, pick-list values)", ss.cov["pct"] >= 100),
+             ("Data injected with zero validation errors", bool(L and L.get("con") is not None)),
+             ("All four tests signed off", len(ss.tests_signed) >= 4)]
+    for label, ok in items:
+        st.write(("✅ " if ok else "⬜ ") + label)
+    if ss.approved:
+        st.success(f"Migration approved by {ss.approved['by']} on {ss.approved['at']}.")
+        st.json(ss.approved)
+    elif all(ok for _, ok in items):
+        note = st.text_area("Approval note", "Legacy and cloud results match. Approved for production cut-over.")
+        if st.button("Approve migration", type="primary"):
+            ss.approved = {"by": sme(), "at": dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "note": note,
+                           "source": ss.src_label, "rows": {t: len(d) for t, d in L["dest"].items()},
+                           "sme_decisions": len(ss.map_ov) + len(ss.val_ov) + len(ss.syn_edits),
+                           "tests": ss.tests_signed}
+            log(sme(), "Migration approved", note)
+            st.rerun()
+    else:
+        st.info("Complete the items above to enable approval.")
+
+# ------------------------------------------------------------------------------------------ Audit
+elif step == "Audit trail":
+    st.subheader("Audit trail")
+    a = pd.DataFrame(ss.audit)
+    st.dataframe(a.iloc[::-1], hide_index=True, width="stretch")
+    st.download_button("Download audit trail (CSV)", a.to_csv(index=False), "SI2_migration_audit.csv", "text/csv")
+
+branding.note_synthetic()
+branding.footer()

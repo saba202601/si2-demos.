@@ -1,0 +1,58 @@
+C000090000|2025-12-12|ADJ99|Inspection complete; estimate $7,400. No injuries reported.
+C000090001|2025-06-09|ADJ71|Inspection complete; estimate $2,171. No injuries reported.
+C000090002|2026-07-02|ADJ62|Claimant retained attorney. Demand letter received. Repair estimate $4,260.
+C000090003|2024-08-15|ADJ10|Inspection complete; estimate $10,770. No injuries reported.
+C000090004|2025-07-08|ADJ40|Recorded statement taken. Estimate of $13,080 under review. Subrogation potential.
+C000090005|2025-10-15|ADJ27|Spoke with insured. Repair estimate $4,884 received from shop. Rental approved 10 days.
+C000090006|2025-08-17|ADJ60|Spoke with insured. Repair estimate $13,261 received from shop. Rental approved 10 days.
+C000090007|2025-09-22|ADJ69|Recorded statement taken. Estimate of $1,276 under review. Subrogation potential.
+C000090008|2026-02-25|ADJ72|Claimant retained attorney. Demand letter received. Repair estimate $1,379.
+C000090009|2026-03-01|ADJ11|Inspection complete; estimate $11,694. No injuries reported.
+C000090010|2026-04-29|ADJ79|Inspection complete; estimate $11,925. No injuries reported.
+C000090011|2025-04-21|ADJ70|Claimant retained attorney. Demand letter received. Repair estimate $6,025.
+C000090012|2025-11-10|ADJ99|Recorded statement taken. Estimate of $12,595 under review. Subrogation potential.
+C000090013|2024-11-18|ADJ89|Spoke with insured. Repair estimate $9,897 received from shop. Rental approved 10 days.
+C000090014|2024-05-23|ADJ99|Spoke with insured. Repair estimate $4,062 received from shop. Rental approved 10 days.
+C000090015|2025-08-09|ADJ81|Claimant retained attorney. Demand letter received. Repair estimate $2,176.
+C000090016|2024-03-15|ADJ20|Recorded statement taken. Estimate of $7,981 under review. Subrogation potential.
+C000090017|2026-03-30|ADJ66|Inspection complete; estimate $2,995. No injuries reported.
+C000090018|2024-03-19|ADJ43|Recorded statement taken. Estimate of $2,272 under review. Subrogation potential.
+C000090019|2026-08-23|ADJ44|Recorded statement taken. Estimate of $911 under review. Subrogation potential.
+C000090020|2026-12-29|ADJ53|Recorded statement taken. Estimate of $2,809 under review. Subrogation potential.
+C000090021|2025-05-12|ADJ59|Claimant retained attorney. Demand letter received. Repair estimate $11,084.
+C000090022|2024-11-21|ADJ66|Recorded statement taken. Estimate of $7,047 under review. Subrogation potential.
+C000090023|2025-05-22|ADJ47|Inspection complete; estimate $13,730. No injuries reported.
+C000090024|2025-11-11|ADJ33|Inspection complete; estimate $12,573. No injuries reported.
+C000090025|2025-03-01|ADJ41|Claimant retained attorney. Demand letter received. Repair estimate $4,666.
+C000090026|2024-10-27|ADJ49|Inspection complete; estimate $6,741. No injuries reported.
+C000090027|2025-10-18|ADJ30|Claimant retained attorney. Demand letter received. Repair estimate $10,625.
+C000090028|2025-09-29|ADJ95|Inspection complete; estimate $10,995. No injuries reported.
+C000090029|2026-01-25|ADJ86|Recorded statement taken. Estimate of $10,192 under review. Subrogation potential.
+C000090030|2025-08-11|ADJ61|Spoke with insured. Repair estimate $1,392 received from shop. Rental approved 10 days.
+C000090031|2024-07-15|ADJ45|Recorded statement taken. Estimate of $1,536 under review. Subrogation potential.
+C000090032|2025-04-09|ADJ34|Inspection complete; estimate $10,266. No injuries reported.
+C000090033|2026-01-15|ADJ62|Spoke with insured. Repair estimate $4,915 received from shop. Rental approved 10 days.
+C000090034|2025-02-08|ADJ32|Claimant retained attorney. Demand letter received. Repair estimate $13,858.
+C000090035|2027-01-01|ADJ34|Recorded statement taken. Estimate of $1,441 under review. Subrogation potential.
+C000090036|2027-01-16|ADJ75|Inspection complete; estimate $7,835. No injuries reported.
+C000090037|2026-10-19|ADJ45|Inspection complete; estimate $7,507. No injuries reported.
+C000090038|2027-01-17|ADJ34|Inspection complete; estimate $7,140. No injuries reported.
+C000090039|2025-05-08|ADJ54|Recorded statement taken. Estimate of $12,841 under review. Subrogation potential.
+C000090040|2026-07-16|ADJ60|Claimant retained attorney. Demand letter received. Repair estimate $814.
+C000090041|2024-12-01|ADJ16|Spoke with insured. Repair estimate $9,186 received from shop. Rental approved 10 days.
+C000090042|2024-11-22|ADJ83|Claimant retained attorney. Demand letter received. Repair estimate $12,183.
+C000090043|2027-01-19|ADJ41|Spoke with insured. Repair estimate $11,581 received from shop. Rental approved 10 days.
+C000090044|2025-05-01|ADJ31|Claimant retained attorney. Demand letter received. Repair estimate $6,844.
+C000090045|2025-04-22|ADJ29|Claimant retained attorney. Demand letter received. Repair estimate $1,387.
+C000090046|2025-04-26|ADJ47|Spoke with insured. Repair estimate $6,199 received from shop. Rental approved 10 days.
+C000090047|2025-03-16|ADJ22|Recorded statement taken. Estimate of $6,062 under review. Subrogation potential.
+C000090048|2026-06-11|ADJ50|Recorded statement taken. Estimate of $13,784 under review. Subrogation potential.
+C000090049|2026-12-10|ADJ57|Inspection complete; estimate $8,975. No injuries reported.
+C000090050|2027-01-23|ADJ63|Recorded statement taken. Estimate of $3,234 under review. Subrogation potential.
+C000090051|2025-04-22|ADJ82|Recorded statement taken. Estimate of $11,699 under review. Subrogation potential.
+C000090052|2025-01-13|ADJ12|Inspection complete; estimate $6,918. No injuries reported.
+C000090053|2024-10-22|ADJ63|Spoke with insured. Repair estimate $2,121 received from shop. Rental approved 10 days.
+C000090054|2025-02-27|ADJ62|Recorded statement taken. Estimate of $2,021 under review. Subrogation potential.
+C000090055|2024-10-13|ADJ43|Spoke with insured. Repair estimate $2,815 received from shop. Rental approved 10 days.
+C000090056|2025-05-02|ADJ78|Recorded statement taken. Estimate of $2,049 under review. Subrogation potential.
+C000090057|2025-05-08|ADJ81|Inspection complete; estimate $5,074. No injuries reported.
