@@ -101,7 +101,21 @@ The ISO line codes, transaction, cause-of-loss, deductible, limit and other code
 * `iso_bureau/sql/02_load_metadata.sql`: layouts, canonical model, pick lists, rules, approvals
 * `iso_bureau/sql/03_load_sample_source.sql`: sample source transactions
 
-Run them in SSMS against `SABAHOME\SQLEXPRESS02`. They create a separate database, **ISOBureauReporting**, so your Workers Comp `BureauReporting` database is untouched. Loaded and verified on SQLEXPRESS02 on 2026-10-12. The app itself runs on SQLite (`iso_bureau/db.py`). Switching the app to SQL Server through pyodbc is the next step. The queries use `?` parameters and standard SQL, so that change is limited to the connection layer.
+Run them in SSMS against `SABAHOME\SQLEXPRESS02`. They create a separate database, **ISOBureauReporting**, so your Workers Comp `BureauReporting` database is untouched. Loaded and verified on SQLEXPRESS02 on 2026-10-12.
+
+### Run the app on SQL Server (desktop)
+
+Double-click **`run_iso_bureau_sqlserver.bat`** in the repo root. It installs the Python packages (including `pyodbc`), checks the connection, then opens the app on `ISOBureauReporting` with Windows Authentication. Or by hand:
+
+```bat
+set SI2_BUREAU_BACKEND=mssql
+set SI2_MSSQL_SERVER=SABAHOME\SQLEXPRESS02
+set SI2_MSSQL_DATABASE=ISOBureauReporting
+python -m iso_bureau.check_sqlserver
+python -m streamlit run app_iso_bureau.py
+```
+
+The driver is picked automatically from: ODBC Driver 18, 17, 13, SQL Server Native Client 11.0, SQL Server. Without `SI2_BUREAU_BACKEND` the app uses its built-in SQLite demo database (that is what Streamlit Cloud runs). The sidebar shows which database is in use.
 
 ## Files
 

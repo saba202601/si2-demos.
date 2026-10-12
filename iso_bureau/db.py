@@ -12,9 +12,11 @@ and every such change is written to approval_log.
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
 from contextlib import contextmanager
 from datetime import date, datetime, timedelta
+from decimal import Decimal
 from pathlib import Path
 
 DEFAULT_DB = Path(__file__).resolve().parent / "data" / "bureau_reporting.db"
@@ -144,7 +146,102 @@ META_TABLES = {
 }
 
 
-def connect(path: Path | str = DEFAULT_DB) -> sqlite3.Connection:
+# ------------------------------------------------------------------ backends
+# SQLite (default, used by the online demo) or SQL Server Express on the desktop:
+#   set SI2_BUREAU_BACKEND=mssql
+#   optional: SI2_MSSQL_SERVER (default SABAHOME\\SQLEXPRESS02), SI2_MSSQL_DATABASE (default ISOBureauReporting)
+# SQL Server uses Windows Authentication (Trusted_Connection), like the AGI-INS rule engine.
+DEFAULT_SERVER = "SABAHOME\\SQLEXPRESS02"
+DEFAULT_DATABASE = "ISOBureauReporting"
+DRIVER_PREFERENCE = (
+    "ODBC Driver 18 for SQL Server",
+    "ODBC Driver 17 for SQL Server",
+    "ODBC Driver 13 for SQL Server",
+    "SQL Server Native Client 11.0",
+    "SQL Server",
+)
+# identity column of every table (used to return the new key after an INSERT on SQL Server)
+IDENTITY = {**META_TABLES, "approval_log": "log_id", "source_transaction": "txn_id",
+            "submission_batch": "batch_id", "submission_record": "rec_id", "batch_event": "event_id"}
+
+
+def backend() -> str:
+    return os.environ.get("SI2_BUREAU_BACKEND", "sqlite").strip().lower()
+
+
+class _Row(dict):
+    """dict row that also supports row[0] like sqlite3.Row / pyodbc.Row."""
+
+    def __getitem__(self, k):
+        if isinstance(k, int):
+            return list(self.values())[k]
+        return dict.__getitem__(self, k)
+
+
+def _py(v):
+    # keep values identical to the SQLite backend: ISO strings for dates, floats for money
+    if isinstance(v, datetime):
+        return v.isoformat(sep=" ", timespec="seconds")
+    if isinstance(v, date):
+        return v.isoformat()
+    if isinstance(v, Decimal):
+        return float(v)
+    return v
+
+
+class _Cursor:
+    def __init__(self, cur):
+        self._cur = cur
+        self.lastrowid = None
+
+    def _cols(self):
+        return [d[0] for d in self._cur.description] if self._cur.description else []
+
+    def fetchone(self):
+        r = self._cur.fetchone()
+        return None if r is None else _Row(zip(self._cols(), (_py(v) for v in r)))
+
+    def fetchall(self):
+        cols = self._cols()
+        return [_Row(zip(cols, (_py(v) for v in r))) for r in self._cur.fetchall()]
+
+
+class MssqlConnection:
+    """Minimal sqlite3-like wrapper over pyodbc so the engine runs unchanged on SQL Server."""
+
+    def __init__(self, server: str, database: str):
+        import pyodbc  # imported only when SQL Server is used
+        installed = set(pyodbc.drivers())
+        driver = next((d for d in DRIVER_PREFERENCE if d in installed), None)
+        if driver is None:
+            raise RuntimeError("No SQL Server ODBC driver found. Install 'ODBC Driver 18 for SQL Server'. "
+                               f"Installed drivers: {sorted(installed)}")
+        self.driver, self.server, self.database = driver, server, database
+        self._cn = pyodbc.connect(f"DRIVER={{{driver}}};SERVER={server};DATABASE={database};"
+                                  "Trusted_Connection=yes;TrustServerCertificate=yes;", autocommit=False)
+
+    def execute(self, sql: str, params=()):
+        cur = self._cn.cursor()
+        if params:
+            cur.execute(sql, tuple(params))
+        else:
+            cur.execute(sql)
+        return _Cursor(cur)
+
+    def commit(self):
+        self._cn.commit()
+
+    def rollback(self):
+        self._cn.rollback()
+
+    def close(self):
+        self._cn.close()
+
+
+def connect(path: Path | str = DEFAULT_DB):
+    if backend() == "mssql":
+        return MssqlConnection(os.environ.get("SI2_MSSQL_SERVER", DEFAULT_SERVER),
+                               os.environ.get("SI2_MSSQL_DATABASE", DEFAULT_DATABASE))
     con = sqlite3.connect(str(path), check_same_thread=False)
     con.row_factory = sqlite3.Row
     con.execute("PRAGMA foreign_keys = ON")
@@ -152,8 +249,14 @@ def connect(path: Path | str = DEFAULT_DB) -> sqlite3.Connection:
     return con
 
 
+def describe(con) -> str:
+    if isinstance(con, MssqlConnection):
+        return f"SQL Server {con.server} / {con.database}"
+    return "SQLite demo database"
+
+
 @contextmanager
-def tx(con: sqlite3.Connection):
+def tx(con):
     try:
         yield con
         con.commit()
@@ -171,9 +274,16 @@ def one(con, sql, params=()) -> dict | None:
     return dict(r) if r else None
 
 
-def insert(con, table: str, data: dict) -> int:
+def insert(con, table: str, data: dict):
     cols = ", ".join(data)
     qs = ", ".join("?" for _ in data)
+    if isinstance(con, MssqlConnection):
+        key = IDENTITY.get(table)
+        out = f" OUTPUT INSERTED.{key}" if key and key not in data else ""
+        cur = con.execute(f"INSERT INTO {table} ({cols}){out} VALUES ({qs})", tuple(data.values()))
+        if out:
+            return int(cur.fetchone()[0])
+        return None
     cur = con.execute(f"INSERT INTO {table} ({cols}) VALUES ({qs})", tuple(data.values()))
     return cur.lastrowid
 

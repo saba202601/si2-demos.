@@ -45,6 +45,8 @@ st.markdown("""<style>
 
 @st.cache_resource
 def get_con():
+    if db.backend() == "mssql":
+        return db.connect()
     if not DB_PATH.exists():
         DB_PATH.parent.mkdir(parents=True, exist_ok=True)
         seed.build(DB_PATH, demo_approve=True)
@@ -90,13 +92,15 @@ with st.sidebar:
     actor = st.text_input("SME / approver name", value=st.session_state.get("actor", "SME"), key="actor")
     pc = db.pending_counts(con)
     st.metric("Items awaiting SME approval", sum(pc.values()))
-    with st.expander("Demo data"):
-        st.caption("Rebuild the demo database (baseline approved, 2027 changes pending).")
-        if st.button("Reset demo database"):
-            st.cache_resource.clear()
-            con.close()
-            seed.build(DB_PATH, demo_approve=True)
-            st.rerun()
+    st.caption(f"Database: {db.describe(con)}")
+    if db.backend() != "mssql":
+        with st.expander("Demo data"):
+            st.caption("Rebuild the demo database (baseline approved, 2027 changes pending).")
+            if st.button("Reset demo database"):
+                st.cache_resource.clear()
+                con.close()
+                seed.build(DB_PATH, demo_approve=True)
+                st.rerun()
 
 if "_flash" in st.session_state:
     st.success(st.session_state.pop("_flash"))
@@ -126,7 +130,7 @@ def page_dashboard():
         table([{"object": k, "pending": v} for k, v in pc.items() if v])
     with r:
         st.subheader("Batches by line and status")
-        b = db.rows(con, "SELECT lob_code, record_type, status, COUNT(*) n FROM submission_batch WHERE status!='SANDBOX' GROUP BY 1,2,3")
+        b = db.rows(con, "SELECT lob_code, record_type, status, COUNT(*) n FROM submission_batch WHERE status!='SANDBOX' GROUP BY lob_code, record_type, status")
         if b:
             table(b)
         else:
