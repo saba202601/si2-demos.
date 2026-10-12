@@ -8,7 +8,7 @@ import json
 import pandas as pd
 import streamlit as st
 
-from si2_common import approvals_ui, branding, data, gate, identity, store
+from si2_common import approvals_ui, branding, data, gate, identity, persist, store
 from si2_common import registry as R
 
 branding.page("Canonical Data Model",
@@ -48,7 +48,8 @@ def decide_term(req: dict) -> str:
 
 with st.sidebar:
     identity.name_input("Your name", "sme_name", "Name for proposals and approvals")
-    st.caption(f"💾 Company model saved to {store.describe()}")
+    persist.workspace_picker()
+    st.caption(f"💾 Company model saved to {store.describe()} · workspace {store.workspace()}")
 
 
 with tab_co:

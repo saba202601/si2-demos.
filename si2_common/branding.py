@@ -1,9 +1,17 @@
 """SI² look and feel shared by every demo app."""
 import base64
+from pathlib import Path
 
 import streamlit as st
 
 WEBSITE = "https://si2insure.com"
+try:
+    VERSION = (Path(__file__).resolve().parents[1] / "VERSION").read_text().strip()
+except OSError:
+    VERSION = "dev"
+DISCLAIMER = ("SI² is independent and is not affiliated with, endorsed or sponsored by NCCI, ISO / Verisk, ACORD, "
+              "Guidewire, Duck Creek or any rating bureau, standards body or software vendor. Their names are used only "
+              "to describe the formats SI² works with; all trademarks belong to their owners.")
 CONTACT = "hello@si2insure.com"
 
 SHIELD_SVG = """
@@ -113,8 +121,9 @@ def page(title: str, subtitle: str) -> None:
 
 def note_synthetic() -> None:
     st.caption(
-        "All data in this demo is synthetic. Codes, layouts and factors are illustrative "
-        "and are not official bureau or company values."
+        "All data in this demo is synthetic. Codes, layouts, edits and factors are illustrative "
+        "and are not official bureau or company values; confirm them against the bureau manuals and filed rates. "
+        + DISCLAIMER
     )
 
 
@@ -133,6 +142,6 @@ def footer() -> None:
     st.markdown(
         f'<div class="si2-foot"><b>SI²</b> · Super Intelligence for Insurance · '
         f'Want this on your own data? Email <b>{CONTACT}</b> or visit '
-        f'<a href="{WEBSITE}" target="_blank">si2insure.com</a></div>',
+        f'<a href="{WEBSITE}" target="_blank">si2insure.com</a> · v{VERSION}</div>',
         unsafe_allow_html=True,
     )

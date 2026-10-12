@@ -77,6 +77,19 @@ sample upload set: `migrate/initial_load_samples/`.
   synonyms and definitions feed initial-load profiling and migration matching.
 * Security summary: `SECURITY.md`.
 
+### Operations
+
+* **Continuous integration** (`.github/workflows/tests.yml`): every push runs the unit and engine tests, a
+  PostgreSQL test, every app and every step (`tests/test_apps_smoke.py`) and a smaller load benchmark.
+* **Client workspaces**: the sidebar's *Client workspace* keeps each client's decisions and approvals apart;
+  `SI2_WORKSPACES=acme,beta` in secrets limits the list (e.g. one deployment per client).
+* **Backup / restore**: sidebar → *Backup / restore* downloads or restores one workspace; scheduled backups with
+  `python -m tools.backup_state` (`run_si2_backup.bat` + Windows Task Scheduler on your PC).
+* **Versions**: `VERSION` (shown in every footer), `CHANGELOG.md`, git tags (`v1.0.0`).
+
+SI² is independent and not affiliated with or endorsed by NCCI, ISO / Verisk, ACORD, Guidewire or Duck Creek; their
+names describe the formats SI² works with, and all trademarks belong to their owners.
+
 Tests: `python -m pytest tests iso_bureau/tests -q` (set `SI2_TEST_PG_URL` to include the PostgreSQL test).
 
 ## Bureau Reporting Workbench (`bureau/`)

@@ -72,7 +72,29 @@ def _setting(name: str, default: str = "") -> str:
 
 
 def workspace() -> str:
-    return os.environ.get("SI2_WORKSPACE", "demo")
+    """The client workspace: chosen in the sidebar (session), else SI2_WORKSPACE, else 'demo'."""
+    try:
+        import streamlit as st
+        w = st.session_state.get("si2_workspace")
+        if w:
+            return str(w)
+    except Exception:
+        pass
+    return _setting("SI2_WORKSPACE", "demo") or "demo"
+
+
+def allowed_workspaces() -> list[str]:
+    """SI2_WORKSPACES (comma separated) limits who sees which client; empty = any."""
+    return [w.strip() for w in _setting("SI2_WORKSPACES", "").split(",") if w.strip()]
+
+
+def workspaces() -> list[str]:
+    con = connect()
+    found = {r["workspace"] for r in con.execute("SELECT DISTINCT workspace FROM si2_state").fetchall()}
+    found |= {r["workspace"] for r in con.execute("SELECT DISTINCT workspace FROM si2_approval").fetchall()}
+    allow = allowed_workspaces()
+    out = sorted((found | {"demo"} | set(allow)) if not allow else set(allow))
+    return out
 
 
 def backend() -> str:
@@ -322,3 +344,38 @@ def decide(app: str, req_id: int, checker: str, approve: bool, note: str = "") -
                payload=loads(r["payload"]) if r["payload"] else None)
     return out
 
+
+
+# ------------------------------------------------------------------------------------------ backup / restore
+BACKUP_FORMAT = "si2-backup-1"
+
+
+def export_workspace(ws: str | None = None) -> str:
+    """Everything SI² saved for one client workspace (all apps, approvals) as one JSON document."""
+    ws = ws or workspace()
+    con = connect()
+    state = [dict(r) for r in con.execute("SELECT * FROM si2_state WHERE workspace = ?", (ws,)).fetchall()]
+    appr = [dict(r) for r in con.execute("SELECT * FROM si2_approval WHERE workspace = ? ORDER BY id", (ws,)).fetchall()]
+    return json.dumps({"format": BACKUP_FORMAT, "workspace": ws, "exported_at": _now(), "backend": describe(),
+                       "state": state, "approvals": appr}, default=str)
+
+
+def import_workspace(text: str, ws: str | None = None, actor: str = "") -> dict:
+    """Replace one workspace with a backup (to the same or another workspace name)."""
+    data = json.loads(text)
+    if data.get("format") != BACKUP_FORMAT:
+        raise ValueError("This is not an SI² backup file.")
+    ws = ws or data["workspace"]
+    con = connect()
+    con.execute("DELETE FROM si2_state WHERE workspace = ?", (ws,))
+    con.execute("DELETE FROM si2_approval WHERE workspace = ?", (ws,))
+    for r in data["state"]:
+        con.execute("INSERT INTO si2_state (workspace, app, k, v, updated_by, updated_at) VALUES (?,?,?,?,?,?)",
+                    (ws, r["app"], r["k"], r["v"], r.get("updated_by") or actor, r.get("updated_at") or _now()))
+    for r in data["approvals"]:
+        con.execute("INSERT INTO si2_approval (workspace, app, kind, ref, summary, payload, maker, made_at, status, checker, "
+                    "checked_at, note) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+                    (ws, r["app"], r["kind"], r.get("ref"), r.get("summary"), r.get("payload"), r["maker"], r["made_at"],
+                     r["status"], r.get("checker"), r.get("checked_at"), r.get("note")))
+    con.commit()
+    return {"workspace": ws, "state": len(data["state"]), "approvals": len(data["approvals"])}
