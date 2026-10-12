@@ -82,6 +82,7 @@ Open the **SME Validation Workbench** with *As of = 2027-01-15*. Approve the lin
 | Approval Queue | Everything pending, by table, with bulk approve or reject |
 | SME Templates | Download the template, fill in new records only, upload. The system adds keys, status and audit columns, then checks keys and overlaps |
 | Audit Trail | Approvals, expirations, batch lifecycle, source corrections |
+| Data | Browse any table, download it as CSV, export every table to one Excel workbook, or download the SQLite database file |
 
 ## Findings from the supplied layouts (for the SME)
 

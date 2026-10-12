@@ -8,6 +8,7 @@ effective-dated and SME-approved. Engine and docs: iso_bureau/.
 """
 from __future__ import annotations
 
+import io
 import json
 import os
 from datetime import date
@@ -86,7 +87,7 @@ with st.sidebar:
     st.caption("ISO statistical reporting - all lines")
     PAGES = ["🏠 Dashboard", "▶️ Bureau Run", "🛠 Corrections & Resubmit", "✅ SME Validation Workbench",
              "📐 Layouts", "🧬 Canonical Model", "📋 Pick Lists", "⚙️ Business Rules",
-             "🗳 Approval Queue", "⬇⬆ SME Templates", "📜 Audit Trail"]
+             "🗳 Approval Queue", "⬇⬆ SME Templates", "📜 Audit Trail", "🗄 Data"]
     page = st.radio("Menu", PAGES, label_visibility="collapsed", key="page")
     st.divider()
     actor = st.text_input("SME / approver name", value=st.session_state.get("actor", "SME"), key="actor")
@@ -715,10 +716,84 @@ def page_audit():
                               ORDER BY n.txn_id DESC"""))
 
 
+# ============================================================ data access
+ALL_TABLES = ["bureau", "line_of_business", *db.META_TABLES, "approval_log", "source_transaction",
+              "submission_batch", "submission_record", "batch_event"]
+EXCEL_CELL_LIMIT = 32000  # Excel holds at most 32,767 characters per cell
+
+
+def _table_df(tbl: str) -> pd.DataFrame:
+    return pd.DataFrame(db.rows(con, f"SELECT * FROM {tbl}"))
+
+
+def _excel_export() -> bytes:
+    bio = io.BytesIO()
+    with pd.ExcelWriter(bio, engine="openpyxl") as xw:
+        pd.DataFrame([{"table": t, "rows": db.one(con, f"SELECT COUNT(*) n FROM {t}")["n"]} for t in ALL_TABLES]) \
+            .to_excel(xw, sheet_name="Tables", index=False)
+        for t in ALL_TABLES:
+            d = _table_df(t)
+            for c in d.columns:
+                if d[c].dtype == object:
+                    d[c] = d[c].map(lambda v: v[:EXCEL_CELL_LIMIT] if isinstance(v, str) else v)
+            d.to_excel(xw, sheet_name=t[:31], index=False)
+    return bio.getvalue()
+
+
+def _sqlite_copy() -> bytes:
+    """Consistent copy of the live SQLite file (safe while the app is running)."""
+    import sqlite3
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:
+        target = Path(tmp) / "bureau_reporting.db"
+        dst = sqlite3.connect(target)
+        con.backup(dst)
+        dst.close()
+        return target.read_bytes()
+
+
+def page_data():
+    header("Data", "See every table, export everything to Excel, or download the database itself")
+    st.caption(f"Database: {db.describe(con)}")
+    counts = [{"table": t, "rows": db.one(con, f"SELECT COUNT(*) n FROM {t}")["n"]} for t in ALL_TABLES]
+    t = st.tabs(["Table viewer", "Export / download"])
+    with t[0]:
+        c = st.columns([2, 3])
+        tbl = c[0].selectbox("Table", ALL_TABLES, format_func=lambda x: f"{x} ({next(r['rows'] for r in counts if r['table'] == x)} rows)")
+        find = c[1].text_input("Filter rows containing (optional)")
+        d = _table_df(tbl)
+        if find and not d.empty:
+            d = d[d.astype(str).apply(lambda col: col.str.contains(find, case=False, regex=False)).any(axis=1)]
+        st.caption(f"{len(d)} row(s)" + (" - showing the first 5,000" if len(d) > 5000 else ""))
+        st.dataframe(d.head(5000), width="stretch", hide_index=True, height=480)
+        st.download_button(f"Download {tbl} as CSV", d.to_csv(index=False).encode("utf-8"), file_name=f"{tbl}.csv", mime="text/csv")
+    with t[1]:
+        table(counts)
+        a, b = st.columns(2)
+        with a:
+            st.markdown("**Excel workbook**: one sheet per table, ready to share.")
+            if st.button("Prepare Excel export"):
+                st.session_state["_xlsx"] = _excel_export()
+            if st.session_state.get("_xlsx"):
+                st.download_button("Download SI2_ISO_Bureau_Data.xlsx", st.session_state["_xlsx"], file_name="SI2_ISO_Bureau_Data.xlsx",
+                                   mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        with b:
+            if db.backend() == "mssql":
+                st.markdown("**Database**: this app is running on SQL Server. Open it directly in SSMS.")
+            else:
+                st.markdown("**SQLite database file**: open it with the free *DB Browser for SQLite* (sqlitebrowser.org) "
+                            "or any SQLite tool.")
+                st.download_button("Download bureau_reporting.db", _sqlite_copy(), file_name="bureau_reporting.db",
+                                   mime="application/x-sqlite3")
+        st.caption("The online demo database is rebuilt when Streamlit restarts the app, so download anything you want to keep.")
+
+
+
 ROUTES = {"🏠 Dashboard": page_dashboard, "▶️ Bureau Run": page_run, "🛠 Corrections & Resubmit": page_corrections,
  "✅ SME Validation Workbench": page_workbench, "📐 Layouts": page_layouts, "🧬 Canonical Model": page_canonical,
  "📋 Pick Lists": page_picklists, "⚙️ Business Rules": page_rules, "🗳 Approval Queue": page_queue,
- "⬇⬆ SME Templates": page_templates, "📜 Audit Trail": page_audit}
+ "⬇⬆ SME Templates": page_templates, "📜 Audit Trail": page_audit,
+ "🗄 Data": page_data}
 _ = ROUTES[page]()
 branding.note_synthetic()
 branding.footer()
