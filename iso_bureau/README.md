@@ -97,11 +97,11 @@ The ISO line codes, transaction, cause-of-loss, deductible, limit and other code
 
 `python iso_bureau/sql/make_sqlserver.py` regenerates:
 
-* `iso_bureau/sql/01_create_BureauReporting.sql`: the database and all tables
+* `iso_bureau/sql/01_create_ISOBureauReporting.sql`: the database and all tables
 * `iso_bureau/sql/02_load_metadata.sql`: layouts, canonical model, pick lists, rules, approvals
 * `iso_bureau/sql/03_load_sample_source.sql`: sample source transactions
 
-Run them in SSMS against `SABAHOME\SQLEXPRESS02`. The app itself runs on SQLite (`iso_bureau/db.py`). Switching the app to SQL Server through pyodbc is the next step. The queries use `?` parameters and standard SQL, so that change is limited to the connection layer.
+Run them in SSMS against `SABAHOME\SQLEXPRESS02`. They create a separate database, **ISOBureauReporting**, so your Workers Comp `BureauReporting` database is untouched. Loaded and verified on SQLEXPRESS02 on 2026-10-12. The app itself runs on SQLite (`iso_bureau/db.py`). Switching the app to SQL Server through pyodbc is the next step. The queries use `?` parameters and standard SQL, so that change is limited to the connection layer.
 
 ## Files
 

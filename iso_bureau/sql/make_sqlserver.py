@@ -3,7 +3,7 @@
     python iso_bureau/sql/make_sqlserver.py
 
 Writes:
-  sql/01_create_BureauReporting.sql   database + tables (+ indexes)
+  sql/01_create_ISOBureauReporting.sql   database + tables (+ indexes)
   sql/02_load_metadata.sql            every metadata row (layouts, canonical, pick lists, rules, approvals)
   sql/03_load_sample_source.sql       sample Guidewire / Duck Creek source transactions
 Run them in SSMS against SABAHOME\\SQLEXPRESS02 (Windows Authentication) in order.
@@ -48,7 +48,7 @@ def col_type(name, decl):
 
 def ddl():
     out = ["-- SI² ISO Bureau Reporting - SQL Server Express DDL (generated from engine/db.py)",
-           "IF DB_ID('BureauReporting') IS NULL CREATE DATABASE BureauReporting;", "GO", "USE BureauReporting;", "GO"]
+           "IF DB_ID('ISOBureauReporting') IS NULL CREATE DATABASE ISOBureauReporting;", "GO", "USE ISOBureauReporting;", "GO"]
     for m in re.finditer(r"CREATE TABLE IF NOT EXISTS (\w+) \((.*?)\);", db.SCHEMA, re.S):
         name, body = m.group(1), m.group(2)
         body = "\n".join(re.sub(r"--.*", "", ln) for ln in body.splitlines())
@@ -84,7 +84,7 @@ def lit(v):
 
 
 def inserts(con, tables):
-    out = ["USE BureauReporting;", "GO", "SET NOCOUNT ON;"]
+    out = ["USE ISOBureauReporting;", "GO", "SET NOCOUNT ON;"]
     for t in tables:
         rows = con.execute(f"SELECT * FROM {t}").fetchall()
         if not rows:
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     src = Path(sys.argv[1]) if len(sys.argv) > 1 else db.DEFAULT_DB
     con = sqlite3.connect(src)
     con.row_factory = sqlite3.Row
-    (OUT / "01_create_BureauReporting.sql").write_text(ddl(), encoding="utf-8")
+    (OUT / "01_create_ISOBureauReporting.sql").write_text(ddl(), encoding="utf-8")
     meta = ["bureau", "line_of_business"] + list(db.META_TABLES) + ["approval_log"]
     (OUT / "02_load_metadata.sql").write_text(inserts(con, meta), encoding="utf-8")
     (OUT / "03_load_sample_source.sql").write_text(inserts(con, ["source_transaction"]), encoding="utf-8")

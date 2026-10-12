@@ -1,7 +1,7 @@
 -- SI² ISO Bureau Reporting - SQL Server Express DDL (generated from engine/db.py)
-IF DB_ID('BureauReporting') IS NULL CREATE DATABASE BureauReporting;
+IF DB_ID('ISOBureauReporting') IS NULL CREATE DATABASE ISOBureauReporting;
 GO
-USE BureauReporting;
+USE ISOBureauReporting;
 GO
 IF OBJECT_ID('dbo.bureau') IS NULL
 CREATE TABLE dbo.bureau (
