@@ -209,6 +209,8 @@ def to_canonical(txn: dict, meta: Meta, meta_date: str) -> tuple[dict, list[dict
             msgs.append({"sev": "WARNING", "code": "MAP001", "element": None,
                          "msg": f"Source attribute {sysname}.{attr} has no approved canonical mapping (ignored)"})
             continue
+        if cands[0]["element_code"] == "NOT_REPORTED":  # SME marked this attribute not needed
+            continue
         canon[cands[0]["element_code"]] = val
     # resolve code dates after dates are known; then translate pick-list values
     cdate = code_date(canon, meta.bureau)

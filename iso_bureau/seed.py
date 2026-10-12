@@ -357,6 +357,10 @@ def _sample_transactions(con) -> int:
         p = _payload("PA", "PREMIUM", "Guidewire", rng, acct, n + 1, pa_2027=True)
         p["PeriodStart"], p["PeriodEnd"] = "2027-01-01", "2027-07-01"
         p["TelematicsInd"], p["RideshareInd"] = rng.choice("YN"), rng.choice("YN")
+        # attributes the new Guidewire release sends that the canonical model does not know yet (Canonical Gaps demo)
+        p["AgentComment"] = rng.choice(["Customer asked for paperless", "Garaged at second home in winter", "Referred by existing insured"])
+        p["GaragingCounty"] = rng.choice(["Bergen", "Essex", "Morris", "Hudson"])
+        p["DiscountCode"] = rng.choice(["MULTIPOL", "GOODSTU", "MULTIPOL", "NONE"])
         add("PA", "PREMIUM", "Guidewire", p, acct)
     # ---- January 2027 HO losses on 2027 policies using the proposed water split
     for i in range(4):

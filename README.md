@@ -14,7 +14,7 @@ All data is synthetic. Codes, record layouts and rating factors are illustrative
 | `app_fraud.py` | Fraud Engine | https://si2-fraud.streamlit.app |
 | `app_iso_bureau.py` | ISO Bureau Reporting, all lines (PA, HO, CA, CP, GL, IM, CR, BP, FI, BR); see `iso_bureau/README.md` | https://si2-iso-bureau.streamlit.app |
 
-Shared code lives in `si2_common/` (branding, access code, synthetic data, rule evaluator).
+Shared code lives in `si2_common/` (branding, access code, synthetic data, rule evaluator, and the Canonical Gaps engine and screen used by the ISO bureau and migration apps).
 
 ## Bureau Reporting Workbench (`bureau/`)
 

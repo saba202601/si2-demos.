@@ -14,8 +14,9 @@ import pandas as pd
 import streamlit as st
 
 from migrate import engine as E
+from migrate import gaps as MG
 from migrate import legacy
-from si2_common import branding, gate
+from si2_common import branding, gate, gaps_ui
 
 branding.page("Legacy-to-Cloud Migration Workbench",
               "Discover every legacy data element, build the canonical model, map, migrate, test and approve.")
@@ -323,7 +324,7 @@ elif step == STEPS[5]:
         c.metric(k, f"{a}/{b}")
     if cov["missing_required"]:
         st.warning("Required destination fields with no legacy source yet: " + ", ".join(cov["missing_required"]))
-    t1, t2 = st.tabs(["SME mapping queue", "Lineage view"])
+    t1, t2, t3 = st.tabs(["SME mapping queue", "Lineage view", "🧩 Canonical gaps"])
     with t1:
         flt = st.radio("Show", ["Needs SME review", "All"], horizontal=True, key="map_flt")
         m = ss.m if flt == "All" else ss.m[ss.m.status == "Needs SME review"]
@@ -395,6 +396,10 @@ elif step == STEPS[5]:
         dot.append("}")
         st.graphviz_chart("\n".join(dot), width="stretch")
         st.caption("Legacy element → canonical element → destination field(s). Dashed red = waiting for the SME.")
+    with t3:
+        gaps_ui.render(MG.scan(ss), MG.Handler(ss, sme(), recompute, log, invalidate_load), key="mig_gaps",
+                       intro="Legacy elements and values the canonical model cannot place, plus required cloud fields nothing "
+                             "feeds yet. Add new extends the cloud destination (new column or new pick-list code).")
 
 # ------------------------------------------------------------------------------------------ 6. Values
 elif step == STEPS[6]:

@@ -18,7 +18,7 @@ Lines loaded from the three ISO workbooks: 10 lines, each with a Premium and a L
 pip install -r requirements.txt                    # from the repo root
 streamlit run app_iso_bureau.py
 python -m iso_bureau.seed --demo-approve           # optional: rebuild iso_bureau/data/bureau_reporting.db
-python -m pytest -q iso_bureau/tests               # 31 end-to-end tests
+python -m pytest -q iso_bureau/tests               # 35 end-to-end tests
 ```
 
 * `python -m iso_bureau.seed` without the flag loads **everything as PENDING**. Use it for real SME onboarding.
@@ -82,6 +82,7 @@ Open the **SME Validation Workbench** with *As of = 2027-01-15*. Approve the lin
 | Approval Queue | Everything pending, by table, with bulk approve or reject |
 | SME Templates | Download the template, fill in new records only, upload. The system adds keys, status and audit columns, then checks keys and overlaps |
 | Audit Trail | Approvals, expirations, batch lifecycle, source corrections |
+| Canonical Gaps | Every source attribute, source code, layout field and ISO code the canonical model lacks, each with a complete draft. Three buttons: Map to existing, Add new, Not needed, plus bulk add. Shared with the Migration app (`si2_common/gaps.py`, `gaps_ui.py`) |
 | Data | Browse any table, download it as CSV, export every table to one Excel workbook, or download the SQLite database file |
 
 ## Findings from the supplied layouts (for the SME)
@@ -129,7 +130,11 @@ iso_bureau/engine.py         resolve -> canonical -> derive -> validate -> forma
 iso_bureau/lineage.py        SME workbench lineage + one-click approval
 iso_bureau/templates.py      SME upload templates
 iso_bureau/db.py             schema, effective dating, supersede / approve, audit
-iso_bureau/tests/            31 tests
+iso_bureau/gaps.py           Canonical Gaps adapter for bureau reporting
+si2_common/gaps.py           shared gap logic: naming standard, matching, drafted proposals
+si2_common/gaps_ui.py        shared Canonical Gaps screen (also used by app_migration.py)
+migrate/gaps.py              Canonical Gaps adapter for the migration workbench
+iso_bureau/tests/            35 tests (engine + Canonical Gaps for ISO and Migration)
 iso_bureau/sql/              SQL Server Express scripts
 iso_bureau/templates/        blank SME upload template
 iso_bureau/data/iso_layouts/ the three ISO layout workbooks

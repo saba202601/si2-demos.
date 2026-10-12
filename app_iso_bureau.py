@@ -17,7 +17,8 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from iso_bureau import db, engine as E, lineage as L, seed, templates as T
+from iso_bureau import db, engine as E, gaps as G, lineage as L, seed, templates as T
+from si2_common import gaps_ui
 from iso_bureau.catalog import LOBS
 from si2_common import branding, gate
 
@@ -85,7 +86,7 @@ def lob_label(c):
 with st.sidebar:
     st.markdown("### 🛡️ SI² Bureau Reporting")
     st.caption("ISO statistical reporting - all lines")
-    PAGES = ["🏠 Dashboard", "▶️ Bureau Run", "🛠 Corrections & Resubmit", "✅ SME Validation Workbench",
+    PAGES = ["🏠 Dashboard", "▶️ Bureau Run", "🛠 Corrections & Resubmit", "✅ SME Validation Workbench", "🧩 Canonical Gaps",
              "📐 Layouts", "🧬 Canonical Model", "📋 Pick Lists", "⚙️ Business Rules",
              "🗳 Approval Queue", "⬇⬆ SME Templates", "📜 Audit Trail", "🗄 Data"]
     page = st.radio("Menu", PAGES, label_visibility="collapsed", key="page")
@@ -716,6 +717,21 @@ def page_audit():
                               ORDER BY n.txn_id DESC"""))
 
 
+# ============================================================ canonical gaps
+def page_gaps():
+    header("Canonical Gaps", "Everything a source or the ISO layouts use that the canonical model does not have yet, "
+           "with a complete draft for each. Map to existing, add new, or mark not needed.")
+    c = st.columns([1.4, 1, 3])
+    approve_now = c[0].toggle("My click approves it", value=True, key="gap_approve",
+                              help="Off: new items go to the Approval Queue instead of being approved now.")
+    eff = c[1].date_input("Effective from", date(2000, 1, 1), key="gap_eff",
+                          help="Default covers all data on file. Pick a later date for a future change.")
+    gaps = G.scan(con)
+    gaps_ui.render(gaps, G.Handler(con, actor, approve_now, eff.isoformat()), key="iso_gaps",
+                   intro="Scans every source transaction (Guidewire, Duck Creek, legacy) and every live ISO layout. "
+                         "Approved choices become aliases, so the same gap never comes back.")
+
+
 # ============================================================ data access
 ALL_TABLES = ["bureau", "line_of_business", *db.META_TABLES, "approval_log", "source_transaction",
               "submission_batch", "submission_record", "batch_event"]
@@ -789,7 +805,7 @@ def page_data():
 
 
 
-ROUTES = {"🏠 Dashboard": page_dashboard, "▶️ Bureau Run": page_run, "🛠 Corrections & Resubmit": page_corrections,
+ROUTES = {"🏠 Dashboard": page_dashboard, "🧩 Canonical Gaps": page_gaps, "▶️ Bureau Run": page_run, "🛠 Corrections & Resubmit": page_corrections,
  "✅ SME Validation Workbench": page_workbench, "📐 Layouts": page_layouts, "🧬 Canonical Model": page_canonical,
  "📋 Pick Lists": page_picklists, "⚙️ Business Rules": page_rules, "🗳 Approval Queue": page_queue,
  "⬇⬆ SME Templates": page_templates, "📜 Audit Trail": page_audit,
