@@ -8,7 +8,7 @@ import datetime as dt
 import pandas as pd
 import streamlit as st
 
-from si2_common import approvals_ui, branding, gate, gaps_ui, persist, store
+from si2_common import identity, ai, ai_ui, approvals_ui, branding, gate, gaps_ui, persist, store
 from si2_common import rating_gaps as RT
 
 branding.page("Rating Engine",
@@ -97,7 +97,7 @@ def rate(inp: dict) -> pd.DataFrame:
 
 
 with st.sidebar:
-    st.text_input("Your name", key="sme_name", placeholder="Name for proposals and approvals")
+    identity.name_input("Your name", "sme_name", "Name for proposals and approvals")
     persist.sidebar(APP)
     st.header("Risk")
     inp = {
@@ -148,6 +148,8 @@ with tab_ws:
     st.write(f"Coverage premium **${sheet.Premium.sum():,.0f}** + policy fee **${POLICY_FEE:,.0f}** = "
              f"**${total:,.0f}** per year.")
     st.download_button("Download worksheet (CSV)", sheet.to_csv(index=False), "si2_rating_worksheet.csv", "text/csv")
+    ai_ui.badge()
+    ai_ui.explain_button("🤖 Explain this premium", "ai_prem", ai.explain_premium, sheet.to_dict("records"), float(total))
 
 with tab_what:
     st.caption("Annual premium for this same risk as only the driver's age changes.")

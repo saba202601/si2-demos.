@@ -8,7 +8,7 @@ import json
 import pandas as pd
 import streamlit as st
 
-from si2_common import branding, data, gate
+from si2_common import approvals_ui, branding, data, gate, identity, store
 from si2_common import registry as R
 
 branding.page("Canonical Data Model",
@@ -29,10 +29,26 @@ tab_co, tab_model, tab_map, tab_doc = st.tabs(["🏢 Company model (all apps)", 
                                                "Canonical policy document"])
 
 
-@st.cache_data(show_spinner=False)
 def company_model():
     where = R.harvest()
     return where, R.terms(where)
+
+
+def actor() -> str:
+    return st.session_state.get("sme_name") or "SME"
+
+
+def decide_term(req: dict) -> str:
+    if req["status"] != "Approved":
+        return f"Change to {req['ref']} rejected by {req['checker']}; the published version is unchanged."
+    e = R.publish(req["ref"], req["payload"]["change"], req["maker"], req["checker"], req.get("note", ""))
+    return (f"{req['ref']} v{e['version']} published by {req['checker']}: every SI² app now uses the new definition and "
+            "synonyms (initial-load descriptions, migration matching, company model).")
+
+
+with st.sidebar:
+    identity.name_input("Your name", "sme_name", "Name for proposals and approvals")
+    st.caption(f"💾 Company model saved to {store.describe()}")
 
 
 with tab_co:
@@ -52,7 +68,7 @@ with tab_co:
     view = terms[(terms.apps >= 2) | (not shared)]
     for a in apps:
         view = view[view[a] == "✓"]
-    st.dataframe(view[["business name", "standard name", "apps", "names in use", *R.APPS, "definition"]],
+    st.dataframe(view[["business name", "standard name", "status", "apps", "names in use", *R.APPS, "definition"]],
                  hide_index=True, width="stretch", height=420,
                  column_config={"definition": st.column_config.TextColumn(width="large")})
     st.markdown("**Where used**")
@@ -63,6 +79,38 @@ with tab_co:
         st.dataframe(w, hide_index=True, width="stretch")
         st.caption(f"Changing **{pick.replace('_', ' ').title()}** touches {len(w)} element(s) in {w.app.nunique()} app(s). "
                    f"Standard name proposed by SI²: `{pick.lower()}`.")
+    st.divider()
+    st.markdown("**Govern a term: propose → impact → second-person approval → published to every app**")
+    if pick:
+        pub = R.published().get(pick, {})
+        row = terms.set_index("term").loc[pick]
+        with st.form(f"gov_{pick}"):
+            g1, g2 = st.columns([1, 2])
+            std = g1.text_input("Standard name", pub.get("standard_name") or row["standard name"])
+            owner = g1.text_input("Data owner", pub.get("owner", ""), placeholder="e.g. Policy admin / Underwriting ops")
+            dfn = g2.text_area("Definition", pub.get("definition") or row["definition"], height=80)
+            names = sorted(set(where[where.term == pick].element.str.split(".").str[-1]))
+            syn = g2.text_input("Synonyms (comma separated)", ", ".join(pub.get("synonyms", []) or names))
+            impact = where[where.term == pick]
+            st.caption(f"Impact: {len(impact)} element(s) in {impact.app.nunique()} app(s): "
+                       + ", ".join(f"{a} ({n})" for a, n in impact.app.value_counts().items()))
+            if st.form_submit_button("Submit the change for approval", type="primary"):
+                change = {"standard_name": std.strip(), "definition": dfn.strip(), "owner": owner.strip(),
+                          "synonyms": [x.strip() for x in syn.split(",") if x.strip()]}
+                try:
+                    store.request(R.GOV_APP, "Term change", pick,
+                                  f"{pick}: {std} · {dfn[:80]} · {len(change['synonyms'])} synonyms · impact {len(impact)} "
+                                  f"elements in {impact.app.nunique()} apps", {"change": change}, actor())
+                    st.success("Submitted. A second person approves it below.")
+                except ValueError as exc:
+                    st.error(str(exc))
+    approvals_ui.render(R.GOV_APP, actor(), decide_term, note_label="Note", key="gov_appr")
+    hist = R.history()
+    with st.expander(f"Published versions ({len(hist)})"):
+        if hist:
+            st.dataframe(pd.DataFrame(hist).iloc[::-1], hide_index=True, width="stretch")
+        else:
+            st.caption("Nothing published yet: every term is a harvested draft.")
     st.download_button("Download the company model with where-used (CSV)",
                        where.merge(terms[["term", "business name", "standard name", "definition"]], on="term")
                        .to_csv(index=False), "SI2_company_canonical_model.csv", "text/csv", key="co_dl")

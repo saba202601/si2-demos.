@@ -3,6 +3,8 @@
 Backends
   SQLite (default)  file at $SI2_STATE_DB, default <repo>/data/si2_state.db
   SQL Server        SI2_STATE_BACKEND=mssql, using SI2_MSSQL_SERVER / SI2_MSSQL_DATABASE (same as the ISO app)
+  PostgreSQL        SI2_STATE_BACKEND=postgres, SI2_DATABASE_URL=postgresql://user:password@host:5432/db
+                    (Azure Database for PostgreSQL, Amazon RDS, Supabase, Neon ...); set it in Streamlit secrets
 
 Tables
   si2_state     one row per (workspace, app, key): the app's decision state, as tagged JSON
@@ -37,12 +39,44 @@ DDL = [
 ]
 
 
+class PgConnection:
+    """sqlite3-like wrapper over psycopg 3: '?' placeholders, rows as dicts."""
+
+    def __init__(self, url: str):
+        import psycopg
+        from psycopg.rows import dict_row
+        self._cn = psycopg.connect(url, row_factory=dict_row, connect_timeout=15)
+
+    def execute(self, sql: str, params=()):
+        return self._cn.execute(sql.replace("?", "%s"), tuple(params) if params else None)
+
+    def commit(self):
+        self._cn.commit()
+
+    def rollback(self):
+        self._cn.rollback()
+
+    def close(self):
+        self._cn.close()
+
+
+def _setting(name: str, default: str = "") -> str:
+    v = os.environ.get(name, "")
+    if v:
+        return v
+    try:
+        import streamlit as st
+        return str(st.secrets.get(name, default))
+    except Exception:
+        return default
+
+
 def workspace() -> str:
     return os.environ.get("SI2_WORKSPACE", "demo")
 
 
 def backend() -> str:
-    return os.environ.get("SI2_STATE_BACKEND", "sqlite").strip().lower()
+    return _setting("SI2_STATE_BACKEND", "sqlite").strip().lower()
 
 
 _CON = {}
@@ -52,7 +86,13 @@ def connect():
     key = (backend(), os.environ.get("SI2_STATE_DB", ""))
     if key in _CON:
         return _CON[key]
-    if backend() == "mssql":
+    if backend() == "postgres":
+        url = _setting("SI2_DATABASE_URL")
+        if not url:
+            raise RuntimeError("SI2_STATE_BACKEND=postgres needs SI2_DATABASE_URL")
+        con = PgConnection(url)
+        _ensure(con, big="TEXT", ident="SERIAL PRIMARY KEY")
+    elif backend() == "mssql":
         from iso_bureau.db import DEFAULT_DATABASE, DEFAULT_SERVER, MssqlConnection
         con = MssqlConnection(os.environ.get("SI2_MSSQL_SERVER", DEFAULT_SERVER),
                               os.environ.get("SI2_MSSQL_DATABASE", DEFAULT_DATABASE))
@@ -77,10 +117,15 @@ def _ensure(con, **types):
             except Exception:
                 pass
             con.execute(d.format(**types))
+            con.commit()
     con.commit()
 
 
 def describe() -> str:
+    if backend() == "postgres":
+        from urllib.parse import urlparse
+        u = urlparse(_setting("SI2_DATABASE_URL"))
+        return f"PostgreSQL {u.hostname or ''}/{(u.path or '/').lstrip('/')}"
     if backend() == "mssql":
         from iso_bureau.db import DEFAULT_DATABASE, DEFAULT_SERVER
         return (f"SQL Server {os.environ.get('SI2_MSSQL_SERVER', DEFAULT_SERVER)} / "

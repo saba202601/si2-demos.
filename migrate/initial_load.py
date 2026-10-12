@@ -32,6 +32,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 from si2_common.gaps import draft_description, similarity, to_title, words
@@ -437,9 +438,15 @@ DATE_FORMATS = [("%Y-%m-%d", r"\d{4}-\d{2}-\d{2}"), ("%m/%d/%Y", r"\d{1,2}/\d{1,
                 ("%Y-%m-%d %H:%M:%S", r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}")]
 
 
+ATTR_WORDS = {"ZIP", "POSTAL", "STATE", "STATUS", "TYPE", "LINE", "BUSINESS", "CAUSE", "CURRENCY", "COUNTRY",
+              "REASON", "COLOR", "LANGUAGE"}
+
+
 def _keyish(col: str) -> bool:
     w = set(words(col))
-    return bool(w & KEY_WORDS) or col.endswith("_row")
+    if col.endswith("_row") or w & {"ID", "NUMBER", "KEY", "IDENTIFIER"}:
+        return True
+    return "CODE" in w and not (w & ATTR_WORDS)          # coverage_cd yes; state_cd / zip_cd / lob_cd are attributes
 
 
 def parse_date(v: str) -> str | None:
@@ -451,6 +458,13 @@ def parse_date(v: str) -> str | None:
             except ValueError:
                 return None
     return None
+
+
+def iso_dates(series: pd.Series) -> list:
+    """parse_date over a column, computed once per distinct value."""
+    vals = series.astype(str)
+    m = {u: parse_date(u) for u in vals.unique()}
+    return [m[v] for v in vals]
 
 
 def parse_money(v: str) -> float | None:
@@ -488,6 +502,8 @@ def infer_column(col: str, vals: list[str]) -> tuple[str, str]:
 
 def profile(st: Staged) -> pd.DataFrame:
     rows = []
+    from si2_common import registry as R
+    pub, syn = R.published(), R._synonym_index()
     for t, df in st.tables.items():
         declared = st.declared_types.get(t, {})
         for c in df.columns:
@@ -503,12 +519,16 @@ def profile(st: Staged) -> pd.DataFrame:
             pick = not pii and (typ == "TEXT" and 1 < distinct <= 15 and len(nonblank) >= 2 * distinct
                                 and max(map(len, nonblank)) <= 12 and not _keyish(c))
             shown = [mask(x, pii) for x in dict.fromkeys(nonblank)][:3]      # personal data never shown in the profile
-            rows.append({"table": t, "column": c, "type": typ, "rows": len(vals), "blank": len(vals) - len(nonblank),
+            term = R.concept_of(c, syn)
+            term = term if term in R.CONCEPTS or term in pub else ""
+            rows.append({"table": t, "column": c, "type": typ, "company_term": term,
+                         "rows": len(vals), "blank": len(vals) - len(nonblank),
                          "distinct": distinct, "unique": distinct == len(vals) and not (len(vals) - len(nonblank)),
                          "max_len": max(map(len, nonblank), default=0), "samples": ", ".join(shown),
                          "pick_list": pick, "pii": pii, "note": note,
-                         "description": draft_description(c, "CODE" if pick else typ, shown, "",
-                                                          {}).replace(" (Drafted by SI² - edit if needed.)", "")})
+                         "description": (pub[term]["definition"] + " (company definition)") if term in pub and
+                         pub[term].get("definition") else draft_description(c, "CODE" if pick else typ, shown, "",
+                                                                             {}).replace(" (Drafted by SI² - edit if needed.)", "")})
     return pd.DataFrame(rows)
 
 
@@ -552,7 +572,11 @@ def propose(st: Staged, prof: pd.DataFrame) -> pd.DataFrame:
         links = {c for ch, cc, *_ in st.declared_fk if ch == t for c in cc}
         keyish.sort(key=lambda c: c not in links)                 # parent link first: (vehicle, coverage code)
         dates = [c for c in full if types.get((t, c)) == "DATE"]
-        pairs = [(a, b) for i, a in enumerate(keyish) for b in keyish[i + 1:]] + [(a, b) for a in keyish for b in dates]
+        eff_dates = [d for d in dates if {"EFFECTIVE", "START", "FROM", "INCEPTION"} & set(words(d))]
+        pairs = ([(a, b) for a in keyish if a in links for b in keyish if b != a]          # parent link + item
+                 + [(a, d) for a in keyish for d in eff_dates]                              # number + term start
+                 + [(a, b) for i, a in enumerate(keyish) for b in keyish[i + 1:]]
+                 + [(a, b) for a in keyish for b in dates])
         found = next(([a, b] for a, b in pairs if not df.duplicated([a, b]).any()), None)
         if found:
             reps = int(df[found[0]].duplicated().sum())
@@ -628,23 +652,23 @@ def _term_link(st, child, c, parent, pk, types, hit):
     """Parent key is policy number + a date (one row per term). Exact pair, term in force on a child date, or latest term."""
     cdf, pdf = st.tables[child], st.tables[parent]
     a, b = pk[0], pk[1]
-    pairs = set(zip(pdf[a], pdf[b]))
     child_dates = [d for d in cdf.columns if types.get((child, d)) == "DATE"]
+    pb = [x or "" for x in iso_dates(pdf[b])]
+    pairs = set(zip(pdf[a].astype(str), pb))
     for d in child_dates:
-        cp = set(zip(cdf[c], cdf[d].map(lambda x: parse_date(x) or x)))
-        if cp and len(cp & {(x, parse_date(y) or y) for x, y in pairs}) / len(cp) >= 0.95:
+        cp = set(zip(cdf[c].astype(str), [x or "" for x in iso_dates(cdf[d])]))
+        if cp and len(cp & pairs) / len(cp) >= 0.95:
             return ("FK", child, [c, d], parent, [a, b], "Found in the data", 98,
                     f"{child}.({c}, {d}) matches {parent}.({a}, {b}) exactly: the same policy term")
     exp = next((x for x in pdf.columns if x != b and types.get((parent, x)) == "DATE" and
                 {"EXPIRATION", "EXP", "END", "TO"} & set(words(x))), None)
     if exp:
+        terms = defaultdict(list)
+        for no, s_, e_ in zip(pdf[a].astype(str), pb, iso_dates(pdf[exp])):
+            terms[no].append((s_, e_ or FAR_FUTURE))
         for d in sorted(child_dates, key=lambda x: (not ({"LOSS", "ACCIDENT", "OCCURRENCE"} & set(words(x))), x)):
-            ok = 0
-            for no, when in zip(cdf[c], cdf[d]):
-                when = parse_date(when)
-                terms = pdf[(pdf[a] == no)]
-                if when and sum(1 for s, e in zip(terms[b], terms[exp]) if (parse_date(s) or "") <= when < (parse_date(e) or "")) == 1:
-                    ok += 1
+            ok = sum(1 for no, when in zip(cdf[c].astype(str), iso_dates(cdf[d]))
+                     if when and sum(1 for s_, e_ in terms.get(no, ()) if s_ <= when < e_) == 1)
             share = ok / max(len(cdf), 1)
             if share >= 0.8:
                 return ("FK", child, [c, d], parent, [a, b], "Term in force on the date", int(80 + 18 * share),
@@ -768,6 +792,49 @@ def _exp_col(df_cols, pk, types, t):
                  and {"EXPIRATION", "EXP", "END", "TO"} & set(words(c))), None)
 
 
+def _resolve_column(idx, df, cc, meth, types, t):
+    """Parent surrogate key for every row of df (None when blank); errors as (row index, message)."""
+    n = len(df)
+    if not idx or idx["pk"] is None:
+        return [None] * n, []
+    cols = [df[c].astype(str).tolist() for c in cc]
+    errs, out = [], [None] * n
+    if meth == "Term in force on the date":
+        when = iso_dates(df[cc[1]])
+        terms = idx["first"]
+        for i in range(n):
+            no = cols[0][i]
+            if not no:
+                continue
+            hits = [sk for start, end, sk in terms.get(no, ()) if when[i] and start <= when[i] < (end or FAR_FUTURE)]
+            if len(hits) == 1:
+                out[i] = hits[0]
+            else:
+                errs.append((i, f"no term of {no} in force on {cols[1][i]}"))
+        return out, errs
+    if meth == "Latest term":
+        latest = {k: max(v)[2] for k, v in idx["first"].items()}
+        for i, no in enumerate(cols[0]):
+            if no:
+                out[i] = latest.get(no)
+                if out[i] is None:
+                    errs.append((i, f"{no} not found"))
+        return out, errs
+    exact = idx["exact"]
+    norm = [iso_dates(df[c]) if types.get((t, c)) == "DATE" else None for c in cc]
+    for i in range(n):
+        vals = [cols[j][i] for j in range(len(cc))]
+        if not any(vals):
+            continue
+        key = tuple((norm[j][i] or vals[j]) if norm[j] is not None else vals[j] for j in range(len(cc)))
+        sk = exact.get(key) or exact.get(tuple(vals))
+        if sk:
+            out[i] = sk
+        else:
+            errs.append((i, f"{'/'.join(vals)} not found (orphan)"))
+    return out, errs
+
+
 def _resolve(idx, rec, cc, pc, meth):
     if not idx or idx["pk"] is None:
         return None, ""
@@ -853,7 +920,8 @@ def _load(con, st, prof, props, actor, mode, as_of, blocked):
     recon, quarantine = [], []
     blocked = blocked or {}
     for t in order:
-        df = st.tables[t]
+        df = st.tables[t].reset_index(drop=True)
+        n_rows = len(df)
         cols = [c for c in df.columns if c in db_cols.get(t, [])]
         my_fks = [f for f in fks if f[0] == t]
         for _, par, *_ in my_fks:
@@ -861,50 +929,73 @@ def _load(con, st, prof, props, actor, mode, as_of, blocked):
                 keys[par] = _db_key_index(con, par, pks.get(par), types,
                                           _exp_col(db_cols.get(par, []), pks.get(par) or [], types, par))
         pk = pks.get(t) if pks.get(t) != [f"{t}_sk"] else None
+        why = defaultdict(list)                                  # row index -> reasons (only rows with a problem)
+        # 1. convert each column once per distinct value (set-based: millions of rows)
+        conv = []
+        for c in cols:
+            s_ = df[c].astype(str)
+            typ = types.get((t, c), "TEXT")
+            m = {u: _convert(u, typ) for u in s_.unique()}
+            conv.append([m[v][0] for v in s_])
+            for i in np.flatnonzero([bool(m[v][1]) for v in s_]):
+                why[int(i)].append(f"{c}: {m[s_.iat[i]][1]}")
+        # 2. resolve each foreign key against the parent's current rows in the database
+        refs = []
+        for _, par, cc, pc, meth in my_fks:
+            sk_col, errs = _resolve_column(keys.get(par), df, cc, meth, types, t)
+            refs.append(sk_col)
+            for i, e in errs:
+                why[i].append(f"{par}: {e}")
+        for (bt, row), reason in blocked.items():
+            if bt == t and 1 <= row <= n_rows:
+                why[row - 1].append(reason)
         current = {}
         if mode == "Delta" and pk:
-            sel = ", ".join([f"{t}_sk"] + cols + [f"{f[1]}_sk" for f in my_fks])
+            sel = ", ".join([f"{t}_sk"] + cols)
             for r in con.execute(f"SELECT {sel} FROM {t} WHERE effective_to = ?", (FAR_FUTURE,)).fetchall():
-                row = dict(zip(cols, r[1:1 + len(cols)]))
+                row = dict(zip(cols, r[1:]))
                 current[tuple(_fmt(row[c]) for c in pk)] = (r[0], [_fmt(v) for v in r[1:]])
         names = cols + [f"{f[1]}_sk" for f in my_fks] + ["load_batch_id", "loaded_at", "effective_from"]
         sql = f"INSERT INTO {t} ({', '.join(names)}) VALUES ({', '.join('?' * len(names))})"
         n = Counter()
-        for i, rec in enumerate(df.to_dict("records"), 1):
-            vals, why = [], []
-            for c in cols:
-                v, err = _convert(str(rec[c]), types.get((t, c), "TEXT"))
-                vals.append(v)
-                if err:
-                    why.append(f"{c}: {err}")
-            refs = []
-            for _, par, cc, pc, meth in my_fks:
-                sk, err = _resolve(keys.get(par), rec, cc, pc, meth)
-                refs.append(sk)
-                if err:
-                    why.append(f"{par}: {err}")
-            if (t, i) in blocked:
-                why.append(blocked[(t, i)])
-            if why:
-                quarantine.append({"table": t, "row": i, "reason": "; ".join(why), "record": _masked_record(rec, t, pii)})
-                n["quarantined"] += 1
+        bad = set(why)
+        for i in sorted(bad):
+            rec = {c: df.iat[i, df.columns.get_loc(c)] for c in df.columns}
+            quarantine.append({"table": t, "row": i + 1, "reason": "; ".join(why[i]), "record": _masked_record(rec, t, pii)})
+        n["quarantined"] = len(bad)
+        rows, expire = [], []
+        pk_pos = [cols.index(c) for c in pk] if (current and pk) else []
+        for i in range(n_rows):
+            if i in bad:
                 continue
-            old = None
+            vals = [col[i] for col in conv]
             if current:
-                k = tuple(_fmt(vals[cols.index(c)]) for c in pk)
-                old = current.get(k)
-                if old and old[1][:len(cols)] == [_fmt(v) for v in vals]:
-                    n["unchanged"] += 1
-                    continue
-            try:
+                old = current.get(tuple(_fmt(vals[j]) for j in pk_pos))
                 if old:
-                    con.execute(f"UPDATE {t} SET effective_to = ? WHERE {t}_sk = ?", (stamp, old[0]))
-                con.execute(sql, vals + refs + [batch, now, stamp])
-                n["changed" if old else "new"] += 1
-            except sqlite3.IntegrityError as exc:
-                quarantine.append({"table": t, "row": i, "reason": f"database rejected it: {exc}",
-                                   "record": _masked_record(rec, t, pii)})
-                n["quarantined"] += 1
+                    if old[1] == [_fmt(v) for v in vals]:
+                        n["unchanged"] += 1
+                        continue
+                    expire.append(old[0])
+            rows.append((i, vals + [rc[i] for rc in refs] + [batch, now, stamp]))
+        # 3. write in batches; a row the database rejects is quarantined, the rest go in
+        if expire:
+            con.executemany(f"UPDATE {t} SET effective_to = ? WHERE {t}_sk = ?", [(stamp, x) for x in expire])
+        n["changed"] = len(expire)
+        for k in range(0, len(rows), 20000):
+            chunk = rows[k:k + 20000]
+            try:
+                con.executemany(sql, [v for _, v in chunk])
+            except sqlite3.IntegrityError:
+                for i, v in chunk:
+                    try:
+                        con.execute(sql, v)
+                    except sqlite3.IntegrityError as exc:
+                        rec = {c: df.iat[i, df.columns.get_loc(c)] for c in df.columns}
+                        quarantine.append({"table": t, "row": i + 1, "reason": f"database rejected it: {exc}",
+                                           "record": _masked_record(rec, t, pii)})
+                        n["quarantined"] += 1
+                        n["rejected"] += 1
+        n["new"] = len(rows) - n["changed"] - n["rejected"]
         con.commit()
         keys[t] = _db_key_index(con, t, pks.get(t), types, _exp_col(db_cols.get(t, []), pks.get(t) or [], types, t))
         money = [c for c in cols if types.get((t, c)) in ("MONEY", "DECIMAL")]
@@ -1062,67 +1153,83 @@ EDITS = {
 
 
 def quality_edits(st: Staged, prof: pd.DataFrame, props: pd.DataFrame, today: dt.date | None = None) -> pd.DataFrame:
-    """SI² data edits in the style of NCCI / ISO statistical-plan edits, run before the load."""
-    today = (today or dt.date.today()).isoformat()
+    """SI² data edits in the style of NCCI / ISO statistical-plan edits, run before the load (set-based, so they
+    run on millions of rows)."""
+    today_s = (today or dt.date.today()).isoformat()
     types = {(r.table, r.column): r.type for r in prof.itertuples()}
     out = []
 
-    def hit(code, t, i, c, v, extra=""):
+    def hit(code, t, mask_, c, values, extra=None):
+        idx = np.flatnonzero(np.asarray(mask_, dtype=bool))
+        if not len(idx):
+            return
         sev, msg = EDITS[code]
-        out.append({"edit": code, "severity": sev, "table": t, "row": i, "column": c, "value": v,
-                    "message": msg + (f" ({extra})" if extra else "")})
+        vals = list(values) if not isinstance(values, pd.Series) else values.tolist()
+        ex = list(extra) if extra is not None else None
+        for i in idx:
+            out.append({"edit": code, "severity": sev, "table": t, "row": int(i) + 1, "column": c, "value": vals[i],
+                        "message": msg + (f" ({ex[i]})" if ex is not None else "")})
     pks = {r.table: r.columns for r in props[(props.kind == "PK")].itertuples()}
+    dates_cache = {}
+
+    def dates(t, c):
+        if (t, c) not in dates_cache:
+            dates_cache[(t, c)] = pd.Series([x or "" for x in iso_dates(st.tables[t][c])])
+        return dates_cache[(t, c)]
     for t, df in st.tables.items():
+        if not len(df):
+            continue
         cols = list(df.columns)
         w = {c: set(words(c)) for c in cols}
-        dates = [c for c in cols if types.get((t, c)) == "DATE"]
-        eff = next((c for c in dates if {"EFFECTIVE", "EFF"} & w[c] and not {"BIRTH"} & w[c]), None)
-        exp = next((c for c in dates if {"EXPIRATION", "EXP"} & w[c]), None)
-        loss = next((c for c in dates if {"LOSS", "ACCIDENT"} & w[c]), None)
-        rep = next((c for c in dates if "REPORT" in w[c]), None)
-        future = [c for c in dates if {"LOSS", "REPORT", "PAYMENT", "PMT", "VIOLATION"} & w[c]]
-        for i, rec in enumerate(df.to_dict("records"), 1):
-            for c in cols:
-                v = str(rec[c])
-                if not v:
-                    if c in pks.get(t, []) and not c.endswith("_sk"):
-                        hit("Q10", t, i, c, v)
-                    continue
-                if "STATE" in w[c] and len(v) <= 3 and types.get((t, c)) == "TEXT" and v.upper() not in US_STATES:
-                    hit("Q01", t, i, c, v)
-                if {"ZIP", "POSTAL"} & w[c] and not re.fullmatch(r"\d{5}(-?\d{4})?", v):
-                    hit("Q02", t, i, c, v)
-                if types.get((t, c)) in ("MONEY", "DECIMAL") and (parse_money(v) or 0) < 0:
-                    hit("Q07", t, i, c, v)
-                if types.get((t, c)) == "MONEY" and "PREMIUM" in w[c] and (parse_money(v) or 0) <= 0:
-                    hit("Q08", t, i, c, v)
-                if {"BIRTH"} & w[c] and (d := parse_date(v)):
-                    age = (dt.date.fromisoformat(today) - dt.date.fromisoformat(d)).days // 365
-                    if not 14 <= age <= 100:
-                        hit("Q09", t, i, c, v, f"age {age}")
-            if eff and exp and (a := parse_date(rec[eff])) and (b := parse_date(rec[exp])) and a >= b:
-                hit("Q03", t, i, eff, f"{rec[eff]} / {rec[exp]}")
-            if loss and rep and (a := parse_date(rec[loss])) and (b := parse_date(rec[rep])) and b < a:
-                hit("Q04", t, i, rep, f"loss {rec[loss]}, reported {rec[rep]}")
-            for c in future:
-                if (d := parse_date(rec[c])) and d > today:
-                    hit("Q05", t, i, c, rec[c])
-    # cross-table: payment before the loss date of its claim (via an approved or proposed foreign key)
+        dcols = [c for c in cols if types.get((t, c)) == "DATE"]
+        eff = next((c for c in dcols if {"EFFECTIVE", "EFF"} & w[c] and "BIRTH" not in w[c]), None)
+        exp = next((c for c in dcols if {"EXPIRATION", "EXP"} & w[c]), None)
+        loss = next((c for c in dcols if {"LOSS", "ACCIDENT"} & w[c]), None)
+        rep = next((c for c in dcols if "REPORT" in w[c]), None)
+        for c in cols:
+            s_ = df[c].astype(str).reset_index(drop=True)
+            blank = s_ == ""
+            if c in pks.get(t, []) and not c.endswith("_sk"):
+                hit("Q10", t, blank, c, s_)
+            if "STATE" in w[c] and types.get((t, c)) == "TEXT" and s_.str.len().max() <= 3:
+                hit("Q01", t, ~blank & ~s_.str.upper().isin(US_STATES), c, s_)
+            if {"ZIP", "POSTAL"} & w[c]:
+                hit("Q02", t, ~blank & ~s_.str.fullmatch(r"\d{5}(-?\d{4})?"), c, s_)
+            if types.get((t, c)) in ("MONEY", "DECIMAL"):
+                num = pd.to_numeric(s_.str.replace(r"[$,]", "", regex=True), errors="coerce")
+                hit("Q07", t, num < 0, c, s_)
+                if types.get((t, c)) == "MONEY" and "PREMIUM" in w[c]:
+                    hit("Q08", t, ~blank & (num <= 0), c, s_)
+            if "BIRTH" in w[c] and types.get((t, c)) == "DATE":
+                d = pd.to_datetime(dates(t, c), errors="coerce")
+                age = (pd.Timestamp(today_s) - d).dt.days // 365
+                hit("Q09", t, d.notna() & ((age < 14) | (age > 100)), c, s_, [f"age {x}" for x in age.fillna(0).astype(int)])
+            if types.get((t, c)) == "DATE" and {"LOSS", "REPORT", "PAYMENT", "PMT", "VIOLATION"} & w[c]:
+                d = dates(t, c)
+                hit("Q05", t, (d != "") & (d > today_s), c, s_)
+        if eff and exp:
+            a_, b_ = dates(t, eff), dates(t, exp)
+            hit("Q03", t, (a_ != "") & (b_ != "") & (a_ >= b_), eff, df[eff].astype(str) + " / " + df[exp].astype(str))
+        if loss and rep:
+            a_, b_ = dates(t, loss), dates(t, rep)
+            hit("Q04", t, (a_ != "") & (b_ != "") & (b_ < a_), rep, df[rep].astype(str),
+                [f"loss {x}, reported {y}" for x, y in zip(df[loss].astype(str), df[rep].astype(str))])
+    # cross-table: payment before the loss date of its claim (via a proposed or approved foreign key)
     for r in props[(props.kind == "FK") & (props.status != "Rejected")].itertuples():
         child, parent = r.table, r.ref_table
         if len(r.columns) != 1 or child not in st.tables or parent not in st.tables:
             continue
-        pd_ = st.tables[parent]
-        ploss = next((c for c in pd_.columns if types.get((parent, c)) == "DATE" and {"LOSS"} & set(words(c))), None)
+        pdf_ = st.tables[parent]
+        ploss = next((c for c in pdf_.columns if types.get((parent, c)) == "DATE" and "LOSS" in set(words(c))), None)
         cdate = next((c for c in st.tables[child].columns if types.get((child, c)) == "DATE"
                       and {"PAYMENT", "PMT", "PAID"} & set(words(c))), None)
         if not (ploss and cdate):
             continue
-        lookup = dict(zip(pd_[r.ref_columns[0]], pd_[ploss]))
-        for i, rec in enumerate(st.tables[child].to_dict("records"), 1):
-            a, b = parse_date(lookup.get(rec[r.columns[0]], "")), parse_date(rec[cdate])
-            if a and b and b < a:
-                hit("Q06", child, i, cdate, f"paid {rec[cdate]}, loss {lookup[rec[r.columns[0]]]}")
+        lookup = dict(zip(pdf_[r.ref_columns[0]].astype(str), dates(parent, ploss)))
+        a_ = st.tables[child][r.columns[0]].astype(str).map(lookup).fillna("").reset_index(drop=True)
+        b_ = dates(child, cdate)
+        hit("Q06", child, (a_ != "") & (b_ != "") & (b_ < a_), cdate, st.tables[child][cdate].astype(str),
+            [f"paid {y}, loss {x}" for x, y in zip(a_, b_)])
     return pd.DataFrame(out, columns=["edit", "severity", "table", "row", "column", "value", "message"])
 
 

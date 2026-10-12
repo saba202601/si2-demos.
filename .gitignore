@@ -4,3 +4,4 @@ __pycache__/
 iso_bureau/data/*.db
 data/si2_state.db
 data/initial_load/
+.streamlit/secrets.toml

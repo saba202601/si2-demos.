@@ -5,15 +5,19 @@ import pandas as pd
 import streamlit as st
 
 from fraud import catalog, data, engine
-from si2_common import branding, gate
+from fraud import gaps as FG
+from si2_common import ai, ai_ui, approvals_ui, branding, gate, gaps_ui, identity, persist, store
 
 branding.page("Fraud Engine",
               "Policy, billing, claims, reinsurance and internal fraud: detect it, stop it before money moves, and keep watching.")
 gate.require_access()
 
 STEPS = ["Overview", "1 · Fraud catalog", "2 · Synthetic book", "3 · Run the engine", "4 · Prevent (gates)",
-         "5 · SIU cases", "6 · Monitor", "Audit trail"]
-DECISIONS = ["", "Confirmed fraud", "False positive · release", "Refer to SIU", "Needs more information"]
+         "5 · SIU cases", "6 · Monitor", "7 · Data gaps", "✅ Approvals", "Audit trail"]
+APP = "fraud"
+KEYS = ["decisions", "params", "enabled", "cat", "audit", "fraud_data_map", "fraud_requests", "fraud_gap_ignored"]
+RELEASE = "False positive · release"
+DECISIONS = ["", "Confirmed fraud", "False positive · release", "Refer to SIU", "Needs more information", "Release requested"]
 
 
 @st.cache_data(show_spinner=False)
@@ -42,6 +46,13 @@ def init():
     ss = st.session_state
     if "ready" in ss:
         return
+    if persist.restore(APP, KEYS) and "params" in ss:
+        ss.d = _book()
+        ss.setdefault("decisions", {})
+        ss.setdefault("audit", [])
+        run_engine()
+        ss.ready = True
+        return
     ss.audit, ss.decisions = [], {}
     ss.d = _book()
     ss.cat = catalog.load()
@@ -66,11 +77,39 @@ def save_decisions(edited, original):
     n = 0
     for r, o in zip(edited.itertuples(), original.itertuples()):
         if r.decision != o.decision:
+            if r.decision == RELEASE:
+                request_release(o.fraud_id, o.entity_id, f"alert {o.alert_id} {o.fraud_id} on {o.entity_id}")
+                n += 1
+                continue
             st.session_state.decisions[(o.fraud_id, o.entity_id)] = {
                 "decision": r.decision, "by": sme(), "at": dt.datetime.now().strftime("%Y-%m-%d %H:%M")}
             log(sme(), "Alert decision", f"{o.alert_id} {o.fraud_id} {o.entity_id}: {r.decision or 'cleared'}")
             n += 1
     return n
+
+
+def request_release(fraud_id, entity_id, what):
+    """Releasing held money is the high-risk decision: a second person must approve it."""
+    try:
+        store.request(APP, "Release held transaction", f"{fraud_id}|{entity_id}", f"Release {what} as a false positive",
+                      {"keys": [[fraud_id, entity_id]]}, sme())
+        st.session_state.decisions[(fraud_id, entity_id)] = {"decision": "Release requested", "by": sme(),
+                                                            "at": dt.datetime.now().strftime("%Y-%m-%d %H:%M")}
+        log(sme(), "Release requested (needs approval)", what)
+    except ValueError as exc:
+        st.error(str(exc))
+
+
+def decide_request(req: dict) -> str:
+    ss = st.session_state
+    for fid, eid in req["payload"]["keys"]:
+        ss.decisions[(fid, eid)] = ({"decision": RELEASE, "by": req["maker"], "approved_by": req["checker"],
+                                     "at": req["checked_at"]} if req["status"] == "Approved" else
+                                    {"decision": "Refer to SIU", "by": req["checker"], "at": req["checked_at"],
+                                     "note": "release rejected"})
+    log(req["checker"], f"Release {req['status'].lower()}", req["summary"])
+    return (f"Released by {req['maker']}, approved by {req['checker']}: the money can move." if req["status"] == "Approved"
+            else f"Release rejected by {req['checker']}; the transaction stays stopped and goes to SIU.")
 
 
 def usd(x):
@@ -85,7 +124,8 @@ with st.sidebar:
     st.markdown("**Workflow**")
     step = st.radio("Step", STEPS, label_visibility="collapsed", key="step")
     st.divider()
-    st.text_input("SME name", key="sme_name", placeholder="Your name for decisions")
+    identity.name_input("SME name", "sme_name", "Your name for decisions")
+    persist.sidebar(APP)
     st.metric("Open alerts", int((A.decision == "").sum()))
     st.caption(f"{len(ss.enabled)} of {len(ss.cat)} catalog fraud types have live rules")
 
@@ -338,7 +378,26 @@ elif step == STEPS[5]:
         st.graphviz_chart("\n".join(dict.fromkeys(dot)), width="stretch")
         dec = st.selectbox("Case decision", DECISIONS[1:], key="case_dec")
         note = st.text_input("Case note", key="case_note")
+        ai_ui.badge()
+        ai_ui.explain_button("🤖 Summarise this case for the SIU file", f"ai_case_{pick}", ai.answer,
+                             f"Summarise the fraud evidence on claim {pick} and the next investigative steps.",
+                             {"claim": pick, "line": c.lob, "cause": c.cause, "loss date": str(c.loss_date),
+                              "report date": str(c.report_date), "paid + reserve": float(pays.amount.sum() + c.reserve),
+                              "alerts": a[["fraud_id", "fraud_type", "evidence", "severity", "action"]].to_dict("records"),
+                              "in a ring of linked claims": bool(ring)})
         if st.button("Record case decision", type="primary"):
+            if dec == RELEASE:
+                try:
+                    store.request(APP, "Release held transaction", f"case|{pick}", f"Release SIU case {pick} as a false positive. {note}",
+                                  {"keys": [[r.fraud_id, r.entity_id] for r in a.itertuples()]}, sme())
+                    for r in a.itertuples():
+                        ss.decisions[(r.fraud_id, r.entity_id)] = {"decision": "Release requested", "by": sme(),
+                                                                   "at": dt.datetime.now().strftime("%Y-%m-%d %H:%M")}
+                    log(sme(), "SIU case release requested (needs approval)", f"{pick}. {note}")
+                    st.rerun()
+                except ValueError as exc:
+                    st.error(str(exc))
+                    st.stop()
             for r in a.itertuples():
                 ss.decisions[(r.fraud_id, r.entity_id)] = {"decision": dec, "by": sme(),
                                                            "at": dt.datetime.now().strftime("%Y-%m-%d %H:%M")}
@@ -404,6 +463,27 @@ elif step == STEPS[6]:
         st.caption("Rules with low precision get their thresholds tuned in step 3. Catalog-only fraud types are next in line for a rule.")
         st.download_button("Download alerts with decisions (CSV)", A.to_csv(index=False), "SI2_fraud_alerts.csv", "text/csv")
 
+# ------------------------------------------------------------------------------------------ 7. Data gaps
+elif step == STEPS[7]:
+    st.subheader("Data gaps: what the remaining fraud types need")
+    live = int((ss.cat.engine_rule == "Yes").sum())
+    st.caption(f"{live} of {len(ss.cat)} fraud types have live rules. The rest need data the book does not have yet. Map it "
+               "to data that is there under another name, raise a data request (SI² drafts the target column and the "
+               "usual source), or mark it not needed.")
+    gaps_ui.render(FG.scan(ss.cat, ss.d, ss), FG.Handler(ss, ss.d, sme(), log), key="fraud_gaps")
+    req = getattr(ss, "fraud_requests", {})
+    if req:
+        st.markdown(f"**Data requests for the data team ({len(req)})**")
+        st.dataframe(pd.DataFrame([{"data": k, **v} for k, v in req.items()]), hide_index=True, width="stretch")
+        st.download_button("Download data requests (CSV)", pd.DataFrame([{"data": k, **v} for k, v in req.items()]).to_csv(index=False),
+                           "SI2_fraud_data_requests.csv", "text/csv")
+
+# ------------------------------------------------------------------------------------------ Approvals
+elif step == "✅ Approvals":
+    st.subheader("Approvals")
+    st.caption("Releasing money stopped at a gate (a false positive) needs a second person.")
+    approvals_ui.render(APP, sme(), decide_request, note_label="Note", key="fraud_appr")
+
 # ------------------------------------------------------------------------------------------ Audit
 elif step == "Audit trail":
     st.subheader("Audit trail")
@@ -411,5 +491,6 @@ elif step == "Audit trail":
     st.dataframe(a.iloc[::-1], hide_index=True, width="stretch")
     st.download_button("Download audit trail (CSV)", a.to_csv(index=False), "SI2_fraud_audit.csv", "text/csv")
 
+persist.checkpoint(APP, KEYS, sme())
 branding.note_synthetic()
 branding.footer()

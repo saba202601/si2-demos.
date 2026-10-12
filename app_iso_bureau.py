@@ -18,9 +18,9 @@ import pandas as pd
 import streamlit as st
 
 from iso_bureau import db, engine as E, gaps as G, lineage as L, seed, templates as T
-from si2_common import gaps_ui
+from si2_common import ai, ai_ui, gaps_ui
 from iso_bureau.catalog import LOBS
-from si2_common import branding, gate
+from si2_common import branding, gate, identity
 
 branding.page("ISO Bureau Reporting", "ISO statistical plans, all lines: effective-dated layouts, canonical model, "
               "pick lists and rules, every object SME-approved.")
@@ -91,7 +91,7 @@ with st.sidebar:
              "🗳 Approval Queue", "⬇⬆ SME Templates", "📜 Audit Trail", "🗄 Data"]
     page = st.radio("Menu", PAGES, label_visibility="collapsed", key="page")
     st.divider()
-    actor = st.text_input("SME / approver name", value=st.session_state.get("actor", "SME"), key="actor")
+    actor = identity.name_input("SME / approver name", "actor", "Your name for approvals", default="SME") or "SME"
     pc = db.pending_counts(con)
     st.metric("Items awaiting SME approval", sum(pc.values()))
     st.caption(f"Database: {db.describe(con)}")
@@ -321,6 +321,15 @@ def page_corrections():
                  "corrected": "✔" if r["txn_id"] in corrected else "",
                  "errors": " | ".join(m["msg"] for m in json.loads(r["messages_json"]) if m["sev"] == "ERROR")} for r in items]
         st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
+        msgs_all = [m for r_ in items for m in json.loads(r_["messages_json"]) if m["sev"] == "ERROR"]
+        grp = {}
+        for m in msgs_all:
+            grp.setdefault((m["code"], m["msg"]), 0)
+            grp[(m["code"], m["msg"])] += 1
+        ai_ui.badge()
+        ai_ui.explain_button("🤖 Explain these errors and how to fix them", f"ai_iso_{bid}", ai.explain_rejections, "ISO",
+                             [{"edit": f"{k[0]} · {k[1]}", "count": v} for k, v in grp.items()],
+                             f"ISO statistical plan, line {b['lob_code']}, {b['record_type']} records.")
         pick = st.selectbox("Correct record", [r["txn_id"] for r in items],
                             format_func=lambda t: next(f"line {r['line_no']} · txn {t} · {r['status']}" for r in items if r["txn_id"] == t))
         r = next(x for x in items if x["txn_id"] == pick)

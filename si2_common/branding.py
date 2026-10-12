@@ -32,6 +32,7 @@ CSS = """
 
 # the demo hub: suggested order for a client walk-through
 DEMOS = [
+    ("SI² Command Center", "https://si2-command.streamlit.app", "ROI calculator, bureau reporting calendar, all demos"),
     ("Canonical Data Model", "https://si2-canonical.streamlit.app", "Start here: one company model, where-used across every app"),
     ("Legacy-to-Cloud Migration Workbench", "https://si2-migrate.streamlit.app", "Initial load, mapping, gaps, delta loads, sign-off"),
     ("ISO Bureau Reporting", "https://si2-iso-bureau.streamlit.app", "All ISO lines: effective-dated layouts, generate, validate, submit"),
@@ -43,9 +44,14 @@ DEMOS = [
 ]
 
 TOURS = {
+    "SI² Command Center": [
+        "**💰 ROI calculator**: enter a carrier's hours and error rates; every SI² assumption is editable.",
+        "**📅 Reporting calendar**: NCCI and ISO submissions due in the next 12 months, with status.",
+        "**🧭 All demos**: the walk-through order for a client meeting."],
     "Canonical Data Model": [
         "Open **🏢 Company model**: 150 business terms harvested from all six SI² apps.",
         "Pick **Policy Number** under Where used: one concept, seven elements, four apps.",
+        "Govern it: edit the definition or add a synonym, submit, change the sidebar name and approve: it is published to every app.",
         "Untick *Shared terms only* to see every term; download the model with where-used.",
         "Open **The model** and **Map a source file** to see one legacy file mapped into the core model."],
     "Legacy-to-Cloud Migration Workbench": [
@@ -53,6 +59,7 @@ TOURS = {
         "**Data quality** shows the bureau-style edits; **Keys & pick lists** → *Approve all ≥ 90%* (pick the driver link yourself).",
         "**Approve & load**: submit the plan, change the sidebar name, approve it, then *Create tables and load*.",
         "**Delta loads** → *Load the sample delta*: changed rows get a new version, history is kept.",
+        "**🤖 Ask SI²**: which keys need my decision, why rows were quarantined.",
         "**Use in migration** → then Steps 3-9: discovery, mapping, canonical gaps, inject, test, two-person sign-off."],
     "ISO Bureau Reporting": [
         "**▶️ Bureau Run**: pick a line, accounting period and record type; generate, validate, approve.",
@@ -63,8 +70,9 @@ TOURS = {
         "Step **3 · Canonical model & mapping** → **🧩 Canonical gaps**: resolve WCIO fields and codes.",
         "Step **5**: enter your name in the sidebar and generate a WCSTAT file.",
         "Step **6**: the person who generated it cannot approve it; change the name, approve and submit.",
-        "Step **7**: fix the bureau's edit errors and resubmit a revision."],
+        "Step **6**: 🤖 *Explain these errors and how to fix them*; Step **7**: resubmit a revision."],
     "Business Rule Engine": [
+        "**Rules (draft)** → ✍️ *Write a rule in plain English*: e.g. Decline drivers under 18 in Florida.",
         "**🧩 Rule gaps**: map `drv_age`, fix `'FLA'`, add `telematics_score` and `'Delivery'`.",
         "**Rules (draft)**: enter your name, *Submit the draft for approval*.",
         "**✅ Approvals**: change the sidebar name and approve; the draft goes to production.",
@@ -74,10 +82,14 @@ TOURS = {
         "**🧩 Rating gaps**: rate AL as GA, add the 500/1000 and $2,000 factors (SI² drafts them).",
         "**✅ Approvals**: an actuary (a different name) approves with a filing reference.",
         "Back on **Incoming quotes**: indications become bindable."],
-    "Claims Triage": ["**Work queue**: claims scored and routed.", "**Claim detail**: why a claim scored as it did.",
-                      "**How scoring works**: the factors behind the score."],
-    "Fraud Engine": ["**1 · Fraud catalog** and **2 · Synthetic book**.", "**3 · Run the engine**, then **4 · Prevent** at the gates.",
-                     "**5 · SIU cases** and **6 · Monitor**."],
+    "Claims Triage": ["**📥 New FNOL**: 5 mobile-app claims cannot be routed: their cause of loss has no score.",
+                      "**🧩 Claim gaps**: score Animal collision as Single-vehicle collision, add Glass breakage (SI² drafts 8 points).",
+                      "**Claim detail**: 🤖 Explain this routing; re-route a claim; releasing one from SIU needs a second person.",
+                      "Sidebar: change a routing threshold, submit it, approve it under another name on **✅ Approvals**."],
+    "Fraud Engine": ["**3 · Run the engine**, then **4 · Prevent**: money stopped at the gates.",
+                     "**5 · SIU cases**: 🤖 summarise a case; releasing it as a false positive needs a second person.",
+                     "**7 · Data gaps**: the data the remaining fraud types need; raise a data request.",
+                     "**✅ Approvals**: approve the release under another name."],
 }
 
 

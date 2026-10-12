@@ -68,10 +68,60 @@ RATING_VARIABLES = [  # (name, description, type)
 ]
 
 
-def concept_of(name: str) -> str:
+# ------------------------------------------------------------------------------------------ governance
+GOV_APP = "company_model"
+
+
+def published() -> dict:
+    """Approved company terms: {term: {standard_name, definition, synonyms, owner, version, effective_from, ...}}."""
+    try:
+        from . import store
+        raw = store.load(GOV_APP).get("terms")
+        return store.loads(raw) if raw else {}
+    except Exception:
+        return {}
+
+
+def history() -> list:
+    try:
+        from . import store
+        raw = store.load(GOV_APP).get("history")
+        return store.loads(raw) if raw else []
+    except Exception:
+        return []
+
+
+def publish(term: str, change: dict, proposed_by: str, approved_by: str, note: str = "") -> dict:
+    import datetime as dt
+    from . import store
+    terms, hist = published(), history()
+    cur = terms.get(term, {})
+    entry = {**cur, **change, "version": int(cur.get("version", 0)) + 1, "proposed_by": proposed_by,
+             "approved_by": approved_by, "effective_from": dt.date.today().isoformat(), "note": note}
+    terms[term] = entry
+    hist.append({"term": term, **entry})
+    store.save(GOV_APP, "terms", store.dumps(terms), approved_by)
+    store.save(GOV_APP, "history", store.dumps(hist), approved_by)
+    return entry
+
+
+def _synonym_index() -> dict:
+    out = {}
+    for term, e in published().items():
+        for syn in [e.get("standard_name", "")] + list(e.get("synonyms", [])):
+            w = frozenset(words(syn))
+            if w:
+                out[w] = term
+    return out
+
+
+def concept_of(name: str, _syn: dict | None = None) -> str:
     w = set(words(name))
     if not w:
         return ""
+    syn = _syn if _syn is not None else _synonym_index()
+    if frozenset(w) in syn:
+        return syn[frozenset(w)]
     for concept, pats in CONCEPTS.items():
         if any(w == p for p in pats):
             return concept
@@ -124,21 +174,44 @@ def harvest() -> pd.DataFrame:
     for n, d, t in RATING_VARIABLES:
         add("Rating engine", "Rating variable", n, t, d)
     df = pd.DataFrame(rows)
-    df["term"] = [concept_of(e.split(".")[-1]) for e in df.element]
+    syn = _synonym_index()
+    df["term"] = [concept_of(e.split(".")[-1], syn) for e in df.element]
     return df
 
 
 def terms(where: pd.DataFrame) -> pd.DataFrame:
     """One row per company business term, with the apps that use it and every name it goes by."""
     out = []
+    pub = published()
     for term, g in where.groupby("term"):
         descs = [d for d in g.description if d and len(d) > 3]
         core = g[g.app == "Core canonical"]
+        p = pub.get(term, {})
         out.append({"term": term, "business name": to_title(term.replace("_", " ")),
-                    "standard name": term.lower(),
-                    "definition": max(descs, key=len) if descs else to_title(term.replace("_", " ")),
+                    "standard name": p.get("standard_name") or term.lower(),
+                    "status": f"Published v{p['version']}" if p else "Draft (harvested)",
+                    "definition": p.get("definition") or (max(descs, key=len) if descs else to_title(term.replace("_", " "))),
                     "apps": int(g.app.nunique()), "names in use": int(g.element.str.split(".").str[-1].str.lower().nunique()),
                     **{a: "✓" if (g.app == a).any() else "" for a in APPS},
                     "in core model": "Yes" if len(core) else "No"})
     df = pd.DataFrame(out)
     return df.sort_values(["apps", "term"], ascending=[False, True]).reset_index(drop=True)
+
+
+def definition_for(name: str) -> tuple[str, str]:
+    """(term, published definition) for a column name; ('', '') when the company has not published one."""
+    pub = published()
+    t = concept_of(name)
+    return (t, pub[t]["definition"]) if t in pub and pub[t].get("definition") else (t if t in CONCEPTS or t in pub else "", "")
+
+
+def migration_synonyms(where: pd.DataFrame | None = None) -> dict:
+    """Published synonyms for the migration's canonical ids (feeds its matching)."""
+    pub = published()
+    if not pub:
+        return {}
+    where = harvest() if where is None else where
+    out = {}
+    for r in where[(where.app == "Migration (cloud)") & where.term.isin(list(pub))].itertuples():
+        out[r.element] = [x for x in pub[r.term].get("synonyms", []) if x]
+    return out

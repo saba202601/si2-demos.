@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-from si2_common import approvals_ui, branding, gate, gaps_ui, persist, store
+from si2_common import identity, ai, ai_ui, approvals_ui, branding, gate, gaps_ui, persist, store
 from si2_common import rules_gaps as RG
 from si2_common.rules_gaps import BASE_DOMAINS, FIELDS
 from si2_common.rules import RuleError, compile_rule, evaluate, fields_used
@@ -139,7 +139,7 @@ def decide_rules(req: dict) -> str:
 
 
 with st.sidebar:
-    st.text_input("Your name", key="sme_name", placeholder="Name for proposals and approvals")
+    identity.name_input("Your name", "sme_name", "Name for proposals and approvals")
     persist.sidebar(APP)
 
 n_pend = approvals_ui.pending_count(APP)
@@ -164,6 +164,25 @@ with tab_rules:
             "action": st.column_config.SelectboxColumn("…then", options=ACTIONS),
             "value": st.column_config.NumberColumn("%", min_value=0, max_value=100, step=1, width="small"),
         })
+    with st.expander("✍️ Write a rule in plain English"):
+        ai_ui.badge()
+        txt = st.text_input("Rule", key="nl_rule", placeholder="e.g. Decline drivers under 18 in Florida, or surcharge 10% for rideshare in Texas")
+        if st.button("Draft the rule", key="nl_go") and txt.strip():
+            st.session_state.nl_draft = ai.rule_from_english(txt, VOCAB, DOMS)
+        if d := st.session_state.get("nl_draft"):
+            r, src = d
+            st.markdown(f"**{r['name']}** · when `{r['condition'] or '?'}` then **{r['action']}**"
+                        + (f" {r['value']}%" if r["value"] else ""))
+            st.caption(f"Drafted by {src}. {r.get('note', '')}")
+            if st.button("Add to the draft rules", key="nl_add", disabled=not r["condition"] or r.get("note", "").startswith(("Not a valid", "Uses fields"))):
+                ids = [int(x[1:]) for x in edited.rule_id.dropna() if str(x)[1:].isdigit()]
+                new = pd.DataFrame([(True, f"R{max(ids, default=0) + 1:02d}", r["name"], r["condition"], r["action"], r["value"])],
+                                   columns=edited.columns)
+                st.session_state.rules = pd.concat([edited, new], ignore_index=True)
+                st.session_state.pop("rule_editor", None)
+                st.session_state.pop("nl_draft", None)
+                st.rerun()
+            st.caption("It joins the draft; production changes only after a second person approves.")
     compiled, problems = compile_all(edited)
     for p in problems:
         st.error(p)

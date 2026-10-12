@@ -60,7 +60,24 @@ sample upload set: `migrate/initial_load_samples/`.
 * **Demo hub**: every app's sidebar links all eight demos in walk-through order, and each app has a two-minute
   guided tour.
 
-Tests: `python -m pytest tests iso_bureau/tests -q`.
+### Round 3: production readiness
+
+* **Company sign-in** (`si2_common/identity.py`): OpenID Connect single sign-on via `st.login` when `[auth]` is in
+  the secrets; approvals then use the signed-in email. **PostgreSQL** store backend (`SI2_STATE_BACKEND=postgres`,
+  `SI2_DATABASE_URL`). Template: `.streamlit/secrets.toml.example`.
+* **AI with Claude** (`si2_common/ai.py`, `ai_ui.py`; `ANTHROPIC_API_KEY`, model `SI2_AI_MODEL`): explain NCCI / ISO
+  rejections, draft column descriptions, write a rule from plain English, explain a premium or a claim routing,
+  summarise an SIU case, Ask SI² about loaded data. Masked facts only; offline built-in rules when no key is set.
+* **Scale**: set-based initial load, about 1 million rows in 42 s (`benchmarks/RESULTS.md`).
+* **SI² Command Center** (`app_hub.py`, deploy as `si2-command`): ROI calculator, NCCI / ISO reporting calendar,
+  all demos.
+* **Claims and Fraud** at the same standard: saved decisions, two-person approval (routing settings, SIU releases,
+  payment releases), Canonical Gaps (new FNOL causes; data the remaining fraud types need).
+* **Company model governance** (Canonical app): propose → impact → second-person approval → published; published
+  synonyms and definitions feed initial-load profiling and migration matching.
+* Security summary: `SECURITY.md`.
+
+Tests: `python -m pytest tests iso_bureau/tests -q` (set `SI2_TEST_PG_URL` to include the PostgreSQL test).
 
 ## Bureau Reporting Workbench (`bureau/`)
 

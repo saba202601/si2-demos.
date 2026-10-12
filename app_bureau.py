@@ -14,7 +14,7 @@ import streamlit as st
 from bureau import canonical as cn
 from bureau import catalog, edits, generate as gen, revise, source, specparse
 from bureau import gaps as NG
-from si2_common import branding, gate, gaps_ui, persist
+from si2_common import identity, ai, ai_ui, branding, gate, gaps_ui, persist
 
 branding.page("Bureau Reporting Workbench",
               "NCCI / WCIO statistical, policy and data call reporting: from spec PDF to accepted submission.")
@@ -109,7 +109,7 @@ with st.sidebar:
     st.markdown("**Workflow**")
     step = st.radio("Step", STEPS, label_visibility="collapsed", key="step")
     st.divider()
-    st.text_input("SME name", key="sme_name", placeholder="Your name for approvals")
+    identity.name_input("SME name", "sme_name")
     persist.sidebar(APP)
     st.text_input("Carrier code", value=ss.carrier, key="carrier_input", max_chars=5,
                   help="NCCI-assigned carrier code reported in positions 1-5.")
@@ -471,6 +471,11 @@ elif step == STEPS[6]:
             st.bar_chart(err.groupby("edit_id").size(), color="#2B4CF2", height=200)
             st.dataframe(err, hide_index=True, width="stretch")
             st.download_button("Download error file (CSV)", err.to_csv(index=False), f'{x["spec"]}_{x["id"]}_errors.csv', "text/csv")
+            summary = [{"edit": f"{k[0]} · {k[1]}", "field": k[2], "count": int(len(g)), "example": g.value.iloc[0]}
+                       for k, g in err.groupby(["edit_id", "message", "field"])]
+            ai_ui.badge()
+            ai_ui.explain_button("🤖 Explain these errors and how to fix them", f"ai_err_{sel}", ai.explain_rejections,
+                                 x["spec"], summary, "NCCI workers compensation statistical / policy data.")
             st.info("Go to step 7 to review SI²'s proposed revisions and resubmit.")
         else:
             st.balloons()

@@ -19,8 +19,9 @@ import streamlit as st
 from migrate import engine as E
 from migrate import gaps as MG
 from migrate import initial_load as IL
+from si2_common import registry as R
 from migrate import legacy
-from si2_common import approvals_ui, branding, gate, gaps_ui, persist, store
+from si2_common import identity, ai, ai_ui, approvals_ui, branding, gate, gaps_ui, persist, store
 
 branding.page("Legacy-to-Cloud Migration Workbench",
               "Discover every legacy data element, build the canonical model, map, migrate, test and approve.")
@@ -61,6 +62,14 @@ def recompute():
     """Canonical model -> matching -> value maps, applying every SME decision so far."""
     ss = st.session_state
     canon = E.build_canonical(ss.src["dest_schema"], ss.src["dest_picklists"])
+    pub = R.published()                       # company synonyms approved in the company model
+    if pub:
+        idx = R._synonym_index()
+        for i, cid in canon.canonical_id.items():
+            t = R.concept_of(cid.split(".")[-1], idx)
+            extra = [x for x in pub.get(t, {}).get("synonyms", []) if x not in canon.at[i, "synonyms"]]
+            if extra:
+                canon.at[i, "synonyms"] += ", " + ", ".join(extra)
     for cid, syn in ss.syn_edits.items():
         canon.loc[canon.canonical_id == cid, "synonyms"] = syn
     m = E.match(ss.inv, canon, ss.map_ov)
@@ -207,7 +216,7 @@ with st.sidebar:
     st.markdown("**Workflow**")
     step = st.radio("Step", STEPS, label_visibility="collapsed", key="step")
     st.divider()
-    st.text_input("SME name", key="sme_name", placeholder="Your name for approvals")
+    identity.name_input("SME name", "sme_name")
     st.selectbox("Role", ["SME", "Data steward"], key="role",
                  help="Data stewards see personal data unmasked and can download the loaded database.")
     persist.sidebar(APP)
@@ -302,18 +311,26 @@ elif step == STEPS[1]:
             with st.expander(f"Reader notes ({len(staged.notes)})"):
                 st.dataframe(pd.DataFrame(staged.notes, columns=["file", "note"]), hide_index=True, width="stretch")
         tabs = st.tabs(["Tables & columns", "Data quality", "Keys & pick lists", "Pick-list codes", "Relationships",
-                        "Approve & load", "Delta loads", "Use in migration"])
+                        "Approve & load", "Delta loads", "Use in migration", "🤖 Ask SI²"])
         with tabs[0]:
             tsel = st.selectbox("Table", list(staged.tables), key="il_table",
                                 format_func=lambda t: f"{t}  ·  {len(staged.tables[t])} rows  ·  from {staged.origin[t]}")
             cols = prof[prof.table == tsel].drop(columns=["table"]).reset_index()
             ed = st.data_editor(cols, hide_index=True, width="stretch", key=f"il_ed_{tsel}",
                                 disabled=[c for c in cols.columns if c not in ("type", "description")],
-                                column_order=["column", "type", "pii", "description", "rows", "blank", "distinct", "unique",
+                                column_order=["column", "type", "company_term", "pii", "description", "rows", "blank", "distinct", "unique",
                                               "samples", "note"],
                                 column_config={"type": st.column_config.SelectboxColumn("type", options=list(IL.SQLITE_TYPE)),
                                                "pii": st.column_config.TextColumn("personal data"),
                                                "description": st.column_config.TextColumn("business description", width="large")})
+            if st.button("🤖 Draft business descriptions for this table", key=f"il_ai_desc_{tsel}"):
+                desc, src_ = ai.describe_columns(tsel, cols[["column", "type", "samples"]].to_dict("records"))
+                for i in cols.index:
+                    prof.loc[cols.at[i, "index"], "description"] = desc.get(cols.at[i, "column"], cols.at[i, "description"])
+                log(sme() if src_ == "SI² rules" else "Claude", "Initial load: descriptions drafted", f"{tsel} by {src_}")
+                for k in [k for k in ss if str(k).startswith("il_ed_")]:
+                    del ss[k]
+                st.rerun()
             changed = (ed[["type", "description"]].values != cols[["type", "description"]].values).any(axis=1)
             if changed.any():
                 for r in ed[changed].itertuples():
@@ -501,6 +518,22 @@ elif step == STEPS[1]:
                     show_load_result(res, steward)
                 st.markdown("**Load history**")
                 st.dataframe(pd.DataFrame(il["batches"]), hide_index=True, width="stretch")
+        with tabs[8]:
+            def _facts():
+                ok = props[props.status == "Approved"]
+                q = il["result"]["quarantine"] if il.get("result") else pd.DataFrame()
+                return {"tables": {t: f"{len(d)} rows from {staged.origin[t]}" for t, d in staged.tables.items()},
+                        "approved keys": [f"{r.kind} {r.table}({', '.join(r.columns)})" + (f" -> {r.ref_table}" if r.ref_table else "")
+                                          for r in ok.itertuples()],
+                        "keys needing a decision": [f"{r.id} {r.kind} {r.table}({', '.join(r.columns)}) -> {r.ref_table}: {r.evidence}"
+                                                    for r in props[props.status == "Proposed"].itertuples()],
+                        "data edits": edits_df.groupby(["edit", "severity", "message"]).size().reset_index(name="rows").to_dict("records"),
+                        "personal data columns": prof[prof.pii != ""][["table", "column", "pii"]].to_dict("records"),
+                        "quarantined rows": q[["table", "reason"]].to_dict("records") if len(q) else [],
+                        "load batches": il.get("batches", []),
+                        "column types": prof[["table", "column", "type"]].to_dict("records")[:120]}
+            ai_ui.ask_box("il_ask", _facts, ["Which keys still need my decision?", "Why were rows quarantined?",
+                                             "Which columns hold personal data?"])
         with tabs[7]:
             st.caption("Send the loaded tables into Steps 1-9: SI² discovers every column, maps it to the canonical model "
                        "and the cloud destination, and anything missing appears on the Canonical gaps tab in Step 5. The "
