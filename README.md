@@ -1,6 +1,6 @@
 # SI² Demo Apps
 
-Five Streamlit demos for **SI² · Super Intelligence for Insurance** (https://si2insure.com).
+Streamlit demos for **SI² · Super Intelligence for Insurance** (https://si2insure.com).
 All data is synthetic. Codes, record layouts and rating factors are illustrative.
 
 | App file | Demo | Planned address |
@@ -12,6 +12,7 @@ All data is synthetic. Codes, record layouts and rating factors are illustrative
 | `app_claims.py` | Claims Triage | https://si2-claims.streamlit.app |
 | `app_migration.py` | Legacy-to-Cloud Migration Workbench | https://si2-migrate.streamlit.app |
 | `app_fraud.py` | Fraud Engine | https://si2-fraud.streamlit.app |
+| `app_iso_bureau.py` | ISO Bureau Reporting, all lines (PA, HO, CA, CP, GL, IM, CR, BP, FI, BR); see `iso_bureau/README.md` | https://si2-iso-bureau.streamlit.app |
 
 Shared code lives in `si2_common/` (branding, access code, synthetic data, rule evaluator).
 
