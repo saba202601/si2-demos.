@@ -20,7 +20,7 @@ from migrate import engine as E
 from migrate import gaps as MG
 from migrate import initial_load as IL
 from migrate import legacy
-from si2_common import branding, gate, gaps_ui
+from si2_common import approvals_ui, branding, gate, gaps_ui, persist, store
 
 branding.page("Legacy-to-Cloud Migration Workbench",
               "Discover every legacy data element, build the canonical model, map, migrate, test and approve.")
@@ -71,12 +71,93 @@ def recompute():
     ss.cov = E.coverage(m, canon, vm)
 
 
+APP = "migration"
+KEYS = ["src", "src_label", "syn_edits", "map_ov", "rejected", "val_ov", "audit", "il", "approved"]
+# the injected cloud database (and the tests run on it) is rebuilt in Step 7 after a restart
+IL_DIR = Path(__file__).resolve().parent / "data" / "initial_load"
+IL_DIR.mkdir(parents=True, exist_ok=True)
+
+
 def init():
     if "ready" in st.session_state:
+        return
+    if persist.restore(APP, KEYS) and "src" in st.session_state:
+        for ent in st.session_state.src["entities"]:
+            E.CONTEXT.setdefault(ent, context_for(ent))
+        st.session_state.inv = E.discover(st.session_state.src)
+        for k, v in (("syn_edits", {}), ("map_ov", {}), ("rejected", set()), ("val_ov", {}), ("audit", []),
+                     ("approved", None)):
+            st.session_state.setdefault(k, v)
+        st.session_state.loaded, st.session_state.tests_signed = None, {}
+        recompute()
+        st.session_state.ready = True
         return
     st.session_state.audit = []
     set_source(_demo(), "SI² demo legacy system INSURE/400")
     st.session_state.ready = True
+
+
+def context_for(entity: str) -> str:
+    """Destination context of an initial-load table, by its name."""
+    w = set(entity.upper().replace("-", "_").split("_"))
+    for words_, ctx in ((("PAYMENT", "PMT"), "ClaimPayment"), (("CLAIM",), "Claim"), (("AGENT", "PRODUCER", "AGENCY"), "Producer"),
+                        (("COVERAGE", "COV"), "Coverage"), (("DRIVER", "PARTY", "INSURED"), "Party"), (("POLICY", "POL"), "Policy")):
+        if w & set(words_):
+            return ctx
+    return "Policy"
+
+
+@st.cache_data(show_spinner=False)
+def il_sample_zip() -> bytes:
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        for p in sorted(IL.SAMPLES.rglob("*")):
+            if p.is_file():
+                z.write(p, p.relative_to(IL.SAMPLES))
+    return buf.getvalue()
+
+
+def load_plan_digest(il: dict) -> str:
+    ok = il["props"][il["props"].status == "Approved"]
+    plan = [(r.kind, r.table, list(r.columns), r.ref_table, list(r.ref_columns), r.method) for r in ok.itertuples()]
+    types = il["prof"][["table", "column", "type"]].values.tolist()
+    return store.digest(store.dumps([plan, types, sorted(il["accepted_edits"])]))
+
+
+def decide_request(req: dict) -> str:
+    ss = st.session_state
+    if req["kind"] == "Initial load plan":
+        if req["status"] == "Approved":
+            ss.il["approved_plan"], ss.il["plan_checker"] = req["payload"]["plan"], req["checker"]
+            log(req["checker"], "Initial load plan approved", req["summary"])
+            return f"Load plan approved by {req['checker']}. Create tables and load is now enabled."
+        log(req["checker"], "Initial load plan rejected", req.get("note", ""))
+        return f"Load plan rejected by {req['checker']}."
+    if req["kind"] == "Migration sign-off":
+        if req["status"] == "Approved":
+            ss.approved = {"by": req["checker"], "at": req["checked_at"], "comment": req.get("note", ""),
+                           "requested_by": req["maker"]}
+            log(req["checker"], "Migration approved (second signature)", req.get("note", ""))
+            return f"Migration signed off by {req['maker']} and approved by {req['checker']}."
+        log(req["checker"], "Migration sign-off rejected", req.get("note", ""))
+        return f"Sign-off rejected by {req['checker']}."
+    return ""
+
+
+def show_load_result(r: dict, steward: bool):
+    rec = r["recon"]
+    k = st.columns(4)
+    k[0].metric("Rows loaded" if r["mode"] == "Initial" else "New + changed rows", f"{int(rec.loaded.sum()):,}")
+    k[1].metric("Quarantined", len(r["quarantine"]))
+    k[2].metric("Foreign-key violations", r["fk_violations"])
+    k[3].metric("Reconciliation", "PASS" if (rec["rows balance"] == "PASS").all()
+                and (rec["totals balance"] != "FAIL").all() else "FAIL")
+    st.caption(f"{r['mode']} batch {r['batch']} · as of {r['as_of']} · by {r['by']} · load order (parents first): "
+               f"{' → '.join(r['order'])}" + (f" · circular references: {', '.join(r['cycles'])}" if r["cycles"] else ""))
+    st.dataframe(styled(rec, ["rows balance", "totals balance"]), hide_index=True, width="stretch")
+    if len(r["quarantine"]):
+        st.markdown("**Quarantined rows** (not loaded; personal data in them is always masked)")
+        st.dataframe(r["quarantine"], hide_index=True, width="stretch")
 
 
 def invalidate_load(reason):
@@ -127,6 +208,9 @@ with st.sidebar:
     step = st.radio("Step", STEPS, label_visibility="collapsed", key="step")
     st.divider()
     st.text_input("SME name", key="sme_name", placeholder="Your name for approvals")
+    st.selectbox("Role", ["SME", "Data steward"], key="role",
+                 help="Data stewards see personal data unmasked and can download the loaded database.")
+    persist.sidebar(APP)
     st.caption(f"Source: {ss.src_label}")
     st.metric("Mapping complete", f"{ss.cov['pct']}%")
     q = int((ss.m.status == "Needs SME review").sum()) + int((ss.vm.status == "Needs SME review").sum())
@@ -176,6 +260,7 @@ elif step == STEPS[1]:
                "SQL / PL-SQL scripts (CREATE TABLE, keys and INSERTs are read, nothing is executed) · PDF (simple text "
                "tables, best effort) · an API returning JSON.")
     il = ss.setdefault("il", {})
+    steward = ss.get("role", "SME") == "Data steward"
     up = st.file_uploader("Files", accept_multiple_files=True, key="il_files",
                           type=["csv", "txt", "xlsx", "xls", "json", "xml", "sql", "ddl", "pls", "pkb", "pdf"])
     c1, c2 = st.columns([3, 1])
@@ -186,20 +271,18 @@ elif step == STEPS[1]:
     b1, b2, b3 = st.columns(3)
     go_sample = b1.button("Use the sample upload set", type="primary", key="il_sample")
     go_files = b2.button("Read my files", disabled=not up, key="il_read")
-    buf = io.BytesIO()
-    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
-        for p in sorted(IL.SAMPLES.rglob("*")):
-            if p.is_file():
-                z.write(p, p.relative_to(IL.SAMPLES))
-    b3.download_button("Download the sample set", buf.getvalue(), "SI2_initial_load_samples.zip", key="il_dl_samples")
+    b3.download_button("Download the sample set", il_sample_zip(), "SI2_initial_load_samples.zip", key="il_dl_samples")
     if go_sample or go_files:
         files = IL.sample_files() if go_sample else [(f.name, f.getvalue()) for f in up]
         with st.spinner("Reading and profiling ..."):
             staged = IL.stage(files, [api] if use_api and api.strip() else [])
             prof = IL.profile(staged)
             props = IL.propose(staged, prof)
-        ss.il = il = {"staged": staged, "prof": prof, "props": props, "files": [f for f, _ in files], "result": None,
-                      "db": str(Path(tempfile.gettempdir()) / f"si2_initial_load_{uuid.uuid4().hex[:8]}.db")}
+            codes = IL.code_descriptions(staged, props, ss.src.get("dest_picklists"))
+            edits_df = IL.quality_edits(staged, prof, props)
+        ss.il = il = {"staged": staged, "prof": prof, "props": props, "codes": codes, "edits": edits_df,
+                      "accepted_edits": set(), "files": [f for f, _ in files], "result": None, "batches": [],
+                      "approved_plan": "", "db": str(IL_DIR / f"si2_initial_load_{uuid.uuid4().hex[:8]}.db")}
         for k in [k for k in ss if str(k).startswith("il_ed_")]:
             del ss[k]
         log("SI²", "Initial load: files read", f"{len(files)} file(s), {len(staged.tables)} tables, {len(props)} proposals")
@@ -207,26 +290,29 @@ elif step == STEPS[1]:
         st.info("Start with the sample set (policy and claim Excel, payment CSV, Oracle DDL, ACORD XML, billing JSON and "
                 "a driver API) or upload your own files.")
     else:
-        staged, prof, props = il["staged"], il["prof"], il["props"]
-        m = st.columns(5)
-        m[0].metric("Sources", len(il["files"]) + sum(1 for src, note in staged.notes if src.startswith("API") and "page" in note))
+        staged, prof, props, codes, edits_df = il["staged"], il["prof"], il["props"], il["codes"], il["edits"]
+        m = st.columns(6)
+        m[0].metric("Sources", len(il["files"]) + sum(1 for src_, note in staged.notes if src_.startswith("API") and "page" in note))
         m[1].metric("Tables", len(staged.tables))
         m[2].metric("Rows", f"{sum(len(d) for d in staged.tables.values()):,}")
-        m[3].metric("Proposals approved", f"{int((props.status == 'Approved').sum())} / {len(props)}")
-        m[4].metric("Need a decision", int((props.status == "Proposed").sum()))
+        m[3].metric("Personal-data columns", int((prof.pii != "").sum()))
+        m[4].metric("Edit errors", int((edits_df.severity == "Error").sum()))
+        m[5].metric("Need a decision", int((props.status == "Proposed").sum()))
         if staged.notes:
             with st.expander(f"Reader notes ({len(staged.notes)})"):
                 st.dataframe(pd.DataFrame(staged.notes, columns=["file", "note"]), hide_index=True, width="stretch")
-        t1, t2, t3, t4 = st.tabs(["Tables & columns", "Keys & pick lists (SME approval)", "Relationships", "Create & load"])
-        with t1:
+        tabs = st.tabs(["Tables & columns", "Data quality", "Keys & pick lists", "Pick-list codes", "Relationships",
+                        "Approve & load", "Delta loads", "Use in migration"])
+        with tabs[0]:
             tsel = st.selectbox("Table", list(staged.tables), key="il_table",
                                 format_func=lambda t: f"{t}  ·  {len(staged.tables[t])} rows  ·  from {staged.origin[t]}")
             cols = prof[prof.table == tsel].drop(columns=["table"]).reset_index()
             ed = st.data_editor(cols, hide_index=True, width="stretch", key=f"il_ed_{tsel}",
                                 disabled=[c for c in cols.columns if c not in ("type", "description")],
-                                column_order=["column", "type", "description", "rows", "blank", "distinct", "unique",
+                                column_order=["column", "type", "pii", "description", "rows", "blank", "distinct", "unique",
                                               "samples", "note"],
                                 column_config={"type": st.column_config.SelectboxColumn("type", options=list(IL.SQLITE_TYPE)),
+                                               "pii": st.column_config.TextColumn("personal data"),
                                                "description": st.column_config.TextColumn("business description", width="large")})
             changed = (ed[["type", "description"]].values != cols[["type", "description"]].values).any(axis=1)
             if changed.any():
@@ -234,10 +320,34 @@ elif step == STEPS[1]:
                     prof.loc[r.index, ["type", "description"]] = [r.type, r.description]
                     log(sme(), "Initial load: column approved", f"{tsel}.{r.column} {r.type}: {r.description[:60]}")
             st.caption("Types are inferred from the data (or taken from the DDL). Codes with leading zeros (ZIP, class "
-                       "codes) stay text; dates in any format load as dates; $ and commas are removed from amounts.")
-            st.markdown("Preview")
-            st.dataframe(staged.tables[tsel].head(20), hide_index=True, width="stretch")
-        with t2:
+                       "codes) stay text; dates in any format load as dates; $ and commas are removed from amounts. "
+                       "Personal data is masked everywhere unless your role is Data steward (sidebar).")
+            prev = staged.tables[tsel].head(20)
+            st.markdown("Preview" + ("" if steward else " (personal data masked)"))
+            st.dataframe(prev if steward else IL.mask_frame(prev, tsel, prof), hide_index=True, width="stretch")
+        with tabs[1]:
+            st.caption("SI² data edits in the style of NCCI / ISO statistical-plan edits, run before anything is loaded. "
+                       "Rows with an **Error** are quarantined at load unless you accept that edit; **Warnings** load "
+                       "and stay on this report.")
+            if edits_df.empty:
+                st.success("No edit failures.")
+            else:
+                summ = edits_df.groupby(["edit", "severity", "message"]).size().reset_index(name="rows")
+                summ.insert(0, "accept", summ.edit.isin(il["accepted_edits"]))
+                es = st.data_editor(summ, hide_index=True, width="stretch", key=f"il_ed_edits_{len(il['accepted_edits'])}",
+                                    disabled=["edit", "severity", "message", "rows"],
+                                    column_config={"accept": st.column_config.CheckboxColumn(
+                                        "load anyway", help="Errors only: the SME accepts the rows as they are.")})
+                acc = set(es[es.accept & (es.severity == "Error")].edit)
+                if acc != il["accepted_edits"]:
+                    il["accepted_edits"] = acc
+                    log(sme(), "Initial load: edit acceptance changed", ", ".join(sorted(acc)) or "none accepted")
+                    st.rerun()
+                shown = edits_df if steward else edits_df.assign(
+                    value=[IL.mask(v, prof.set_index(["table", "column"]).pii.get((t, c), "")) for t, c, v in
+                           zip(edits_df.table, edits_df.column, edits_df.value)])
+                st.dataframe(styled(shown, "severity"), hide_index=True, width="stretch")
+        with tabs[2]:
             st.caption("Every primary key, foreign key and pick list SI² proposes, with its evidence. Declared keys come from "
                        "the DDL; nested keys from the JSON / XML structure; the rest are found in the data. Where one column "
                        "matches two parents, you pick one.")
@@ -271,7 +381,18 @@ elif step == STEPS[1]:
             missing = [t for t in staged.tables if t not in pk_ok]
             if missing:
                 st.warning("Tables without an approved key (SI² will still give them a generated key): " + ", ".join(missing))
-        with t3:
+        with tabs[3]:
+            st.caption("Each pick list's codes with a drafted description: from the destination pick lists, the SI² insurance "
+                       "code dictionary (ACORD-style LOB, claim status, payment type, cause of loss ...), or a draft. Edit "
+                       "any description; they load into the pick_list table and travel with the codes into the migration.")
+            ced = st.data_editor(codes, hide_index=True, width="stretch", key=f"il_ed_codes_{len(codes)}",
+                                 disabled=[c for c in codes.columns if c != "description"],
+                                 column_config={"description": st.column_config.TextColumn("description", width="large")})
+            if not ced.description.equals(codes.description):
+                il["codes"] = ced
+                log(sme(), "Initial load: code descriptions approved", f"{int((ced.description != codes.description).sum())} edited")
+                st.rerun()
+        with tabs[4]:
             g = ['digraph G { rankdir=LR; bgcolor="transparent"; node [shape=box, style="rounded,filled", '
                  'fillcolor="#FFFFFF", color="#0B1B2B", fontname="Helvetica", fontsize=10]; edge [fontname="Helvetica", fontsize=8];']
             for t, df in staged.tables.items():
@@ -286,7 +407,8 @@ elif step == STEPS[1]:
             st.graphviz_chart("\n".join(g) + "}", width="stretch")
             st.caption("Arrows point from child to parent. Green = approved, blue dashed = proposed, orange = one column "
                        "matching two parents (SME picks), grey = rejected.")
-        with t4:
+        with tabs[5]:
+            plan = load_plan_digest(il)
             sql = IL.ddl(staged, prof, props, "mssql")
             with st.expander("Generated DDL: SQLite (this demo) and SQL Server"):
                 d1, d2 = st.tabs(["SQLite", "SQL Server"])
@@ -298,34 +420,100 @@ elif step == STEPS[1]:
             open_items = int((props.status == "Proposed").sum())
             if open_items:
                 st.info(f"{open_items} proposal(s) still need a decision; only approved keys and pick lists are created.")
-            if st.button("Create tables and load", type="primary", key="il_load"):
+            st.markdown("**Two-person approval of the load plan** (keys, pick lists, accepted edits)")
+            if il.get("approved_plan") == plan:
+                st.success(f"Load plan approved by {il.get('plan_checker', '')}.")
+            else:
+                if il.get("approved_plan"):
+                    st.warning("The plan changed after it was approved: submit it again.")
+                if st.button("Submit the load plan for approval", key="il_submit_plan"):
+                    ok = props[props.status == "Approved"]
+                    try:
+                        store.request(APP, "Initial load plan", "initial_load",
+                                      f"{int((ok.kind == 'PK').sum())} keys, {int((ok.kind == 'FK').sum())} relationships, "
+                                      f"{int((ok.kind == 'PICKLIST').sum())} pick lists, accepted edits: "
+                                      f"{', '.join(sorted(il['accepted_edits'])) or 'none'}", {"plan": plan}, sme())
+                        log(sme(), "Initial load plan submitted for approval", plan[:10])
+                        st.rerun()
+                    except ValueError as exc:
+                        st.error(str(exc))
+                approvals_ui.render(APP, sme(), decide_request, note_label="Note", key="il_appr", kinds=["Initial load plan"])
+            if st.button("Create tables and load", type="primary", key="il_load", disabled=il.get("approved_plan") != plan,
+                         help=None if il.get("approved_plan") == plan else "A second person must approve the load plan first."):
+                blocked = IL.blocked_rows(edits_df, il["accepted_edits"])
                 with st.spinner("Creating tables and loading parent-first ..."):
-                    il["result"] = IL.build_and_load(staged, prof, props, il["db"], sme())
+                    il["result"] = IL.build_and_load(staged, prof, props, il["db"], sme(), blocked=blocked, codes=il["codes"])
                 r = il["result"]
+                il["batches"] = [{"batch": r["batch"], "type": "Initial", "as of": r["as_of"], "by": r["by"],
+                                  "loaded": int(r["recon"].loaded.sum()), "quarantined": len(r["quarantine"])}]
                 log(sme(), "Initial load: tables created and loaded",
                     f"batch {r['batch']}: {int(r['recon'].loaded.sum())} rows loaded, {len(r['quarantine'])} quarantined")
             r = il.get("result")
-            if r:
-                rec = r["recon"]
-                k = st.columns(4)
-                k[0].metric("Rows loaded", f"{int(rec.loaded.sum()):,}")
-                k[1].metric("Quarantined", len(r["quarantine"]))
-                k[2].metric("Foreign-key violations", r["fk_violations"])
-                k[3].metric("Reconciliation", "PASS" if (rec["rows balance"] == "PASS").all()
-                            and (rec["totals balance"] != "FAIL").all() else "FAIL")
-                st.caption(f"Batch {r['batch']} · load order (parents first): {' → '.join(r['order'])}"
-                           + (f" · circular references: {', '.join(r['cycles'])}" if r["cycles"] else ""))
-                st.dataframe(styled(rec, ["rows balance", "totals balance"]), hide_index=True, width="stretch")
-                if len(r["quarantine"]):
-                    st.markdown("**Quarantined rows** (not loaded; fix the source or approve a different key, then load again)")
-                    st.dataframe(r["quarantine"], hide_index=True, width="stretch")
+            if r and Path(r["db_path"]).exists():
+                show_load_result(r, steward)
                 con = sqlite3.connect(r["db_path"])
-                names = [x[0] for x in con.execute("select name from sqlite_master where type='table' order by name")]
-                qt = st.selectbox("Look at a loaded table", names, key="il_peek")
-                st.dataframe(pd.read_sql_query(f'select * from "{qt}" limit 50', con), hide_index=True, width="stretch")
+                names = [x[0] for x in con.execute("select name from sqlite_master where type in ('table','view') order by name")]
+                qt = st.selectbox("Look at a loaded table (…_current views show only current versions)", names, key="il_peek")
+                peek = pd.read_sql_query(f'select * from "{qt}" limit 50', con)
                 con.close()
-                st.download_button("Download the loaded database (SQLite)", Path(r["db_path"]).read_bytes(),
-                                   "SI2_initial_load.db", key="il_dl_db")
+                base_t = qt.removesuffix("_current")
+                st.dataframe(peek if steward else IL.mask_frame(peek, base_t, prof), hide_index=True, width="stretch")
+                if steward:
+                    st.download_button("Download the loaded database (SQLite)", Path(r["db_path"]).read_bytes(),
+                                       "SI2_initial_load.db", key="il_dl_db")
+                else:
+                    st.caption("The database download (unmasked personal data) is for the Data steward role.")
+            elif r:
+                st.warning("The loaded database is no longer on this server (the app was restarted). Load again.")
+        with tabs[6]:
+            r = il.get("result")
+            if not r or not Path(r["db_path"]).exists():
+                st.info("Run the initial load first.")
+            else:
+                st.caption("Weekly or nightly extracts after the first load. New rows are added; a changed row gets a new "
+                           "version and the old one is expired (effective_to); unchanged rows are skipped; rows missing from "
+                           "the extract are kept, never deleted. Keys and types come from the approved plan.")
+                dup = st.file_uploader("Delta files", accept_multiple_files=True, key="il_delta_files",
+                                       type=["csv", "txt", "xlsx", "xls", "json", "xml"])
+                as_of = st.text_input("As of (blank = now)", "", key="il_delta_asof", placeholder="YYYY-MM-DD HH:MM:SS")
+                e1, e2 = st.columns(2)
+                go_d_sample = e1.button("Load the sample delta", type="primary", key="il_delta_sample")
+                go_d_files = e2.button("Load my delta files", disabled=not dup, key="il_delta_go")
+                if go_d_sample or go_d_files:
+                    dfiles = ([(p.name, p.read_bytes()) for p in sorted((IL.SAMPLES / "delta").glob("*.*"))] if go_d_sample
+                              else [(f.name, f.getvalue()) for f in dup])
+                    sd = IL.stage(dfiles)
+                    d_edits = IL.quality_edits(sd, prof, props)
+                    try:
+                        res = IL.delta_load(sd, prof, props, r["db_path"], sme(), as_of=as_of.strip() or None,
+                                            blocked=IL.blocked_rows(d_edits, il["accepted_edits"]))
+                    except ValueError as exc:
+                        st.error(str(exc))
+                        st.stop()
+                    il["delta"] = res
+                    il["batches"].append({"batch": res["batch"], "type": "Delta", "as of": res["as_of"], "by": res["by"],
+                                          "loaded": int(res["recon"].loaded.sum()), "quarantined": len(res["quarantine"])})
+                    log(sme(), "Delta load", f"batch {res['batch']}: {int(res['recon'].loaded.sum())} new / changed rows")
+                if il.get("delta"):
+                    res = il["delta"]
+                    if res.get("unknown_tables"):
+                        st.warning("Not in the approved plan (run a full load to add them): " + ", ".join(res["unknown_tables"]))
+                    show_load_result(res, steward)
+                st.markdown("**Load history**")
+                st.dataframe(pd.DataFrame(il["batches"]), hide_index=True, width="stretch")
+        with tabs[7]:
+            st.caption("Send the loaded tables into Steps 1-9: SI² discovers every column, maps it to the canonical model "
+                       "and the cloud destination, and anything missing appears on the Canonical gaps tab in Step 5. The "
+                       "approved pick-list codes and descriptions go along as the code table.")
+            if st.button("Use these tables as the legacy source", type="primary", key="il_to_mig"):
+                src = IL.to_legacy_source(staged, il["codes"], ss.src)
+                for ent in src["entities"]:
+                    E.CONTEXT.setdefault(ent, context_for(ent))
+                set_source(src, f"Initial load: {len(src['entities'])} tables")
+                st.success(f"{len(src['entities'])} tables are now the legacy source. Mapping is {ss.cov['pct']}%: "
+                           "continue with Step 3 (discovery) and Step 5 (mapping and canonical gaps).")
+            if ss.src_label.startswith("Initial load"):
+                st.info(f"Current legacy source: {ss.src_label}.")
 
 # ------------------------------------------------------------------------------------------ 1. Legacy sources
 elif step == STEPS[2]:
@@ -348,7 +536,7 @@ elif step == STEPS[2]:
                 for x in msgs:
                     st.write("• " + x)
                 st.success("Sources read. Continue to Discovery inventory.")
-    elif ss.src_label.startswith("Uploaded") and st.button("Reconnect the demo system"):
+    elif not ss.src_label.startswith("SI² demo") and st.button("Reconnect the demo system"):
         set_source(_demo(), "SI² demo legacy system INSURE/400")
         st.rerun()
 
@@ -755,14 +943,18 @@ elif step == STEPS[10]:
         st.success(f"Migration approved by {ss.approved['by']} on {ss.approved['at']}.")
         st.json(ss.approved)
     elif all(ok for _, ok in items):
-        note = st.text_area("Approval note", "Legacy and cloud results match. Approved for production cut-over.")
-        if st.button("Approve migration", type="primary"):
-            ss.approved = {"by": sme(), "at": dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "note": note,
-                           "source": ss.src_label, "rows": {t: len(d) for t, d in L["dest"].items()},
-                           "sme_decisions": len(ss.map_ov) + len(ss.val_ov) + len(ss.syn_edits),
-                           "tests": ss.tests_signed}
-            log(sme(), "Migration approved", note)
-            st.rerun()
+        note = st.text_area("Sign-off note", "Legacy and cloud results match. Recommended for production cut-over.")
+        if st.button("Sign off and request the second approval", type="primary"):
+            try:
+                store.request(APP, "Migration sign-off", "migration",
+                              f"{ss.src_label}: {sum(len(d) for d in L['dest'].values()):,} rows, 4 tests signed. {note}",
+                              {"rows": {t: len(d) for t, d in L["dest"].items()}, "tests": ss.tests_signed}, sme())
+                log(sme(), "Migration signed off (first signature)", note)
+                st.rerun()
+            except ValueError as exc:
+                st.error(str(exc))
+        approvals_ui.render(APP, sme(), decide_request, note_label="Approval note",
+                            note_default="Approved for production cut-over.", key="mig_appr", kinds=["Migration sign-off"])
     else:
         st.info("Complete the items above to enable approval.")
 
@@ -773,5 +965,6 @@ elif step == "Audit trail":
     st.dataframe(a.iloc[::-1], hide_index=True, width="stretch")
     st.download_button("Download audit trail (CSV)", a.to_csv(index=False), "SI2_migration_audit.csv", "text/csv")
 
+persist.checkpoint(APP, KEYS, sme())
 branding.note_synthetic()
 branding.footer()

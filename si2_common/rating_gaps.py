@@ -105,9 +105,13 @@ def apply_extensions(spec_tables: dict, ss) -> None:
                 spec_tables[tkey][k] = row["factor"]
 
 
+PENDING = "Pending actuary approval"
+
+
 class Handler:
-    def __init__(self, ss, spec: dict, actor: str):
-        self.ss, self.spec, self.actor = ss, spec, actor
+    def __init__(self, ss, spec: dict, actor: str, approval=None):
+        """approval(kind, ref, summary, payload) files a two-person approval request (raises ValueError to refuse)."""
+        self.ss, self.spec, self.actor, self.approval = ss, spec, actor, approval
         for attr, default in (("factor_ext", {}), ("rate_declined", set()), ("rating_audit", [])):
             if not hasattr(ss, attr):
                 setattr(ss, attr, default)
@@ -151,9 +155,16 @@ class Handler:
             raise ValueError(f"'{p.get('factor')}' is not a number.")
         if not 0.1 <= f <= 10:
             raise ValueError(f"A factor of {f} is outside the 0.1 - 10 range; check it.")
-        tkey, label, k = self._add(g, round(f, 3), p.get("description") or p.get("basis", ""), "Draft - actuary to confirm")
+        tkey, label, table, _ = self._entry(g)
+        k = _key(g.name, table)
+        if self.approval:
+            self.approval("New rating factor", f"{tkey}:{k}", f"{label} {k} = {f:.3f} ({p.get('basis', '')})",
+                          {"tkey": tkey, "key": k, "factor": round(f, 3), "label": label})
+        self._add(g, round(f, 3), p.get("description") or p.get("basis", ""), PENDING if self.approval else "Draft - actuary to confirm")
         self._log("Factor added (Canonical Gaps)", f"{label} {k} = {f} ({p.get('basis', '')})")
-        return (f"New {label} factor {k} = {f:.3f} added as a draft (actuary to confirm against the filed rates). "
+        return (f"New {label} factor {k} = {f:.3f} added and sent to an actuary for approval. Until then, "
+                f"{g.occurrences} quote(s) get an indication only." if self.approval else
+                f"New {label} factor {k} = {f:.3f} added as a draft (actuary to confirm against the filed rates). "
                 f"{g.occurrences} quote(s) can now be rated.")
 
     def not_needed(self, g: Gap, reason: str) -> str:
@@ -161,6 +172,20 @@ class Handler:
         self.ss.rate_declined.add(f"{tkey}:{g.name}")
         self._log("Value not written (Canonical Gaps)", f"{label} {g.name}: {reason}")
         return f"{label} {g.name} is not written: those quotes are declined ({reason})."
+
+
+def decide_factor(ss, request: dict) -> str:
+    """Apply an actuary's decision on a new factor."""
+    p = request["payload"]
+    ext = getattr(ss, "factor_ext", {}).get(p["tkey"], {})
+    if p["key"] not in ext:
+        return "The factor was already removed."
+    if request["status"] == "Approved":
+        ext[p["key"]]["status"] = "Approved" + (f" · {request['note']}" if request.get("note") else "")
+        ext[p["key"]]["approved_by"] = request["checker"]
+        return f"{p['label']} {p['key']} = {p['factor']} approved by {request['checker']}; quotes using it can be bound."
+    ext.pop(p["key"])
+    return f"{p['label']} {p['key']} rejected by {request['checker']}; it is back on the gaps list."
 
 
 def declined_reason(quote: dict, spec: dict, ss) -> str:

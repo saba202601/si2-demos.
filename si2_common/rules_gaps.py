@@ -29,6 +29,17 @@ US_STATES = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "
              "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
 
 
+# the rule vocabulary of the Personal Auto demo (fields and coded domains)
+FIELDS = {
+    "state": "Two-letter state", "driver_age": "Age of the principal driver", "years_licensed": "Years licensed",
+    "prior_claims": "At-fault claims, last 3 years", "violations": "Moving violations, last 3 years",
+    "vehicle_value": "Vehicle value ($)", "model_year": "Vehicle model year",
+    "use_type": "Pleasure, Commute, Business or Rideshare", "annual_miles": "Estimated annual miles",
+    "coverage_lapse_days": "Days without insurance before this policy",
+}
+BASE_DOMAINS = {"state": US_STATES, "use_type": ["Pleasure", "Commute", "Business", "Rideshare"]}
+
+
 def _snake(name: str) -> str:
     return "_".join(w.lower() for w in to_title(name).split()) or "new_field"
 

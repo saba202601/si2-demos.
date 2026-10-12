@@ -30,6 +30,57 @@ CSS = """
 """
 
 
+# the demo hub: suggested order for a client walk-through
+DEMOS = [
+    ("Canonical Data Model", "https://si2-canonical.streamlit.app", "Start here: one company model, where-used across every app"),
+    ("Legacy-to-Cloud Migration Workbench", "https://si2-migrate.streamlit.app", "Initial load, mapping, gaps, delta loads, sign-off"),
+    ("ISO Bureau Reporting", "https://si2-iso-bureau.streamlit.app", "All ISO lines: effective-dated layouts, generate, validate, submit"),
+    ("Bureau Reporting Workbench", "https://si2-bureau.streamlit.app", "NCCI WCSTAT · WCPOLS · WCIND · WCMED"),
+    ("Business Rule Engine", "https://si2-rules.streamlit.app", "Rules in plain conditions, draft → approval → production"),
+    ("Rating Engine", "https://si2-rating.streamlit.app", "Step-by-step premium; new factors approved by an actuary"),
+    ("Claims Triage", "https://si2-claims.streamlit.app", "Score and route new claims"),
+    ("Fraud Engine", "https://si2-fraud.streamlit.app", "Detect, prevent and investigate fraud"),
+]
+
+TOURS = {
+    "Canonical Data Model": [
+        "Open **🏢 Company model**: 150 business terms harvested from all six SI² apps.",
+        "Pick **Policy Number** under Where used: one concept, seven elements, four apps.",
+        "Untick *Shared terms only* to see every term; download the model with where-used.",
+        "Open **The model** and **Map a source file** to see one legacy file mapped into the core model."],
+    "Legacy-to-Cloud Migration Workbench": [
+        "Step **0 · Initial load** → *Use the sample upload set*: Excel, CSV, Oracle DDL, ACORD XML, JSON and an API.",
+        "**Data quality** shows the bureau-style edits; **Keys & pick lists** → *Approve all ≥ 90%* (pick the driver link yourself).",
+        "**Approve & load**: submit the plan, change the sidebar name, approve it, then *Create tables and load*.",
+        "**Delta loads** → *Load the sample delta*: changed rows get a new version, history is kept.",
+        "**Use in migration** → then Steps 3-9: discovery, mapping, canonical gaps, inject, test, two-person sign-off."],
+    "ISO Bureau Reporting": [
+        "**▶️ Bureau Run**: pick a line, accounting period and record type; generate, validate, approve.",
+        "**✅ SME Validation Workbench**: approve fields, descriptions, pick lists and mappings.",
+        "**🧩 Canonical Gaps**: map, add or skip what the canonical model lacks.",
+        "**📐 Layouts**: compare effective-dated layout versions."],
+    "Bureau Reporting Workbench": [
+        "Step **3 · Canonical model & mapping** → **🧩 Canonical gaps**: resolve WCIO fields and codes.",
+        "Step **5**: enter your name in the sidebar and generate a WCSTAT file.",
+        "Step **6**: the person who generated it cannot approve it; change the name, approve and submit.",
+        "Step **7**: fix the bureau's edit errors and resubmit a revision."],
+    "Business Rule Engine": [
+        "**🧩 Rule gaps**: map `drv_age`, fix `'FLA'`, add `telematics_score` and `'Delivery'`.",
+        "**Rules (draft)**: enter your name, *Submit the draft for approval*.",
+        "**✅ Approvals**: change the sidebar name and approve; the draft goes to production.",
+        "**Run on submissions** now uses the approved rules."],
+    "Rating Engine": [
+        "**📥 Incoming quotes**: 7 of 8 quotes cannot be rated.",
+        "**🧩 Rating gaps**: rate AL as GA, add the 500/1000 and $2,000 factors (SI² drafts them).",
+        "**✅ Approvals**: an actuary (a different name) approves with a filing reference.",
+        "Back on **Incoming quotes**: indications become bindable."],
+    "Claims Triage": ["**Work queue**: claims scored and routed.", "**Claim detail**: why a claim scored as it did.",
+                      "**How scoring works**: the factors behind the score."],
+    "Fraud Engine": ["**1 · Fraud catalog** and **2 · Synthetic book**.", "**3 · Run the engine**, then **4 · Prevent** at the gates.",
+                     "**5 · SIU cases** and **6 · Monitor**."],
+}
+
+
 def _html(text: str) -> str:
     """Flatten HTML to one line. Indented lines would otherwise render as a code block."""
     return "".join(line.strip() for line in text.splitlines())
@@ -42,6 +93,10 @@ def page(title: str, subtitle: str) -> None:
     # st.html renders the header as HTML directly, with no Markdown step that could turn it into a code block.
     st.html(_html(f"""<div class="si2-head"><img src="{LOGO_URI}" width="44" height="50" alt="SI² logo">
         <div><div class="si2-title">{title}<span class="si2-pill">Demo</span></div><p>{subtitle}</p></div></div>"""))
+    st.session_state["_si2_title"] = title
+    if title in TOURS:
+        with st.expander("Two-minute guided tour"):
+            st.markdown("\n".join(f"{i}. {t}" for i, t in enumerate(TOURS[title], 1)))
 
 
 def note_synthetic() -> None:
@@ -51,7 +106,18 @@ def note_synthetic() -> None:
     )
 
 
+def demo_links() -> None:
+    """The SI² demo hub in the sidebar, current app first in bold."""
+    cur = st.session_state.get("_si2_title", "")
+    with st.sidebar:
+        st.divider()
+        st.markdown("**SI² demos**")
+        st.markdown("\n".join(f"{i}. " + (f"**{t}** (you are here)" if t == cur else f"[{t}]({u})") + f"  \n   <small>{d}</small>"
+                              for i, (t, u, d) in enumerate(DEMOS, 1)), unsafe_allow_html=True)
+
+
 def footer() -> None:
+    demo_links()
     st.markdown(
         f'<div class="si2-foot"><b>SI²</b> · Super Intelligence for Insurance · '
         f'Want this on your own data? Email <b>{CONTACT}</b> or visit '

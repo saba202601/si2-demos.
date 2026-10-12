@@ -499,13 +499,15 @@ def profile(st: Staged) -> pd.DataFrame:
                     note = f"DDL says {declared[c]}; data looks {typ}" + (f" ({note})" if note else "")
                 typ = declared[c]
             distinct = len(set(nonblank))
-            pick = (typ == "TEXT" and 1 < distinct <= 15 and len(nonblank) >= 2 * distinct
-                    and max(map(len, nonblank)) <= 12 and not _keyish(c))
+            pii = pii_kind(c, nonblank)
+            pick = not pii and (typ == "TEXT" and 1 < distinct <= 15 and len(nonblank) >= 2 * distinct
+                                and max(map(len, nonblank)) <= 12 and not _keyish(c))
+            shown = [mask(x, pii) for x in dict.fromkeys(nonblank)][:3]      # personal data never shown in the profile
             rows.append({"table": t, "column": c, "type": typ, "rows": len(vals), "blank": len(vals) - len(nonblank),
                          "distinct": distinct, "unique": distinct == len(vals) and not (len(vals) - len(nonblank)),
-                         "max_len": max(map(len, nonblank), default=0), "samples": ", ".join(list(dict.fromkeys(nonblank))[:3]),
-                         "pick_list": pick, "note": note,
-                         "description": draft_description(c, "CODE" if pick else typ, list(dict.fromkeys(nonblank))[:3], "",
+                         "max_len": max(map(len, nonblank), default=0), "samples": ", ".join(shown),
+                         "pick_list": pick, "pii": pii, "note": note,
+                         "description": draft_description(c, "CODE" if pick else typ, shown, "",
                                                           {}).replace(" (Drafted by SI² - edit if needed.)", "")})
     return pd.DataFrame(rows)
 
@@ -741,94 +743,29 @@ def _convert(v: str, typ: str):
     return v, ""
 
 
-def build_and_load(st: Staged, prof: pd.DataFrame, props: pd.DataFrame, db_path: str, actor: str) -> dict:
-    ok = props[props.status == "Approved"]
-    batch = f"IL-{dt.datetime.now():%Y%m%d-%H%M%S}"
-    now = dt.datetime.now().isoformat(sep=" ", timespec="seconds")
-    today = dt.date.today().isoformat()
-    Path(db_path).unlink(missing_ok=True)
-    con = sqlite3.connect(db_path)
-    con.execute("PRAGMA foreign_keys = ON")
-    con.executescript(ddl(st, prof, props, "sqlite"))
-    types = {(r.table, r.column): r.type for r in prof.itertuples()}
-    fks = [(r.table, r.ref_table, list(r.columns), list(r.ref_columns), r.method) for r in ok[ok.kind == "FK"].itertuples()]
-    order, cycles = load_order(list(st.tables), [(c, p) for c, p, *_ in fks])
-    keys = {}                    # table -> (business key tuple -> sk), plus term index
-    recon, quarantine = [], []
-    for t in order:
-        df = st.tables[t]
-        cols = list(df.columns)
-        my_fks = [f for f in fks if f[0] == t]
-        rows, sks = [], {}
-        for i, rec in enumerate(df.to_dict("records"), 1):
-            vals, why = [], []
-            for c in cols:
-                v, err = _convert(str(rec[c]), types.get((t, c), "TEXT"))
-                vals.append(v)
-                if err:
-                    why.append(f"{c}: {err}")
-            refs = []
-            for _, par, cc, pc, meth in my_fks:
-                sk, err = _resolve(keys.get(par), rec, cc, pc, meth)
-                refs.append(sk)
-                if err:
-                    why.append(f"{par}: {err}")
-            if why:
-                quarantine.append({"table": t, "row": i, "reason": "; ".join(why),
-                                   "record": ", ".join(f"{k}={v}" for k, v in list(rec.items())[:6])})
-                continue
-            rows.append((i, vals + refs + [batch, now, today]))
-        names = cols + [f"{f[1]}_sk" for f in my_fks] + ["load_batch_id", "loaded_at", "effective_from"]
-        sql = f"INSERT INTO {t} ({', '.join(names)}) VALUES ({', '.join('?' * len(names))})"
-        loaded = 0
-        for i, v in rows:
-            try:
-                cur = con.execute(sql, v)
-                sks[i] = cur.lastrowid
-                loaded += 1
-            except sqlite3.IntegrityError as exc:
-                quarantine.append({"table": t, "row": i, "reason": f"database rejected it: {exc}",
-                                   "record": ", ".join(f"{k}={x}" for k, x in list(zip(cols, v))[:6])})
-        keys[t] = _key_index(df, sks, ok, t, types)
-        money = [c for c in cols if types.get((t, c)) in ("MONEY", "DECIMAL")]
-        src_tot = {c: round(sum(parse_money(x) or 0 for x in df[c] if x != ""), 2) for c in money}
-        db_tot = {c: round(con.execute(f"SELECT COALESCE(SUM({c}),0) FROM {t}").fetchone()[0], 2) for c in money}
-        q_rows = [q for q in quarantine if q["table"] == t]
-        q_idx = [q["row"] - 1 for q in q_rows]
-        q_tot = {c: round(sum(parse_money(x) or 0 for x in df.iloc[q_idx][c] if x != ""), 2) for c in money}
-        bal = all(abs(src_tot[c] - db_tot[c] - q_tot[c]) < 0.01 for c in money)
-        recon.append({"table": t, "source rows": len(df), "loaded": loaded, "quarantined": len(q_rows),
-                      "rows balance": "PASS" if loaded + len(q_rows) == len(df) else "FAIL",
-                      "control totals": "; ".join(f"{c}: source {src_tot[c]:,.2f} = loaded {db_tot[c]:,.2f}"
-                                                  + (f" + quarantined {q_tot[c]:,.2f}" if q_tot[c] else "") for c in money) or "—",
-                      "totals balance": ("PASS" if bal else "FAIL") if money else "—"})
-    for r in ok[ok.kind == "PICKLIST"].itertuples():
-        t, c = r.table, r.columns[0]
-        for code in sorted(set(x for x in st.tables[t][c] if x != "")):
-            con.execute("INSERT OR IGNORE INTO pick_list VALUES (?,?,?,?,?,?,?)",
-                        (r.ref_columns[0], code, "", t, c, today, FAR_FUTURE))
-    con.commit()
-    fk_problems = con.execute("PRAGMA foreign_key_check").fetchall()
-    con.close()
-    return {"batch": batch, "by": actor, "order": order, "cycles": cycles, "recon": pd.DataFrame(recon),
-            "quarantine": pd.DataFrame(quarantine, columns=["table", "row", "reason", "record"]),
-            "fk_violations": len(fk_problems), "db_path": db_path}
+def _fmt(v):
+    if v is None:
+        return ""
+    if isinstance(v, float):
+        return f"{v:.6f}".rstrip("0").rstrip(".")
+    return str(v)
 
 
-def _key_index(df, sks, ok, t, types):
-    pk = next((list(r.columns) for r in ok[(ok.kind == "PK") & (ok.table == t)].itertuples()), None)
+def _db_key_index(con, t, pk, types, exp_col):
     idx = {"exact": {}, "first": defaultdict(list), "pk": pk}
-    if not pk or pk == [f"{t}_sk"] or not all(c in df for c in pk):
+    if not pk or pk == [f"{t}_sk"]:
         return idx
-    for i, rec in enumerate(df.to_dict("records"), 1):
-        if i not in sks:
-            continue
-        key = tuple(parse_date(rec[c]) or rec[c] if types.get((t, c)) == "DATE" else str(rec[c]) for c in pk)
-        idx["exact"][key] = sks[i]
-        exp = next((c for c in df.columns if c not in pk and types.get((t, c)) == "DATE"
-                    and {"EXPIRATION", "EXP", "END", "TO"} & set(words(c))), None)
-        idx["first"][str(rec[pk[0]])].append((key[1] if len(key) > 1 else "", parse_date(rec[exp]) if exp else None, sks[i]))
+    cols = ", ".join([f"{t}_sk"] + pk + ([exp_col] if exp_col else []))
+    for r in con.execute(f"SELECT {cols} FROM {t} WHERE effective_to = ?", (FAR_FUTURE,)).fetchall():
+        sk, vals = r[0], [_fmt(v) for v in r[1:1 + len(pk)]]
+        idx["exact"][tuple(vals)] = sk
+        idx["first"][vals[0]].append((vals[1] if len(vals) > 1 else "", _fmt(r[-1]) if exp_col else None, sk))
     return idx
+
+
+def _exp_col(df_cols, pk, types, t):
+    return next((c for c in df_cols if c not in pk and types.get((t, c)) == "DATE"
+                 and {"EXPIRATION", "EXP", "END", "TO"} & set(words(c))), None)
 
 
 def _resolve(idx, rec, cc, pc, meth):
@@ -845,5 +782,364 @@ def _resolve(idx, rec, cc, pc, meth):
         terms = idx["first"].get(vals[0], [])
         return (max(terms)[2], "") if terms else (None, f"{vals[0]} not found")
     key = tuple(parse_date(v) or v for v in vals) if len(vals) > 1 else (vals[0],)
-    sk = idx["exact"].get(key)
+    sk = idx["exact"].get(key) or idx["exact"].get(tuple(vals))
     return (sk, "") if sk else (None, f"{'/'.join(vals)} not found (orphan)")
+
+
+def _masked_record(rec: dict, t: str, pii: dict) -> str:
+    return ", ".join(f"{k}={mask(v, pii.get((t, k), ''))}" for k, v in list(rec.items())[:6])
+
+
+def build_and_load(st: Staged, prof: pd.DataFrame, props: pd.DataFrame, db_path: str, actor: str,
+                   as_of: str | None = None, blocked: dict | None = None, codes: pd.DataFrame | None = None) -> dict:
+    """Initial load: create every table from the approved plan, then load parent-first."""
+    Path(db_path).unlink(missing_ok=True)
+    con = sqlite3.connect(db_path)
+    con.execute("PRAGMA foreign_keys = ON")
+    con.executescript(ddl(st, prof, props, "sqlite"))
+    for t in st.tables:
+        con.execute(f"CREATE VIEW {t}_current AS SELECT * FROM {t} WHERE effective_to = '{FAR_FUTURE}'")
+    res = _load(con, st, prof, props, actor, "Initial", as_of, blocked)
+    ok = props[props.status == "Approved"]
+    today = (as_of or dt.datetime.now().isoformat(sep=" ", timespec="seconds"))[:10]
+    desc = {} if codes is None else {(r.list_name, r.code): r.description for r in codes.itertuples()}
+    for r in ok[ok.kind == "PICKLIST"].itertuples():
+        t, c = r.table, r.columns[0]
+        for code in sorted(set(x for x in st.tables[t][c] if x != "")):
+            con.execute("INSERT OR IGNORE INTO pick_list VALUES (?,?,?,?,?,?,?)",
+                        (r.ref_columns[0], code, desc.get((r.ref_columns[0], code), ""), t, c, today, FAR_FUTURE))
+    con.commit()
+    res["fk_violations"] = len(con.execute("PRAGMA foreign_key_check").fetchall())
+    con.close()
+    res["db_path"] = db_path
+    return res
+
+
+def delta_load(st: Staged, prof: pd.DataFrame, props: pd.DataFrame, db_path: str, actor: str,
+               as_of: str | None = None, blocked: dict | None = None) -> dict:
+    """Delta: new rows are added, changed rows get a new version (the old one is expired), unchanged rows are
+    skipped, and rows missing from the extract are kept (never deleted)."""
+    con = sqlite3.connect(db_path)
+    con.execute("PRAGMA foreign_keys = ON")
+    have = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
+    last = max((con.execute(f"SELECT MAX(effective_from) FROM {t}").fetchone()[0] or "" for t in have
+                if not t.startswith("sqlite_") and t != "pick_list"), default="")
+    if as_of and as_of <= last:
+        con.close()
+        raise ValueError(f"The as-of time must be after the last load ({last[:19]}).")
+    unknown = [t for t in st.tables if t not in have]
+    for t in unknown:
+        st.tables.pop(t)
+    res = _load(con, st, prof, props, actor, "Delta", as_of, blocked)
+    res["fk_violations"] = len(con.execute("PRAGMA foreign_key_check").fetchall())
+    con.close()
+    res["db_path"], res["unknown_tables"] = db_path, unknown
+    return res
+
+
+def _load(con, st, prof, props, actor, mode, as_of, blocked):
+    ok = props[props.status == "Approved"]
+    stamp = as_of or dt.datetime.now().isoformat(sep=" ", timespec="microseconds")
+    batch = f"{'IL' if mode == 'Initial' else 'DL'}-{dt.datetime.now():%Y%m%d-%H%M%S}"
+    now = dt.datetime.now().isoformat(sep=" ", timespec="seconds")
+    types = {(r.table, r.column): r.type for r in prof.itertuples()}
+    pii = {(r.table, r.column): r.pii for r in prof.itertuples() if getattr(r, "pii", "")}
+    pks = {r.table: list(r.columns) for r in ok[ok.kind == "PK"].itertuples()}
+    fks = [(r.table, r.ref_table, list(r.columns), list(r.ref_columns), r.method) for r in ok[ok.kind == "FK"].itertuples()]
+    all_tables = list(st.tables)
+    order, cycles = load_order(all_tables, [(c, p) for c, p, *_ in fks])
+    db_cols = {t: [r[1] for r in con.execute(f"PRAGMA table_info({t})")] for t in order}
+    keys = {}                                     # parents resolve from the database: works for initial and delta
+    recon, quarantine = [], []
+    blocked = blocked or {}
+    for t in order:
+        df = st.tables[t]
+        cols = [c for c in df.columns if c in db_cols.get(t, [])]
+        my_fks = [f for f in fks if f[0] == t]
+        for _, par, *_ in my_fks:
+            if par not in keys:
+                keys[par] = _db_key_index(con, par, pks.get(par), types,
+                                          _exp_col(db_cols.get(par, []), pks.get(par) or [], types, par))
+        pk = pks.get(t) if pks.get(t) != [f"{t}_sk"] else None
+        current = {}
+        if mode == "Delta" and pk:
+            sel = ", ".join([f"{t}_sk"] + cols + [f"{f[1]}_sk" for f in my_fks])
+            for r in con.execute(f"SELECT {sel} FROM {t} WHERE effective_to = ?", (FAR_FUTURE,)).fetchall():
+                row = dict(zip(cols, r[1:1 + len(cols)]))
+                current[tuple(_fmt(row[c]) for c in pk)] = (r[0], [_fmt(v) for v in r[1:]])
+        names = cols + [f"{f[1]}_sk" for f in my_fks] + ["load_batch_id", "loaded_at", "effective_from"]
+        sql = f"INSERT INTO {t} ({', '.join(names)}) VALUES ({', '.join('?' * len(names))})"
+        n = Counter()
+        for i, rec in enumerate(df.to_dict("records"), 1):
+            vals, why = [], []
+            for c in cols:
+                v, err = _convert(str(rec[c]), types.get((t, c), "TEXT"))
+                vals.append(v)
+                if err:
+                    why.append(f"{c}: {err}")
+            refs = []
+            for _, par, cc, pc, meth in my_fks:
+                sk, err = _resolve(keys.get(par), rec, cc, pc, meth)
+                refs.append(sk)
+                if err:
+                    why.append(f"{par}: {err}")
+            if (t, i) in blocked:
+                why.append(blocked[(t, i)])
+            if why:
+                quarantine.append({"table": t, "row": i, "reason": "; ".join(why), "record": _masked_record(rec, t, pii)})
+                n["quarantined"] += 1
+                continue
+            old = None
+            if current:
+                k = tuple(_fmt(vals[cols.index(c)]) for c in pk)
+                old = current.get(k)
+                if old and old[1][:len(cols)] == [_fmt(v) for v in vals]:
+                    n["unchanged"] += 1
+                    continue
+            try:
+                if old:
+                    con.execute(f"UPDATE {t} SET effective_to = ? WHERE {t}_sk = ?", (stamp, old[0]))
+                con.execute(sql, vals + refs + [batch, now, stamp])
+                n["changed" if old else "new"] += 1
+            except sqlite3.IntegrityError as exc:
+                quarantine.append({"table": t, "row": i, "reason": f"database rejected it: {exc}",
+                                   "record": _masked_record(rec, t, pii)})
+                n["quarantined"] += 1
+        con.commit()
+        keys[t] = _db_key_index(con, t, pks.get(t), types, _exp_col(db_cols.get(t, []), pks.get(t) or [], types, t))
+        money = [c for c in cols if types.get((t, c)) in ("MONEY", "DECIMAL")]
+        q_idx = [q["row"] - 1 for q in quarantine if q["table"] == t]
+        src_tot = {c: round(sum(parse_money(x) or 0 for x in df[c] if x != ""), 2) for c in money}
+        q_tot = {c: round(sum(parse_money(x) or 0 for x in df.iloc[q_idx][c] if x != ""), 2) for c in money}
+        if mode == "Initial":
+            db_tot = {c: round(con.execute(f"SELECT COALESCE(SUM({c}),0) FROM {t}").fetchone()[0], 2) for c in money}
+            bal = all(abs(src_tot[c] - db_tot[c] - q_tot[c]) < 0.01 for c in money)
+            tot_txt = "; ".join(f"{c}: source {src_tot[c]:,.2f} = loaded {db_tot[c]:,.2f}"
+                                + (f" + quarantined {q_tot[c]:,.2f}" if q_tot[c] else "") for c in money) or "—"
+        else:
+            bal, tot_txt = True, "; ".join(f"{c}: extract {src_tot[c]:,.2f}" for c in money) or "—"
+        row = {"table": t, "source rows": len(df), "loaded": n["new"] + n["changed"], "quarantined": n["quarantined"]}
+        if mode == "Delta":
+            row.update({"new": n["new"], "changed (new version)": n["changed"], "unchanged": n["unchanged"]})
+        row.update({"rows balance": "PASS" if n["new"] + n["changed"] + n["unchanged"] + n["quarantined"] == len(df) else "FAIL",
+                    "control totals": tot_txt, "totals balance": ("PASS" if bal else "FAIL") if money and mode == "Initial" else "—"})
+        recon.append(row)
+    return {"batch": batch, "mode": mode, "as_of": stamp, "by": actor, "order": order, "cycles": cycles,
+            "recon": pd.DataFrame(recon), "quarantine": pd.DataFrame(quarantine, columns=["table", "row", "reason", "record"])}
+
+
+# ============================================================================== personal data
+PII_RULES = [  # (kind, name words, value pattern)
+    ("SSN / TIN", {"SSN", "TIN", "FEIN", "SOCIAL", "TAX"}, r"\d{3}-?\d{2}-?\d{4}|\d{2}-\d{7}"),
+    ("Date of birth", {"BIRTH", "DOB"}, None),
+    ("Driver's license", {"LICENSE", "LIC", "DL"}, None),
+    ("Email", {"EMAIL", "MAIL"}, r"[^@\s]+@[^@\s]+\.[a-z]{2,}"),
+    ("Phone", {"PHONE", "TEL", "MOBILE", "CELL"}, r"\(?\d{3}\)?[-. ]?\d{3}[-. ]?\d{4}"),
+    ("Bank account", {"ACCOUNT", "ROUTING", "IBAN", "ACH"}, None),
+    ("Personal name", {"NAME", "NM", "INSURED"}, None),
+    ("Street address", {"ADDRESS", "ADDR", "STREET"}, None),
+]
+
+
+def pii_kind(col: str, vals: list[str]) -> str:
+    w = set(words(col))
+    v = [x for x in vals if x][:200]
+    for kind, names, rx in PII_RULES:
+        hit_name = bool(w & names)
+        if kind == "Driver's license" and not (w & {"LICENSE", "LIC", "DL"} and w & {"NUMBER", "ID"}):
+            continue
+        if kind == "Bank account" and not (w & names and w & {"NUMBER", "NO", "ACCOUNT"}) :
+            continue
+        if kind == "Personal name" and not (hit_name and w & {"NAME", "NM", "FIRST", "LAST"}) and "first_name" not in col:
+            continue
+        if kind == "Personal name" and v and sum(any(s in x.upper() for s in ("LLC", "INC", "AGENCY", "CORP", "BROKERS", "PARTNERS"))
+                                                for x in v) > len(v) / 2:
+            continue
+        hit_val = bool(rx and v and sum(bool(re.fullmatch(rx, x, re.I)) for x in v) >= 0.8 * len(v))
+        if hit_name and (rx is None or hit_val or not v) or (rx and hit_val and kind in ("SSN / TIN", "Email")):
+            return kind
+    return ""
+
+
+def mask(v, kind: str) -> str:
+    s = "" if v is None else str(v)
+    if not kind or not s:
+        return s
+    if kind == "SSN / TIN":
+        return "***-**-" + re.sub(r"\D", "", s)[-4:]
+    if kind == "Date of birth":
+        return s[:4] + "-**-**" if re.match(r"\d{4}", s) else "**/**/" + s[-4:]
+    if kind == "Email":
+        u, _, d = s.partition("@")
+        return (u[:1] + "***@" + d) if d else "***"
+    if kind == "Personal name":
+        return " ".join(p[:1] + "." for p in s.split())
+    if kind == "Street address":
+        return "*** " + " ".join(s.split()[-2:])
+    return "*" * max(len(s) - 4, 3) + s[-4:]
+
+
+def mask_frame(df: pd.DataFrame, table: str, prof: pd.DataFrame) -> pd.DataFrame:
+    kinds = {r.column: r.pii for r in prof[prof.table == table].itertuples() if getattr(r, "pii", "")}
+    if not kinds:
+        return df
+    out = df.copy()
+    for c, k in kinds.items():
+        if c in out:
+            out[c] = out[c].map(lambda v: mask(v, k))
+    return out
+
+
+# ============================================================================== pick-list descriptions
+CODE_DICTIONARY = {  # concept words -> code -> meaning (common P&C codes)
+    ("CLAIM", "STATUS"): {"O": "Open", "C": "Closed", "R": "Reopened", "P": "Pending", "D": "Denied"},
+    ("POLICY", "STATUS"): {"A": "Active (in force)", "E": "Expired", "C": "Cancelled", "N": "Non-renewed",
+                           "P": "Pending", "L": "Lapsed"},
+    ("PAYMENT", "TYPE"): {"IND": "Indemnity", "MED": "Medical", "EXP": "Expense (allocated LAE)", "LAE": "Loss adjustment expense",
+                          "REC": "Recovery (salvage / subrogation)"},
+    ("LINE", "BUSINESS"): {"AUTOP": "Personal auto", "AUTOB": "Commercial auto", "HOME": "Homeowners",
+                           "WORK": "Workers compensation", "CGL": "Commercial general liability", "BOP": "Businessowners",
+                           "CPKGE": "Commercial package", "UMBRP": "Personal umbrella", "DFIRE": "Dwelling fire"},
+    ("CAUSE",): {"COLL": "Collision", "COMP": "Comprehensive (other than collision)", "BI": "Bodily injury",
+                 "PD": "Property damage", "GLASS": "Glass breakage", "WIND": "Windstorm / hail", "WATER": "Water damage",
+                 "FIRE": "Fire", "THEFT": "Theft", "LIAB": "Liability"},
+    ("COVERAGE",): {"BI": "Bodily injury liability", "PD": "Property damage liability", "COLL": "Collision",
+                    "COMP": "Comprehensive", "UM": "Uninsured motorist", "UIM": "Underinsured motorist",
+                    "PIP": "Personal injury protection", "MED": "Medical payments", "RREIM": "Rental reimbursement",
+                    "TL": "Towing and labor"},
+    ("BILL", "PLAN"): {"FULL": "Paid in full", "QTR": "Quarterly installments", "MONTHLY": "Monthly installments",
+                       "SEMI": "Semi-annual installments", "EFT": "Monthly electronic funds transfer"},
+    ("STATUS",): {"OPEN": "Open", "PAID": "Paid", "CLOSED": "Closed", "VOID": "Voided", "DUE": "Due"},
+    ("VIOLATION",): {"SPD": "Speeding", "RED": "Red-light violation", "DUI": "Driving under the influence",
+                     "RECK": "Reckless driving", "SUSP": "Driving with a suspended license"},
+    ("CODE",): {"SPD": "Speeding", "RED": "Red-light violation", "DUI": "Driving under the influence"},
+}
+
+
+def code_descriptions(st: Staged, props: pd.DataFrame, dest_picklists: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Draft a description for every code of every proposed pick list: destination pick list, insurance code
+    dictionary, or a title-cased draft; the SME edits."""
+    rows = []
+    dest = {}
+    if dest_picklists is not None and len(dest_picklists):
+        for r in dest_picklists.itertuples():
+            dest.setdefault(str(r.code).upper(), (r.pick_list, r.description))
+    for r in props[props.kind == "PICKLIST"].itertuples():
+        t, c, name = r.table, r.columns[0], r.ref_columns[0]
+        w = set(words(f"{t} {c}"))
+        dicts = [d for k, d in CODE_DICTIONARY.items() if set(k) <= w]
+        vc = st.tables[t][c][st.tables[t][c] != ""].value_counts()
+        for code, n in vc.items():
+            src, desc = "Drafted", to_title(code)
+            for d in dicts:
+                if code.upper() in d:
+                    src, desc = "Insurance code dictionary", d[code.upper()]
+                    break
+            else:
+                if code.upper() in dest:
+                    src, desc = f"Destination pick list {dest[code.upper()][0]}", dest[code.upper()][1]
+            rows.append({"list_name": name, "table": t, "column": c, "code": code, "count": int(n),
+                         "description": desc, "source": src})
+    return pd.DataFrame(rows, columns=["list_name", "table", "column", "code", "count", "description", "source"])
+
+
+# ============================================================================== bureau-style data edits
+US_STATES = {"AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY",
+             "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH",
+             "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY", "PR"}
+EDITS = {
+    "Q01": ("Error", "State code must be a valid US state or territory"),
+    "Q02": ("Warning", "ZIP code must be 5 or 9 digits"),
+    "Q03": ("Error", "Effective date must be before expiration date"),
+    "Q04": ("Error", "Report date cannot be before the loss date"),
+    "Q05": ("Error", "Loss, report and payment dates cannot be in the future"),
+    "Q06": ("Warning", "Payment date is before the loss date of its claim"),
+    "Q07": ("Warning", "Negative amount (recovery?): confirm the sign"),
+    "Q08": ("Error", "Premium must be greater than zero"),
+    "Q09": ("Warning", "Driver age outside 14-100 years"),
+    "Q10": ("Error", "Key field is blank"),
+}
+
+
+def quality_edits(st: Staged, prof: pd.DataFrame, props: pd.DataFrame, today: dt.date | None = None) -> pd.DataFrame:
+    """SI² data edits in the style of NCCI / ISO statistical-plan edits, run before the load."""
+    today = (today or dt.date.today()).isoformat()
+    types = {(r.table, r.column): r.type for r in prof.itertuples()}
+    out = []
+
+    def hit(code, t, i, c, v, extra=""):
+        sev, msg = EDITS[code]
+        out.append({"edit": code, "severity": sev, "table": t, "row": i, "column": c, "value": v,
+                    "message": msg + (f" ({extra})" if extra else "")})
+    pks = {r.table: r.columns for r in props[(props.kind == "PK")].itertuples()}
+    for t, df in st.tables.items():
+        cols = list(df.columns)
+        w = {c: set(words(c)) for c in cols}
+        dates = [c for c in cols if types.get((t, c)) == "DATE"]
+        eff = next((c for c in dates if {"EFFECTIVE", "EFF"} & w[c] and not {"BIRTH"} & w[c]), None)
+        exp = next((c for c in dates if {"EXPIRATION", "EXP"} & w[c]), None)
+        loss = next((c for c in dates if {"LOSS", "ACCIDENT"} & w[c]), None)
+        rep = next((c for c in dates if "REPORT" in w[c]), None)
+        future = [c for c in dates if {"LOSS", "REPORT", "PAYMENT", "PMT", "VIOLATION"} & w[c]]
+        for i, rec in enumerate(df.to_dict("records"), 1):
+            for c in cols:
+                v = str(rec[c])
+                if not v:
+                    if c in pks.get(t, []) and not c.endswith("_sk"):
+                        hit("Q10", t, i, c, v)
+                    continue
+                if "STATE" in w[c] and len(v) <= 3 and types.get((t, c)) == "TEXT" and v.upper() not in US_STATES:
+                    hit("Q01", t, i, c, v)
+                if {"ZIP", "POSTAL"} & w[c] and not re.fullmatch(r"\d{5}(-?\d{4})?", v):
+                    hit("Q02", t, i, c, v)
+                if types.get((t, c)) in ("MONEY", "DECIMAL") and (parse_money(v) or 0) < 0:
+                    hit("Q07", t, i, c, v)
+                if types.get((t, c)) == "MONEY" and "PREMIUM" in w[c] and (parse_money(v) or 0) <= 0:
+                    hit("Q08", t, i, c, v)
+                if {"BIRTH"} & w[c] and (d := parse_date(v)):
+                    age = (dt.date.fromisoformat(today) - dt.date.fromisoformat(d)).days // 365
+                    if not 14 <= age <= 100:
+                        hit("Q09", t, i, c, v, f"age {age}")
+            if eff and exp and (a := parse_date(rec[eff])) and (b := parse_date(rec[exp])) and a >= b:
+                hit("Q03", t, i, eff, f"{rec[eff]} / {rec[exp]}")
+            if loss and rep and (a := parse_date(rec[loss])) and (b := parse_date(rec[rep])) and b < a:
+                hit("Q04", t, i, rep, f"loss {rec[loss]}, reported {rec[rep]}")
+            for c in future:
+                if (d := parse_date(rec[c])) and d > today:
+                    hit("Q05", t, i, c, rec[c])
+    # cross-table: payment before the loss date of its claim (via an approved or proposed foreign key)
+    for r in props[(props.kind == "FK") & (props.status != "Rejected")].itertuples():
+        child, parent = r.table, r.ref_table
+        if len(r.columns) != 1 or child not in st.tables or parent not in st.tables:
+            continue
+        pd_ = st.tables[parent]
+        ploss = next((c for c in pd_.columns if types.get((parent, c)) == "DATE" and {"LOSS"} & set(words(c))), None)
+        cdate = next((c for c in st.tables[child].columns if types.get((child, c)) == "DATE"
+                      and {"PAYMENT", "PMT", "PAID"} & set(words(c))), None)
+        if not (ploss and cdate):
+            continue
+        lookup = dict(zip(pd_[r.ref_columns[0]], pd_[ploss]))
+        for i, rec in enumerate(st.tables[child].to_dict("records"), 1):
+            a, b = parse_date(lookup.get(rec[r.columns[0]], "")), parse_date(rec[cdate])
+            if a and b and b < a:
+                hit("Q06", child, i, cdate, f"paid {rec[cdate]}, loss {lookup[rec[r.columns[0]]]}")
+    return pd.DataFrame(out, columns=["edit", "severity", "table", "row", "column", "value", "message"])
+
+
+def blocked_rows(edits: pd.DataFrame, accepted: set) -> dict:
+    """Rows with an Error-level edit the SME has not accepted are quarantined at load."""
+    out = {}
+    for r in edits[(edits.severity == "Error") & ~edits.edit.isin(accepted)].itertuples():
+        out.setdefault((r.table, int(r.row)), f"edit {r.edit}: {r.message}")
+    return out
+
+
+# ============================================================================== hand-off to the migration steps
+def to_legacy_source(st: Staged, codes: pd.DataFrame, base: dict) -> dict:
+    """The staged tables become the legacy source for discovery, canonical mapping and the gaps screen."""
+    code_rows = [{"TABLE_ID": r.list_name, "CODE": r.code, "DESCRIPTION": r.description.upper()} for r in codes.itertuples()]
+    return {"layouts": {}, "program": "",
+            "entities": {t.upper(): {"type": f"Initial load ({st.origin[t]})", "df": df.replace("", None)}
+                         for t, df in st.tables.items() if len(df)},
+            "code_table": pd.DataFrame(code_rows, columns=["TABLE_ID", "CODE", "DESCRIPTION"]),
+            "dest_schema": base["dest_schema"], "dest_picklists": base["dest_picklists"]}

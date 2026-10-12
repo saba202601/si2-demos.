@@ -8,40 +8,39 @@
       "firstName": "Taylor",
       "birthDate": "2002-04-07",
       "licenseState": "FL",
+      "licenseNumber": "S655810350",
       "violations": [
         {
-          "violationDate": "2023-08-12",
-          "code": "DUI"
-        },
-        {
-          "violationDate": "2023-01-01",
-          "code": "RED"
+          "violationDate": "2023-06-24",
+          "code": "SPD"
         }
       ]
     },
     {
       "driverId": "D-101",
       "policyNumber": "PA1000102",
-      "firstName": "Taylor",
-      "birthDate": "1971-04-23",
+      "firstName": "Sam",
+      "birthDate": "1972-08-09",
       "licenseState": "NJ",
+      "licenseNumber": "S307924673",
       "violations": [
         {
-          "violationDate": "2023-06-15",
-          "code": "DUI"
+          "violationDate": "2023-10-12",
+          "code": "RED"
         },
         {
-          "violationDate": "2023-06-12",
-          "code": "SPD"
+          "violationDate": "2023-12-12",
+          "code": "RED"
         }
       ]
     },
     {
       "driverId": "D-102",
       "policyNumber": "PA1000102",
-      "firstName": "Alex",
-      "birthDate": "1961-04-16",
-      "licenseState": "NJ"
+      "firstName": "Sam",
+      "birthDate": "1969-02-08",
+      "licenseState": "NJ",
+      "licenseNumber": "S604744541"
     },
     {
       "driverId": "D-103",
@@ -49,16 +48,7 @@
       "firstName": "Jordan",
       "birthDate": "1968-08-20",
       "licenseState": "MA",
-      "violations": [
-        {
-          "violationDate": "2023-01-16",
-          "code": "DUI"
-        },
-        {
-          "violationDate": "2023-06-26",
-          "code": "DUI"
-        }
-      ]
+      "licenseNumber": "S755263987"
     }
   ]
 }

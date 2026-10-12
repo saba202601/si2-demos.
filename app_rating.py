@@ -8,7 +8,7 @@ import datetime as dt
 import pandas as pd
 import streamlit as st
 
-from si2_common import branding, gate, gaps_ui
+from si2_common import approvals_ui, branding, gate, gaps_ui, persist, store
 from si2_common import rating_gaps as RT
 
 branding.page("Rating Engine",
@@ -37,7 +37,19 @@ GAP_SPEC = {"state": ("STATE_REL", "State", STATE_REL, "state"), "use": ("USE", 
             "bi": ("BI_LIMIT", "BI / UM limit", BI_LIMIT, "limit"), "pd": ("PD_LIMIT", "PD limit", PD_LIMIT, "limit"),
             "coll_ded": ("COLL_DED", "Collision deductible", COLL_DED, "deductible"),
             "comp_ded": ("COMP_DED", "Comprehensive deductible", COMP_DED, "deductible")}
+APP, KEYS = "rating", ["factor_ext", "rate_declined", "rating_audit"]
+if "_rating_ready" not in st.session_state:
+    persist.restore(APP, KEYS)
+    st.session_state._rating_ready = True
 RT.apply_extensions({k: t for k, _, t, _ in GAP_SPEC.values()}, st.session_state)
+
+
+def actor() -> str:
+    return st.session_state.get("sme_name") or "SME"
+
+
+def file_request(kind, ref, summary, payload):
+    store.request(APP, kind, ref, summary, payload, actor())
 
 # quotes arriving from an agency upload / comparative rater (synthetic)
 INCOMING = pd.DataFrame([
@@ -85,6 +97,8 @@ def rate(inp: dict) -> pd.DataFrame:
 
 
 with st.sidebar:
+    st.text_input("Your name", key="sme_name", placeholder="Name for proposals and approvals")
+    persist.sidebar(APP)
     st.header("Risk")
     inp = {
         "state": st.selectbox("State", list(STATE_REL), index=0),
@@ -111,8 +125,10 @@ c1.metric("Annual premium", f"${total:,.0f}")
 c2.metric("Six-month premium", f"${total / 2:,.0f}")
 c3.metric("Coverages rated", len(sheet))
 
-tab_ws, tab_what, tab_tables, tab_in, tab_gaps = st.tabs(["Rating worksheet", "What if", "Factor tables",
-                                                          "📥 Incoming quotes", "🧩 Rating gaps"])
+n_pend = approvals_ui.pending_count(APP)
+tab_ws, tab_what, tab_tables, tab_in, tab_gaps, tab_appr = st.tabs(
+    ["Rating worksheet", "What if", "Factor tables", "📥 Incoming quotes", "🧩 Rating gaps",
+     f"✅ Approvals ({n_pend})" if n_pend else "✅ Approvals"])
 EXT = getattr(st.session_state, "factor_ext", {})
 
 
@@ -181,21 +197,23 @@ with tab_in:
             qi = {**q, "territory": "3 · Suburban", "phys": True, "symbol": 14}
             prem = rate(qi).Premium.sum() + POLICY_FEE
         drafts = [f"{lbl} {q[c]}" for c, (tk, lbl, _, _) in GAP_SPEC.items()
-                  if str(EXT.get(tk, {}).get(q[c], {}).get("status", "")).startswith("Draft")]
+                  if str(EXT.get(tk, {}).get(q[c], {}).get("status", "")).startswith(("Draft", "Pending"))]
         out.append({**{k: q[k] for k in ("quote", "source", "state", "use", "bi", "coll_ded")},
                     "result": ("Not written" if why.startswith("Not written") else "Waiting on a gap") if why
-                    else "Rated" + (" (draft factor)" if drafts else ""),
-                    "annual premium": prem, "note": why or ("Draft factor: " + ", ".join(drafts) if drafts else "")})
+                    else "Indication only" if drafts else "Rated",
+                    "annual premium": prem,
+                    "note": why or ("Factor awaiting actuary approval: " + ", ".join(drafts) if drafts else "")})
     res = pd.DataFrame(out)
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Rated", int(res.result.str.startswith("Rated").sum()))
-    c2.metric("Waiting on a gap", int((res.result == "Waiting on a gap").sum()))
-    c3.metric("Not written", int((res.result == "Not written").sum()))
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Rated (bindable)", int((res.result == "Rated").sum()))
+    c2.metric("Indication only", int((res.result == "Indication only").sum()))
+    c3.metric("Waiting on a gap", int((res.result == "Waiting on a gap").sum()))
+    c4.metric("Not written", int((res.result == "Not written").sum()))
     st.dataframe(res, hide_index=True, width="stretch",
                  column_config={"annual premium": st.column_config.NumberColumn(format="$%.0f")})
 
 with tab_gaps:
-    gaps_ui.render(RT.scan(INCOMING, GAP_SPEC, st.session_state), RT.Handler(st.session_state, GAP_SPEC, "SME"),
+    gaps_ui.render(RT.scan(INCOMING, GAP_SPEC, st.session_state), RT.Handler(st.session_state, GAP_SPEC, actor(), file_request),
                    key="rating_gaps",
                    intro="The rating tables are the canonical model a quote is rated against. Values on incoming quotes "
                          "with no factor are listed here: rate them as an existing entry, add a factor (SI² drafts one "
@@ -211,5 +229,12 @@ with tab_gaps:
         if not rows and not log:
             st.caption("No decisions yet.")
 
+with tab_appr:
+    st.caption("New factors are used for indications at once, but a quote can only be bound once an actuary (a different "
+               "person) approves the factor against the filed rates.")
+    approvals_ui.render(APP, actor(), lambda r: RT.decide_factor(st.session_state, r), note_label="Filing reference",
+                        note_default="Rate filing SERFF # pending", key="rating_appr")
+
+persist.checkpoint(APP, KEYS, actor())
 branding.note_synthetic()
 branding.footer()

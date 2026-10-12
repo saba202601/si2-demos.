@@ -8,8 +8,9 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-from si2_common import branding, gate, gaps_ui
+from si2_common import approvals_ui, branding, gate, gaps_ui, persist, store
 from si2_common import rules_gaps as RG
+from si2_common.rules_gaps import BASE_DOMAINS, FIELDS
 from si2_common.rules import RuleError, compile_rule, evaluate, fields_used
 
 branding.page("Business Rule Engine",
@@ -34,14 +35,6 @@ DEFAULT_RULES = pd.DataFrame([
     (True, "R11", "Florida high mileage", "state == 'FLA' and annual_miles > 20000", "SURCHARGE %", 5),
 ], columns=["active", "rule_id", "name", "condition", "action", "value"])
 
-FIELDS = {
-    "state": "Two-letter state", "driver_age": "Age of the principal driver", "years_licensed": "Years licensed",
-    "prior_claims": "At-fault claims, last 3 years", "violations": "Moving violations, last 3 years",
-    "vehicle_value": "Vehicle value ($)", "model_year": "Vehicle model year",
-    "use_type": "Pleasure, Commute, Business or Rideshare", "annual_miles": "Estimated annual miles",
-    "coverage_lapse_days": "Days without insurance before this policy",
-}
-BASE_DOMAINS = {"state": RG.US_STATES, "use_type": ["Pleasure", "Commute", "Business", "Rideshare"]}
 
 
 @st.cache_data
@@ -108,16 +101,59 @@ def decide(record: dict, compiled) -> dict:
             "rules fired": ", ".join(f"{r.rule_id} {r['name']}" for r in fired) or "None"}
 
 
+APP = "rules"
+KEYS = ["rules", "rules_prod", "fields_ext", "domains_ext", "gap_ignored", "rule_audit"]
+if "_rules_ready" not in st.session_state:
+    persist.restore(APP, KEYS)
+    st.session_state._rules_ready = True
 if "rules" not in st.session_state:
-    st.session_state.rules = DEFAULT_RULES.copy()
+    st.session_state.rules = DEFAULT_RULES.copy()                   # the draft the SME edits
+if "rules_prod" not in st.session_state:
+    st.session_state.rules_prod = DEFAULT_RULES.iloc[:8].copy()     # approved and in production (R09-R11 are proposals)
 
-tab_rules, tab_run, tab_one, tab_gaps = st.tabs(["Rules", "Run on submissions", "Test one submission", "🧩 Rule gaps"])
+
+def actor() -> str:
+    return st.session_state.get("sme_name") or "SME"
+
+
+def rule_diff(draft: pd.DataFrame, prod: pd.DataFrame) -> list[str]:
+    cols = ["active", "name", "condition", "action", "value"]
+    d = draft.dropna(subset=["rule_id"]).set_index("rule_id")
+    p = prod.set_index("rule_id")
+    out = [f"added {i}" for i in d.index if i not in p.index] + [f"removed {i}" for i in p.index if i not in d.index]
+    for i in d.index.intersection(p.index):
+        ch = [c for c in cols if str(d.at[i, c]) != str(p.at[i, c])]
+        if ch:
+            out.append(f"changed {i} ({', '.join(ch)})")
+    return out
+
+
+def decide_rules(req: dict) -> str:
+    ss = st.session_state
+    if req["status"] == "Approved":
+        ss.rules_prod = req["payload"]["rules"].reset_index(drop=True)
+        ss.setdefault("rule_audit", []).append({"time": req["checked_at"], "by": req["checker"],
+                                                "event": "Rule set approved for production", "detail": req["summary"]})
+        return f"Rule set approved by {req['checker']} and now in production."
+    return f"Rule changes rejected by {req['checker']}; production is unchanged. The draft stays for rework."
+
+
+with st.sidebar:
+    st.text_input("Your name", key="sme_name", placeholder="Name for proposals and approvals")
+    persist.sidebar(APP)
+
+n_pend = approvals_ui.pending_count(APP)
+tab_rules, tab_run, tab_one, tab_gaps, tab_appr = st.tabs(
+    ["Rules (draft)", "Run on submissions", "Test one submission", "🧩 Rule gaps",
+     f"✅ Approvals ({n_pend})" if n_pend else "✅ Approvals"])
+compiled_prod, problems_prod = compile_all(st.session_state.rules_prod)
 VOCAB = RG.vocabulary(FIELDS, st.session_state)
 DOMS = RG.domains(BASE_DOMAINS, st.session_state)
 EXT = getattr(st.session_state, "fields_ext", {})
 
 with tab_rules:
-    st.caption("Edit any cell, add rows at the bottom, or switch rules off. Conditions use the fields listed below.")
+    st.caption("Edit any cell, add rows at the bottom, or switch rules off. Changes are a draft: submissions are decided "
+               "by the production rules until a second person approves the draft.")
     edited = st.data_editor(
         st.session_state.rules, num_rows="dynamic", hide_index=True, width="stretch", key="rule_editor",
         column_config={
@@ -133,6 +169,28 @@ with tab_rules:
         st.error(p)
     if not problems:
         st.success(f"{len(compiled)} active rules checked and ready.")
+    changes = rule_diff(edited, st.session_state.rules_prod)
+    if changes:
+        st.warning(f"Draft differs from production: {'; '.join(changes)}.")
+        waiting = [r for r in store.approvals(APP, "Pending") if r["ref"] == "rules"] if n_pend else []
+        if waiting:
+            st.info(f"Submitted by {waiting[0]['maker']} at {waiting[0]['made_at']}; waiting for a second person on the "
+                    "Approvals tab. Submitting again replaces that request.")
+        if st.button("Submit the draft for approval", type="primary", disabled=bool(problems), key="rules_submit",
+                     help="Fix the errors above first." if problems else "A different person approves it on the Approvals tab."):
+            try:
+                store.request(APP, "Rule set change", "rules", "; ".join(changes), {"rules": edited.reset_index(drop=True)},
+                              actor())
+                st.session_state.rules = edited.reset_index(drop=True)
+                st.session_state.pop("rule_editor", None)
+                st.session_state.setdefault("rule_audit", []).append(
+                    {"time": pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S"), "by": actor(),
+                     "event": "Rule changes submitted for approval", "detail": "; ".join(changes)})
+                st.rerun()
+            except ValueError as exc:
+                st.error(str(exc))
+    else:
+        st.caption("✅ The draft matches the rules in production.")
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("**Fields you can use**")
@@ -146,14 +204,15 @@ with tab_rules:
             "- Lists: `state in ['FL', 'GA']`, `use_type not in ['Business']`\n"
             "- Group with parentheses: `(driver_age < 21 or driver_age > 80) and violations > 0`\n\n"
             "When several rules fire, **Decline** wins over **Refer**, and surcharges and credits add up.")
-    if st.button("Reset to the sample rules"):
-        st.session_state.rules = DEFAULT_RULES.copy()
+    if st.button("Discard the draft (back to production)"):
+        st.session_state.rules = st.session_state.rules_prod.copy()
         st.session_state.pop("rule_editor", None)
         st.rerun()
 
 with tab_run:
     subs = RG.extend_submissions(submissions(), st.session_state)
-    results = pd.DataFrame([decide(r, compiled) for r in subs.to_dict("records")])
+    st.caption(f"Decided by the {len(compiled_prod)} active rules in production (the approved rule set).")
+    results = pd.DataFrame([decide(r, compiled_prod) for r in subs.to_dict("records")])
     out = pd.concat([subs[["submission", "state", "driver_age", "prior_claims", "violations", "use_type"]], results],
                     axis=1)
     counts = results.decision.value_counts()
@@ -189,7 +248,8 @@ with tab_one:
                       else col.number_input(to_label(f), value=int(RG.sample_column(f, spec, 1)[0])) if spec["type"] == "number"
                       else col.text_input(to_label(f)))
         go = st.form_submit_button("Run rules", type="primary")
-    res = decide(rec, compiled)
+    use_draft = st.toggle("Test with the draft rules instead of production", key="one_draft")
+    res = decide(rec, compiled if use_draft else compiled_prod)
     tone = {"Accept": st.success, "Refer to underwriter": st.warning, "Decline": st.error}[res["decision"]]
     tone(f"**{res['decision']}** · premium adjustment {res['premium adjustment %']:+.0f}%")
     st.write("Rules fired:", res["rules fired"])
@@ -208,5 +268,15 @@ with tab_gaps:
         else:
             st.caption("No decisions yet.")
 
+with tab_appr:
+    def _show(r):
+        p = r["payload"]["rules"]
+        st.dataframe(p, hide_index=True, width="stretch", height=min(35 * (len(p) + 1) + 3, 320))
+    approvals_ui.render(APP, actor(), decide_rules, note_label="Note", detail=_show, key="rules_appr")
+    prod = st.session_state.rules_prod
+    with st.expander(f"Rules in production ({int(prod.active.sum())} active)"):
+        st.dataframe(prod, hide_index=True, width="stretch")
+
+persist.checkpoint(APP, KEYS, actor())
 branding.note_synthetic()
 branding.footer()

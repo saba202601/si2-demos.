@@ -40,6 +40,26 @@ tables (surrogate key + business key, effective dating), loads them parent-first
 reconciles row counts and money totals. SQLite DDL and SQL Server DDL are generated. Engine: `migrate/initial_load.py`;
 sample upload set: `migrate/initial_load_samples/`.
 
+### Platform features
+
+* **Decisions are saved** (`si2_common/store.py`, `persist.py`): NCCI, Rules, Rating and Migration restore every SME
+  decision in a new session. SQLite by default (`data/si2_state.db`); SQL Server with `SI2_STATE_BACKEND=mssql`
+  (`run_si2_sqlserver.bat app_migration.py`). On Streamlit Community Cloud the file resets when the app is rebooted
+  or redeployed; use SQL Server or a hosted database for permanent storage. *Reset demo data* in each sidebar.
+* **Two-person rule** (`approvals_ui.py`): the person who proposes cannot approve. Rating: new factors are indications
+  only until an actuary approves them with a filing reference. Rules: SME edits are a draft; submissions are decided by
+  the approved production rules. NCCI: the person who generated a submission cannot approve it. Migration: the
+  initial-load plan and the final sign-off need a second person. Names come from the sidebar (SSO in production).
+* **Initial load extras**: personal data (SSN/TIN, date of birth, driver's license, email, phone, names, addresses) is
+  detected and masked unless the role is Data steward; pick-list codes get descriptions from the destination pick
+  lists or the SI² insurance code dictionary; bureau-style data edits (Q01-Q10) run before the load and Error rows are
+  quarantined unless accepted; **delta loads** add new rows, version changed rows (old version expired) and never
+  delete; *Use in migration* sends the loaded tables into Steps 1-9 with the approved codes.
+* **Company canonical model** (`si2_common/registry.py`, Canonical app → 🏢 Company model): every app's model
+  harvested into business terms with every name in use and where-used.
+* **Demo hub**: every app's sidebar links all eight demos in walk-through order, and each app has a two-minute
+  guided tour.
+
 Tests: `python -m pytest tests iso_bureau/tests -q`.
 
 ## Bureau Reporting Workbench (`bureau/`)

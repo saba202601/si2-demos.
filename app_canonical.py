@@ -9,6 +9,7 @@ import pandas as pd
 import streamlit as st
 
 from si2_common import branding, data, gate
+from si2_common import registry as R
 
 branding.page("Canonical Data Model",
               "One shared model for policy, risk, coverage, premium and claim data, mapped from any source system.")
@@ -24,7 +25,47 @@ def sample():
 
 pols, clms = sample()
 
-tab_model, tab_map, tab_doc = st.tabs(["The model", "Map a source file", "Canonical policy document"])
+tab_co, tab_model, tab_map, tab_doc = st.tabs(["🏢 Company model (all apps)", "The model", "Map a source file",
+                                               "Canonical policy document"])
+
+
+@st.cache_data(show_spinner=False)
+def company_model():
+    where = R.harvest()
+    return where, R.terms(where)
+
+
+with tab_co:
+    where, terms = company_model()
+    st.caption("Every SI² app has its own model today: the ISO element catalog, the NCCI canonical tables, the cloud "
+               "canonical of the migration, the rule vocabulary and the rating variables. SI² harvests all of them into "
+               "one company model of business terms, with every name each term goes by and where it is used: one "
+               "definition to govern, and impact analysis before anything changes.")
+    m = st.columns(4)
+    m[0].metric("Business terms", len(terms))
+    m[1].metric("Shared by 2+ apps", int((terms.apps >= 2).sum()))
+    m[2].metric("Used by every app", int((terms.apps == len(R.APPS)).sum()))
+    m[3].metric("Names for the shared terms", int(terms[terms.apps >= 2]["names in use"].sum()))
+    f1, f2 = st.columns([1, 3])
+    shared = f1.toggle("Shared terms only", True, key="co_shared")
+    apps = f2.multiselect("Used by", R.APPS, key="co_apps")
+    view = terms[(terms.apps >= 2) | (not shared)]
+    for a in apps:
+        view = view[view[a] == "✓"]
+    st.dataframe(view[["business name", "standard name", "apps", "names in use", *R.APPS, "definition"]],
+                 hide_index=True, width="stretch", height=420,
+                 column_config={"definition": st.column_config.TextColumn(width="large")})
+    st.markdown("**Where used**")
+    pick = st.selectbox("Business term", view.term.tolist(), key="co_term",
+                        format_func=lambda t: f"{t.replace('_', ' ').title()}  ·  {int(terms.set_index('term').at[t, 'apps'])} app(s)")
+    if pick:
+        w = where[where.term == pick][["app", "entity", "element", "type", "description"]]
+        st.dataframe(w, hide_index=True, width="stretch")
+        st.caption(f"Changing **{pick.replace('_', ' ').title()}** touches {len(w)} element(s) in {w.app.nunique()} app(s). "
+                   f"Standard name proposed by SI²: `{pick.lower()}`.")
+    st.download_button("Download the company model with where-used (CSV)",
+                       where.merge(terms[["term", "business name", "standard name", "definition"]], on="term")
+                       .to_csv(index=False), "SI2_company_canonical_model.csv", "text/csv", key="co_dl")
 
 with tab_model:
     left, right = st.columns([3, 2], gap="large")

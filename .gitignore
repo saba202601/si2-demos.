@@ -2,3 +2,5 @@ __pycache__/
 *.pyc
 .pytest_cache/
 iso_bureau/data/*.db
+data/si2_state.db
+data/initial_load/

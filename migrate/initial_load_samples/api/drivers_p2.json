@@ -5,53 +5,53 @@
     {
       "driverId": "D-104",
       "policyNumber": "PA1000104",
-      "firstName": "Sam",
-      "birthDate": "1997-02-13",
+      "firstName": "Taylor",
+      "birthDate": "1996-06-26",
       "licenseState": "OH",
-      "violations": [
-        {
-          "violationDate": "2023-04-16",
-          "code": "SPD"
-        },
-        {
-          "violationDate": "2023-07-26",
-          "code": "DUI"
-        }
-      ]
+      "licenseNumber": "S790558911"
     },
     {
       "driverId": "D-105",
       "policyNumber": "PA1000104",
-      "firstName": "Jordan",
-      "birthDate": "1960-12-13",
+      "firstName": "Sam",
+      "birthDate": "1979-12-25",
       "licenseState": "OH",
+      "licenseNumber": "S314017576",
       "violations": [
         {
-          "violationDate": "2023-07-24",
-          "code": "SPD"
+          "violationDate": "2023-03-14",
+          "code": "DUI"
         }
       ]
     },
     {
       "driverId": "D-106",
       "policyNumber": "CA3000301",
-      "firstName": "Alex",
-      "birthDate": "1965-03-01",
-      "licenseState": "NJ"
+      "firstName": "Jordan",
+      "birthDate": "1960-12-13",
+      "licenseState": "NJ",
+      "licenseNumber": "S597314843",
+      "violations": [
+        {
+          "violationDate": "2023-12-03",
+          "code": "DUI"
+        }
+      ]
     },
     {
       "driverId": "D-107",
       "policyNumber": "PA1000105",
-      "firstName": "Chris",
-      "birthDate": "1984-11-05",
+      "firstName": "Alex",
+      "birthDate": "1965-03-01",
       "licenseState": "NC",
+      "licenseNumber": "S262296831",
       "violations": [
         {
-          "violationDate": "2023-10-16",
+          "violationDate": "2023-08-26",
           "code": "DUI"
         },
         {
-          "violationDate": "2023-06-05",
+          "violationDate": "2023-03-20",
           "code": "DUI"
         }
       ]
@@ -59,17 +59,18 @@
     {
       "driverId": "D-108",
       "policyNumber": "PA1000105",
-      "firstName": "Chris",
-      "birthDate": "1963-01-01",
+      "firstName": "Taylor",
+      "birthDate": "1997-06-05",
       "licenseState": "NC",
+      "licenseNumber": "S689119239",
       "violations": [
         {
-          "violationDate": "2023-11-04",
-          "code": "DUI"
+          "violationDate": "2023-03-01",
+          "code": "SPD"
         },
         {
-          "violationDate": "2023-12-05",
-          "code": "RED"
+          "violationDate": "2023-12-21",
+          "code": "SPD"
         }
       ]
     }
