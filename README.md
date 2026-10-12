@@ -14,7 +14,23 @@ All data is synthetic. Codes, record layouts and rating factors are illustrative
 | `app_fraud.py` | Fraud Engine | https://si2-fraud.streamlit.app |
 | `app_iso_bureau.py` | ISO Bureau Reporting, all lines (PA, HO, CA, CP, GL, IM, CR, BP, FI, BR); see `iso_bureau/README.md` | https://si2-iso-bureau.streamlit.app |
 
-Shared code lives in `si2_common/` (branding, access code, synthetic data, rule evaluator, and the Canonical Gaps engine and screen used by the ISO bureau and migration apps).
+Shared code lives in `si2_common/` (branding, access code, synthetic data, rule evaluator, and the Canonical Gaps engine and screen).
+
+### Canonical Gaps
+
+One shared screen (`si2_common/gaps_ui.py`) lists everything a source, destination, rule or quote uses that the
+canonical model does not have yet, with three pre-filled actions: **Map to existing**, **Add new** (SI² drafts the
+name, type, description or factor) and **Not needed**. Each app adds only a small adapter:
+
+| App | Where | Adapter | Gaps it finds |
+|---|---|---|---|
+| ISO bureau reporting | 🧩 Canonical Gaps page | `iso_bureau/gaps.py` | source elements, pick lists and codes; ISO destination codes |
+| NCCI bureau reporting | Step 3 · 🧩 Canonical gaps tab | `bureau/gaps.py` | unused source columns, unsourced canonical attributes, WCIO fields with no canonical attribute, values with no WCIO code (NCCI codes are mapped, never added) |
+| Legacy migration | Step 5 · 🧩 Canonical gaps tab | `migrate/gaps.py` | legacy elements and codes; required cloud fields nothing feeds |
+| Business Rule Engine | 🧩 Rule gaps tab | `si2_common/rules_gaps.py` | fields and codes a rule uses that the rule vocabulary lacks (rules R09-R11 are the demo) |
+| Rating Engine | 🧩 Rating gaps tab | `si2_common/rating_gaps.py` | values on incoming quotes with no factor: new state, Rideshare use, 500/1000 limit, $2,000 deductible; drafted factors are flagged until an actuary confirms them |
+
+Tests: `python -m pytest tests iso_bureau/tests -q`.
 
 ## Bureau Reporting Workbench (`bureau/`)
 

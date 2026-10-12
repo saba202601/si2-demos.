@@ -8,7 +8,8 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-from si2_common import branding, gate
+from si2_common import branding, gate, gaps_ui
+from si2_common import rules_gaps as RG
 from si2_common.rules import RuleError, compile_rule, evaluate, fields_used
 
 branding.page("Business Rule Engine",
@@ -26,6 +27,11 @@ DEFAULT_RULES = pd.DataFrame([
     (True, "R07", "High annual mileage", "annual_miles > 25000", "SURCHARGE %", 5),
     (True, "R08", "Experienced clean driver", "years_licensed >= 10 and prior_claims == 0 and violations == 0",
      "CREDIT %", 5),
+    # imported from the 2026 filing / a field analyst: they use words the vocabulary does not have yet
+    (True, "R09", "Low telematics score on delivery use", "telematics_score < 40 and use_type == 'Delivery'",
+     "SURCHARGE %", 15),
+    (True, "R10", "Senior driver with a violation", "drv_age >= 80 and violations >= 1", "REFER", 0),
+    (True, "R11", "Florida high mileage", "state == 'FLA' and annual_miles > 20000", "SURCHARGE %", 5),
 ], columns=["active", "rule_id", "name", "condition", "action", "value"])
 
 FIELDS = {
@@ -35,6 +41,7 @@ FIELDS = {
     "use_type": "Pleasure, Commute, Business or Rideshare", "annual_miles": "Estimated annual miles",
     "coverage_lapse_days": "Days without insurance before this policy",
 }
+BASE_DOMAINS = {"state": RG.US_STATES, "use_type": ["Pleasure", "Commute", "Business", "Rideshare"]}
 
 
 @st.cache_data
@@ -56,16 +63,21 @@ def submissions(n: int = 15, seed: int = 21) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def to_label(field: str) -> str:
+    return field.replace("_", " ").capitalize()
+
+
 def compile_all(rules: pd.DataFrame):
+    vocab = RG.vocabulary(FIELDS, st.session_state)
     compiled, problems = [], []
     for _, r in rules.iterrows():
         if not r.active or not str(r.condition).strip():
             continue
         try:
             tree = compile_rule(str(r.condition))
-            unknown = fields_used(tree) - set(FIELDS)
+            unknown = fields_used(tree) - set(vocab)
             if unknown:
-                raise RuleError(f"Unknown field: {', '.join(sorted(unknown))}.")
+                raise RuleError(f"Unknown field: {', '.join(sorted(unknown))}. Resolve it on the 🧩 Rule gaps tab.")
             compiled.append((r, tree))
         except RuleError as exc:
             problems.append(f"{r.rule_id} · {r['name']}: {exc}")
@@ -99,7 +111,10 @@ def decide(record: dict, compiled) -> dict:
 if "rules" not in st.session_state:
     st.session_state.rules = DEFAULT_RULES.copy()
 
-tab_rules, tab_run, tab_one = st.tabs(["Rules", "Run on submissions", "Test one submission"])
+tab_rules, tab_run, tab_one, tab_gaps = st.tabs(["Rules", "Run on submissions", "Test one submission", "🧩 Rule gaps"])
+VOCAB = RG.vocabulary(FIELDS, st.session_state)
+DOMS = RG.domains(BASE_DOMAINS, st.session_state)
+EXT = getattr(st.session_state, "fields_ext", {})
 
 with tab_rules:
     st.caption("Edit any cell, add rows at the bottom, or switch rules off. Conditions use the fields listed below.")
@@ -121,8 +136,8 @@ with tab_rules:
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("**Fields you can use**")
-        st.dataframe(pd.DataFrame(FIELDS.items(), columns=["field", "meaning"]), hide_index=True,
-                     width="stretch")
+        st.dataframe(pd.DataFrame([(k, m, "SME added" if k in EXT else "") for k, m in VOCAB.items()],
+                                  columns=["field", "meaning", "origin"]), hide_index=True, width="stretch")
     with c2:
         st.markdown("**How to write a condition**")
         st.markdown(
@@ -137,7 +152,7 @@ with tab_rules:
         st.rerun()
 
 with tab_run:
-    subs = submissions()
+    subs = RG.extend_submissions(submissions(), st.session_state)
     results = pd.DataFrame([decide(r, compiled) for r in subs.to_dict("records")])
     out = pd.concat([subs[["submission", "state", "driver_age", "prior_claims", "violations", "use_type"]], results],
                     axis=1)
@@ -156,22 +171,42 @@ with tab_one:
     with st.form("one"):
         c1, c2, c3 = st.columns(3)
         rec = {
-            "state": c1.selectbox("State", ["FL", "GA", "NC", "NY", "OH", "TX", "AL", "SC"]),
+            "state": c1.selectbox("State", ["FL", "GA", "NC", "NY", "OH", "TX", "AL", "SC"] +
+                                  [c for c in DOMS["state"] if c not in RG.US_STATES]),
             "driver_age": c1.number_input("Driver age", 16, 99, 19),
             "years_licensed": c1.number_input("Years licensed", 0, 80, 2),
             "prior_claims": c2.number_input("At-fault claims (3 yrs)", 0, 10, 0),
             "violations": c2.number_input("Violations (3 yrs)", 0, 10, 1),
             "vehicle_value": c2.number_input("Vehicle value ($)", 1000, 250000, 48000, step=1000),
             "model_year": c3.number_input("Model year", 1990, 2027, 2024),
-            "use_type": c3.selectbox("Use", ["Pleasure", "Commute", "Business", "Rideshare"]),
+            "use_type": c3.selectbox("Use", DOMS["use_type"]),
             "annual_miles": c3.number_input("Annual miles", 0, 100000, 12000, step=1000),
             "coverage_lapse_days": c3.number_input("Days without coverage", 0, 3650, 0),
         }
+        for i, (f, spec) in enumerate(EXT.items()):
+            col = (c1, c2, c3)[i % 3]
+            rec[f] = (col.selectbox(to_label(f), spec["values"]) if spec["values"]
+                      else col.number_input(to_label(f), value=int(RG.sample_column(f, spec, 1)[0])) if spec["type"] == "number"
+                      else col.text_input(to_label(f)))
         go = st.form_submit_button("Run rules", type="primary")
     res = decide(rec, compiled)
     tone = {"Accept": st.success, "Refer to underwriter": st.warning, "Decline": st.error}[res["decision"]]
     tone(f"**{res['decision']}** · premium adjustment {res['premium adjustment %']:+.0f}%")
     st.write("Rules fired:", res["rules fired"])
+
+with tab_gaps:
+    gaps_ui.render(RG.scan(edited, FIELDS, BASE_DOMAINS, st.session_state),
+                   RG.Handler(st.session_state, edited, FIELDS, BASE_DOMAINS, "SME"), key="rule_gaps",
+                   intro="Rules use a fixed vocabulary of fields and codes - the rules' canonical model. Fields and codes a rule "
+                         "uses that the vocabulary does not have are listed here: map them to an existing one (the "
+                         "conditions are rewritten), add them (the vocabulary, sample data and test form get them), or switch "
+                         "the rules off.")
+    log = getattr(st.session_state, "rule_audit", [])
+    with st.expander(f"Rule vocabulary decisions ({len(log)})"):
+        if log:
+            st.dataframe(pd.DataFrame(log), hide_index=True, width="stretch")
+        else:
+            st.caption("No decisions yet.")
 
 branding.note_synthetic()
 branding.footer()

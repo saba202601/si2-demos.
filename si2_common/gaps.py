@@ -17,6 +17,8 @@ KINDS = {
     "CODE": "Missing pick-list code",
     "DEST_ELEMENT": "Destination field without canonical element",
     "DEST_CODE": "Missing destination code",
+    "UNSOURCED": "Canonical element with no source",
+    "FACTOR": "Value with no rating factor",
 }
 
 ABBR = {

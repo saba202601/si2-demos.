@@ -13,7 +13,8 @@ import streamlit as st
 
 from bureau import canonical as cn
 from bureau import catalog, edits, generate as gen, revise, source, specparse
-from si2_common import branding, gate
+from bureau import gaps as NG
+from si2_common import branding, gate, gaps_ui
 
 branding.page("Bureau Reporting Workbench",
               "NCCI / WCIO statistical, policy and data call reporting: from spec PDF to accepted submission.")
@@ -221,7 +222,8 @@ elif step == STEPS[2]:
 # ------------------------------------------------------------------------------------------ 3. Mapping
 elif step == STEPS[3]:
     st.subheader("Canonical model & mapping")
-    t1, t2, t3, t4 = st.tabs(["Source → canonical", "Canonical → bureau fields", "Pick-list values", "Canonical tables"])
+    t1, t2, t3, t4, t5 = st.tabs(["Source → canonical", "Canonical → bureau fields", "Pick-list values", "Canonical tables",
+                                  "🧩 Canonical gaps"])
     with t1:
         st.caption("SI² matched each canonical attribute to a source column using names, abbreviations and synonyms.")
         m = ss.smap
@@ -246,7 +248,8 @@ elif step == STEPS[3]:
         fm = ss.fmaps[spec]
         flt = st.radio("Show", ["Needs SME review", "Mapped", "All"], horizontal=True, key="fm_flt")
         view = fm[fm.status == "Needs SME review"] if flt.startswith("Needs") else fm[fm.source.isin(["Canonical", "SI² derived"])] if flt == "Mapped" else fm
-        cols = [""] + sorted(f"{t}.{c}" for t, cs in cn.SCHEMA.items() for c in cs) + \
+        cols = [""] + sorted({f"{t}.{c}" for t, cs in cn.SCHEMA.items() for c in cs} |
+                             {f"{r.canonical_table}.{r.canonical_column}" for r in ss.smap.itertuples()}) + \
             sorted(f"{t}.{c}" for t, cs in cn.DERIVED.items() for c in cs) + \
             sorted(f"{t}.{c}" for t, cs in gen.DERIVED_COLS.items() for c in cs)
         ed = st.data_editor(view[["field_id", "record_name", "field_no", "field_name", "start", "end", "source", "canonical",
@@ -298,6 +301,11 @@ elif step == STEPS[3]:
         t = st.selectbox("Canonical table", list(ss.canon), key="can_tbl")
         st.dataframe(ss.canon[t].drop(columns=["_row"]).head(200), hide_index=True, width="stretch")
         st.dataframe(cn.canonical_columns().query("table == @t"), hide_index=True, width="stretch")
+    with t5:
+        gaps_ui.render(NG.scan(ss), NG.Handler(ss, sme(), rebuild_canonical, log), key="ncci_gaps",
+                       intro="Source columns no canonical attribute uses, canonical attributes nothing feeds, WCIO fields with no "
+                             "canonical source, and source values with no WCIO code. NCCI owns its code lists, so values are "
+                             "mapped, never added.")
 
 # ------------------------------------------------------------------------------------------ 4. Queue
 elif step == STEPS[4]:

@@ -9,6 +9,7 @@ Not needed. The app-specific `handler` applies the decision:
     handler.map_existing(gap, key)      -> message
     handler.add_new(gap, proposal)      -> message
     handler.not_needed(gap, reason)     -> message
+    (raise ValueError(reason) to reject a decision: it is shown in red and nothing changes)
 """
 from __future__ import annotations
 
@@ -18,17 +19,28 @@ import streamlit as st
 from .gaps import KINDS, Gap
 
 
-def _flash(key: str, msg: str):
-    st.session_state[f"{key}__flash"] = msg
+def _flash(key: str, msg: str, level: str = "success"):
+    st.session_state[f"{key}__flash"] = (level, msg)
+
+
+def _do(key: str, fn, *args) -> bool:
+    """Run a handler action. A handler raises ValueError to reject the decision (shown in red, nothing changes)."""
+    try:
+        _flash(key, fn(*args))
+        return True
+    except ValueError as exc:
+        _flash(key, str(exc), "error")
+        return False
 
 
 def render(gaps: list[Gap], handler, key: str = "gaps", intro: str = "") -> None:
-    if msg := st.session_state.pop(f"{key}__flash", None):
-        st.success(msg)
+    if flash := st.session_state.pop(f"{key}__flash", None):
+        level, msg = flash if isinstance(flash, tuple) else ("success", flash)
+        (st.error if level == "error" else st.success)(msg)
     if intro:
         st.caption(intro)
     if not gaps:
-        st.success("No gaps: every source and destination element, pick list and code is in the canonical model.")
+        st.success("No gaps: everything in use is in the canonical model.")
         return
 
     kinds = [k for k in KINDS if any(g.kind == k for g in gaps)]
@@ -51,12 +63,23 @@ def render(gaps: list[Gap], handler, key: str = "gaps", intro: str = "") -> None
     addable = [g for g in chosen if "add" in g.actions]
     skippable = [g for g in chosen if "skip" in g.actions]
     if b1.button(f"Add selected as drafted ({len(addable)})", type="primary", disabled=not addable, key=f"{key}_bulk_add"):
-        msgs = [handler.add_new(g, dict(g.proposal)) for g in addable]
-        _flash(key, f"{len(msgs)} added. " + " ".join(msgs[:3]) + (" ..." if len(msgs) > 3 else ""))
+        msgs, errs = [], []
+        for g in addable:
+            try:
+                msgs.append(handler.add_new(g, dict(g.proposal)))
+            except ValueError as exc:
+                errs.append(f"{g.gap_id}: {exc}")
+        if errs:
+            _flash(key, f"{len(msgs)} added; {len(errs)} need a decision one by one. " + " ".join(errs[:3]), "error")
+        else:
+            _flash(key, f"{len(msgs)} added. " + " ".join(msgs[:3]) + (" ..." if len(msgs) > 3 else ""))
         st.rerun()
     if b2.button(f"Mark selected not needed ({len(skippable)})", disabled=not skippable, key=f"{key}_bulk_skip"):
         for g in skippable:
-            handler.not_needed(g, "Bulk: not needed")
+            try:
+                handler.not_needed(g, "Bulk: not needed")
+            except ValueError:
+                pass
         _flash(key, f"{len(skippable)} marked not needed; they will not come back as gaps.")
         st.rerun()
 
@@ -88,7 +111,7 @@ def render(gaps: list[Gap], handler, key: str = "gaps", intro: str = "") -> None
                 tgt = st.selectbox("Existing item", list(labels), format_func=lambda k: labels[k], key=f"{key}_map_{gid}")
                 st.caption("Use when it is really a synonym of something already in the model.")
                 if st.button("Map to existing", key=f"{key}_mapbtn_{gid}"):
-                    _flash(key, handler.map_existing(g, tgt))
+                    _do(key, handler.map_existing, g, tgt)
                     st.rerun()
             else:
                 st.caption("Nothing comparable exists yet.")
@@ -108,7 +131,7 @@ def render(gaps: list[Gap], handler, key: str = "gaps", intro: str = "") -> None
                     else:
                         prop[fld] = st.text_input(label, str(cur))
                 if st.form_submit_button("Add new", type="primary"):
-                    _flash(key, handler.add_new(g, prop))
+                    _do(key, handler.add_new, g, prop)
                     st.rerun()
         else:
             st.caption("Not applicable for this gap.")
@@ -118,7 +141,7 @@ def render(gaps: list[Gap], handler, key: str = "gaps", intro: str = "") -> None
             reason = st.text_input("Reason", "Not used downstream", key=f"{key}_why_{gid}")
             st.caption("It is recorded and will not come back as a gap.")
             if st.button("Mark not needed", key=f"{key}_skip_{gid}"):
-                _flash(key, handler.not_needed(g, reason))
+                _do(key, handler.not_needed, g, reason)
                 st.rerun()
         else:
             st.caption("Not applicable: this item must be resolved.")
