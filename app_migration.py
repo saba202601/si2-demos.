@@ -7,6 +7,9 @@ mapping with SME queue -> pick-list value maps -> transform -> inject into the c
 """
 import datetime as dt
 import io
+import sqlite3
+import tempfile
+import uuid
 import zipfile
 from pathlib import Path
 
@@ -15,6 +18,7 @@ import streamlit as st
 
 from migrate import engine as E
 from migrate import gaps as MG
+from migrate import initial_load as IL
 from migrate import legacy
 from si2_common import branding, gate, gaps_ui
 
@@ -22,7 +26,7 @@ branding.page("Legacy-to-Cloud Migration Workbench",
               "Discover every legacy data element, build the canonical model, map, migrate, test and approve.")
 gate.require_access()
 
-STEPS = ["Overview", "1 · Legacy sources", "2 · Destination", "3 · Discovery inventory",
+STEPS = ["Overview", "0 · Initial load", "1 · Legacy sources", "2 · Destination", "3 · Discovery inventory",
          "4 · Canonical model & synonyms", "5 · Source → Canonical → Destination", "6 · Pick-list values",
          "7 · Transform & inject", "8 · Test legacy vs cloud", "9 · SME approval", "Audit trail"]
 CHOICE_NONE = ""
@@ -158,12 +162,173 @@ digraph G { rankdir=LR; bgcolor="transparent";
         "program. The destination is a cloud policy and claims platform with six tables and six pick lists.\n\n"
         "Walk the steps on the left. SI² finds every element and pick list, generates the canonical model from the "
         "destination, and maps everything it can. **You** settle the queue (edit synonyms, confirm fields and values) "
-        "until mapping reaches 100%. Then SI² transforms and injects the data, tests legacy against cloud, and you approve.")
+        "until mapping reaches 100%. Then SI² transforms and injects the data, tests legacy against cloud, and you approve.\n\n"
+        "**Step 0 · Initial load** is the fast path for a first load from files: upload Excel, CSV, JSON, XML / ACORD, "
+        "SQL / PL-SQL scripts, PDFs or an API; SI² proposes the tables, primary and foreign keys and pick lists with "
+        "evidence, you approve, and SI² creates the tables, loads them parent-first and reconciles.")
     st.download_button("Download the INSURE/400 sample files", sample_pack(), "SI2_INSURE400_samples.zip",
                        help="Upload these in step 1 to try the upload path, or replace them with your own files.")
 
-# ------------------------------------------------------------------------------------------ 1. Legacy sources
+# ------------------------------------------------------------------------------------------ 0. Initial load
 elif step == STEPS[1]:
+    st.subheader("Initial load: upload files, SI² proposes tables and keys, you approve, SI² loads")
+    st.caption("Excel (one table per sheet) · CSV · JSON and XML / ACORD (nested records become child tables) · "
+               "SQL / PL-SQL scripts (CREATE TABLE, keys and INSERTs are read, nothing is executed) · PDF (simple text "
+               "tables, best effort) · an API returning JSON.")
+    il = ss.setdefault("il", {})
+    up = st.file_uploader("Files", accept_multiple_files=True, key="il_files",
+                          type=["csv", "txt", "xlsx", "xls", "json", "xml", "sql", "ddl", "pls", "pkb", "pdf"])
+    c1, c2 = st.columns([3, 1])
+    api = c1.text_input("API address (optional)", IL.SAMPLE_API, key="il_api",
+                        help="An https:// address that returns JSON (paging via a 'next' link is followed). "
+                             f"{IL.SAMPLE_API} is a built-in stand-in for a client's driver API.")
+    use_api = c2.checkbox("Read the API", True, key="il_use_api")
+    b1, b2, b3 = st.columns(3)
+    go_sample = b1.button("Use the sample upload set", type="primary", key="il_sample")
+    go_files = b2.button("Read my files", disabled=not up, key="il_read")
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        for p in sorted(IL.SAMPLES.rglob("*")):
+            if p.is_file():
+                z.write(p, p.relative_to(IL.SAMPLES))
+    b3.download_button("Download the sample set", buf.getvalue(), "SI2_initial_load_samples.zip", key="il_dl_samples")
+    if go_sample or go_files:
+        files = IL.sample_files() if go_sample else [(f.name, f.getvalue()) for f in up]
+        with st.spinner("Reading and profiling ..."):
+            staged = IL.stage(files, [api] if use_api and api.strip() else [])
+            prof = IL.profile(staged)
+            props = IL.propose(staged, prof)
+        ss.il = il = {"staged": staged, "prof": prof, "props": props, "files": [f for f, _ in files], "result": None,
+                      "db": str(Path(tempfile.gettempdir()) / f"si2_initial_load_{uuid.uuid4().hex[:8]}.db")}
+        for k in [k for k in ss if str(k).startswith("il_ed_")]:
+            del ss[k]
+        log("SI²", "Initial load: files read", f"{len(files)} file(s), {len(staged.tables)} tables, {len(props)} proposals")
+    if not il:
+        st.info("Start with the sample set (policy and claim Excel, payment CSV, Oracle DDL, ACORD XML, billing JSON and "
+                "a driver API) or upload your own files.")
+    else:
+        staged, prof, props = il["staged"], il["prof"], il["props"]
+        m = st.columns(5)
+        m[0].metric("Sources", len(il["files"]) + sum(1 for src, note in staged.notes if src.startswith("API") and "page" in note))
+        m[1].metric("Tables", len(staged.tables))
+        m[2].metric("Rows", f"{sum(len(d) for d in staged.tables.values()):,}")
+        m[3].metric("Proposals approved", f"{int((props.status == 'Approved').sum())} / {len(props)}")
+        m[4].metric("Need a decision", int((props.status == "Proposed").sum()))
+        if staged.notes:
+            with st.expander(f"Reader notes ({len(staged.notes)})"):
+                st.dataframe(pd.DataFrame(staged.notes, columns=["file", "note"]), hide_index=True, width="stretch")
+        t1, t2, t3, t4 = st.tabs(["Tables & columns", "Keys & pick lists (SME approval)", "Relationships", "Create & load"])
+        with t1:
+            tsel = st.selectbox("Table", list(staged.tables), key="il_table",
+                                format_func=lambda t: f"{t}  ·  {len(staged.tables[t])} rows  ·  from {staged.origin[t]}")
+            cols = prof[prof.table == tsel].drop(columns=["table"]).reset_index()
+            ed = st.data_editor(cols, hide_index=True, width="stretch", key=f"il_ed_{tsel}",
+                                disabled=[c for c in cols.columns if c not in ("type", "description")],
+                                column_order=["column", "type", "description", "rows", "blank", "distinct", "unique",
+                                              "samples", "note"],
+                                column_config={"type": st.column_config.SelectboxColumn("type", options=list(IL.SQLITE_TYPE)),
+                                               "description": st.column_config.TextColumn("business description", width="large")})
+            changed = (ed[["type", "description"]].values != cols[["type", "description"]].values).any(axis=1)
+            if changed.any():
+                for r in ed[changed].itertuples():
+                    prof.loc[r.index, ["type", "description"]] = [r.type, r.description]
+                    log(sme(), "Initial load: column approved", f"{tsel}.{r.column} {r.type}: {r.description[:60]}")
+            st.caption("Types are inferred from the data (or taken from the DDL). Codes with leading zeros (ZIP, class "
+                       "codes) stay text; dates in any format load as dates; $ and commas are removed from amounts.")
+            st.markdown("Preview")
+            st.dataframe(staged.tables[tsel].head(20), hide_index=True, width="stretch")
+        with t2:
+            st.caption("Every primary key, foreign key and pick list SI² proposes, with its evidence. Declared keys come from "
+                       "the DDL; nested keys from the JSON / XML structure; the rest are found in the data. Where one column "
+                       "matches two parents, you pick one.")
+            a1, a2, _ = st.columns([1.6, 1.2, 2])
+            if a1.button("Approve all ≥ 90% without a conflict", key="il_approve_hi"):
+                hit = (props.confidence >= 90) & ~props.conflict & (props.status == "Proposed")
+                props.loc[hit, "status"] = "Approved"
+                log(sme(), "Initial load: proposals approved", f"{int(hit.sum())} at ≥ 90% confidence")
+                st.rerun()
+            if a2.button("Reset decisions", key="il_reset"):
+                props["status"] = "Proposed"
+                st.rerun()
+            view = props.assign(columns=props["columns"].map(", ".join), ref_columns=props["ref_columns"].map(", ".join))
+            ed = st.data_editor(view, hide_index=True, width="stretch", key=f"il_ed_props_{(props.status != 'Proposed').sum()}",
+                                disabled=[c for c in view.columns if c != "status"],
+                                column_order=["status", "id", "kind", "table", "columns", "ref_table", "ref_columns",
+                                              "method", "confidence", "evidence"],
+                                column_config={"status": st.column_config.SelectboxColumn(
+                                    "decision", options=["Proposed", "Approved", "Rejected"], width="small"),
+                                    "confidence": st.column_config.ProgressColumn("confidence", min_value=0, max_value=100,
+                                                                                  format="%d%%"),
+                                    "evidence": st.column_config.TextColumn("evidence", width="large")})
+            diff = ed.status != props.status
+            if diff.any():
+                for i in ed[diff].index:
+                    props.at[i, "status"] = ed.at[i, "status"]
+                    log(sme(), f"Initial load: {ed.at[i, 'kind']} {ed.at[i, 'status'].lower()}",
+                        f"{ed.at[i, 'id']} {ed.at[i, 'table']}({ed.at[i, 'columns']}) {ed.at[i, 'ref_table']}")
+                st.rerun()
+            pk_ok = set(props[(props.kind == "PK") & (props.status == "Approved")].table)
+            missing = [t for t in staged.tables if t not in pk_ok]
+            if missing:
+                st.warning("Tables without an approved key (SI² will still give them a generated key): " + ", ".join(missing))
+        with t3:
+            g = ['digraph G { rankdir=LR; bgcolor="transparent"; node [shape=box, style="rounded,filled", '
+                 'fillcolor="#FFFFFF", color="#0B1B2B", fontname="Helvetica", fontsize=10]; edge [fontname="Helvetica", fontsize=8];']
+            for t, df in staged.tables.items():
+                pk = props[(props.kind == "PK") & (props.table == t)]
+                key = ", ".join(pk.iloc[0]["columns"]) if len(pk) else "?"
+                g.append(f'"{t}" [label="{t}\\n{len(df)} rows\\nkey: {key}"];')
+            for r in props[props.kind == "FK"].itertuples():
+                col = {"Approved": "#0A7A3D", "Rejected": "#C8CDD3"}.get(r.status, "#E8590C" if r.conflict else "#2B4CF2")
+                style = "solid" if r.status == "Approved" else "dashed"
+                g.append(f'"{r.table}" -> "{r.ref_table}" [color="{col}", style={style}, '
+                         f'label=" {", ".join(r.columns)}\\n{r.method.lower()}"];')
+            st.graphviz_chart("\n".join(g) + "}", width="stretch")
+            st.caption("Arrows point from child to parent. Green = approved, blue dashed = proposed, orange = one column "
+                       "matching two parents (SME picks), grey = rejected.")
+        with t4:
+            sql = IL.ddl(staged, prof, props, "mssql")
+            with st.expander("Generated DDL: SQLite (this demo) and SQL Server"):
+                d1, d2 = st.tabs(["SQLite", "SQL Server"])
+                with d1:
+                    st.code(IL.ddl(staged, prof, props, "sqlite"), language="sql")
+                with d2:
+                    st.code(sql, language="sql")
+            st.download_button("Download SQL Server DDL", sql, "SI2_initial_load_sqlserver.sql", key="il_dl_mssql")
+            open_items = int((props.status == "Proposed").sum())
+            if open_items:
+                st.info(f"{open_items} proposal(s) still need a decision; only approved keys and pick lists are created.")
+            if st.button("Create tables and load", type="primary", key="il_load"):
+                with st.spinner("Creating tables and loading parent-first ..."):
+                    il["result"] = IL.build_and_load(staged, prof, props, il["db"], sme())
+                r = il["result"]
+                log(sme(), "Initial load: tables created and loaded",
+                    f"batch {r['batch']}: {int(r['recon'].loaded.sum())} rows loaded, {len(r['quarantine'])} quarantined")
+            r = il.get("result")
+            if r:
+                rec = r["recon"]
+                k = st.columns(4)
+                k[0].metric("Rows loaded", f"{int(rec.loaded.sum()):,}")
+                k[1].metric("Quarantined", len(r["quarantine"]))
+                k[2].metric("Foreign-key violations", r["fk_violations"])
+                k[3].metric("Reconciliation", "PASS" if (rec["rows balance"] == "PASS").all()
+                            and (rec["totals balance"] != "FAIL").all() else "FAIL")
+                st.caption(f"Batch {r['batch']} · load order (parents first): {' → '.join(r['order'])}"
+                           + (f" · circular references: {', '.join(r['cycles'])}" if r["cycles"] else ""))
+                st.dataframe(styled(rec, ["rows balance", "totals balance"]), hide_index=True, width="stretch")
+                if len(r["quarantine"]):
+                    st.markdown("**Quarantined rows** (not loaded; fix the source or approve a different key, then load again)")
+                    st.dataframe(r["quarantine"], hide_index=True, width="stretch")
+                con = sqlite3.connect(r["db_path"])
+                names = [x[0] for x in con.execute("select name from sqlite_master where type='table' order by name")]
+                qt = st.selectbox("Look at a loaded table", names, key="il_peek")
+                st.dataframe(pd.read_sql_query(f'select * from "{qt}" limit 50', con), hide_index=True, width="stretch")
+                con.close()
+                st.download_button("Download the loaded database (SQLite)", Path(r["db_path"]).read_bytes(),
+                                   "SI2_initial_load.db", key="il_dl_db")
+
+# ------------------------------------------------------------------------------------------ 1. Legacy sources
+elif step == STEPS[2]:
     st.subheader("Legacy sources")
     mode = st.radio("Connection", ["SI² demo legacy system INSURE/400 (connected)", "Upload legacy files"],
                     horizontal=True, key="conn_mode")
@@ -242,7 +407,7 @@ elif step == STEPS[1]:
             st.caption("No COBOL programs connected.")
 
 # ------------------------------------------------------------------------------------------ 2. Destination
-elif step == STEPS[2]:
+elif step == STEPS[3]:
     st.subheader("Cloud destination")
     st.markdown("The destination schema and pick lists come from the target platform. Upload them in step 1 "
                 "(`table, field, type, length, required, key, pick_list, description` and `pick_list, code, description`) "
@@ -264,7 +429,7 @@ elif step == STEPS[2]:
         st.code(E.ddl(ds), language="sql")
 
 # ------------------------------------------------------------------------------------------ 3. Discovery
-elif step == STEPS[3]:
+elif step == STEPS[4]:
     st.subheader("Discovery inventory")
     inv = ss.inv
     c1, c2, c3, c4 = st.columns(4)
@@ -283,7 +448,7 @@ elif step == STEPS[3]:
                        "legacy_inventory.csv", "text/csv")
 
 # ------------------------------------------------------------------------------------------ 4. Canonical
-elif step == STEPS[4]:
+elif step == STEPS[5]:
     st.subheader("Canonical model & synonyms")
     st.markdown("Generated from the destination: one canonical element per business concept (keys shared across "
                 "tables become one element), with its pick list and synonyms. **Edit the synonyms** to teach SI² your "
@@ -315,7 +480,7 @@ elif step == STEPS[4]:
                      hide_index=True, width="stretch")
 
 # ------------------------------------------------------------------------------------------ 5. Mapping
-elif step == STEPS[5]:
+elif step == STEPS[6]:
     st.subheader("Source → Canonical → Destination")
     cov = ss.cov
     cols = st.columns(len(cov["parts"]) + 1)
@@ -402,7 +567,7 @@ elif step == STEPS[5]:
                              "feeds yet. Add new extends the cloud destination (new column or new pick-list code).")
 
 # ------------------------------------------------------------------------------------------ 6. Values
-elif step == STEPS[6]:
+elif step == STEPS[7]:
     st.subheader("Pick-list values")
     vm = ss.vm
     if vm.empty:
@@ -444,7 +609,7 @@ elif step == STEPS[6]:
             st.rerun()
 
 # ------------------------------------------------------------------------------------------ 7. Transform & inject
-elif step == STEPS[7]:
+elif step == STEPS[8]:
     st.subheader("Transform & inject into the cloud")
     ready = ss.cov["pct"] >= 100
     if not ready:
@@ -500,7 +665,7 @@ elif step == STEPS[7]:
         st.info("Nothing injected yet.")
 
 # ------------------------------------------------------------------------------------------ 8. Test
-elif step == STEPS[8]:
+elif step == STEPS[9]:
     st.subheader("Test legacy vs cloud")
     L = ss.loaded
     if not L or L.get("con") is None:
@@ -578,7 +743,7 @@ elif step == STEPS[8]:
                 st.rerun()
 
 # ------------------------------------------------------------------------------------------ 9. Approval
-elif step == STEPS[9]:
+elif step == STEPS[10]:
     st.subheader("SME approval")
     L = ss.loaded
     items = [("Mapping 100% (fields, synonyms, pick-list values)", ss.cov["pct"] >= 100),

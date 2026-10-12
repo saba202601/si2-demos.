@@ -1,0 +1,77 @@
+{
+  "page": 2,
+  "next": null,
+  "data": [
+    {
+      "driverId": "D-104",
+      "policyNumber": "PA1000104",
+      "firstName": "Sam",
+      "birthDate": "1997-02-13",
+      "licenseState": "OH",
+      "violations": [
+        {
+          "violationDate": "2023-04-16",
+          "code": "SPD"
+        },
+        {
+          "violationDate": "2023-07-26",
+          "code": "DUI"
+        }
+      ]
+    },
+    {
+      "driverId": "D-105",
+      "policyNumber": "PA1000104",
+      "firstName": "Jordan",
+      "birthDate": "1960-12-13",
+      "licenseState": "OH",
+      "violations": [
+        {
+          "violationDate": "2023-07-24",
+          "code": "SPD"
+        }
+      ]
+    },
+    {
+      "driverId": "D-106",
+      "policyNumber": "CA3000301",
+      "firstName": "Alex",
+      "birthDate": "1965-03-01",
+      "licenseState": "NJ"
+    },
+    {
+      "driverId": "D-107",
+      "policyNumber": "PA1000105",
+      "firstName": "Chris",
+      "birthDate": "1984-11-05",
+      "licenseState": "NC",
+      "violations": [
+        {
+          "violationDate": "2023-10-16",
+          "code": "DUI"
+        },
+        {
+          "violationDate": "2023-06-05",
+          "code": "DUI"
+        }
+      ]
+    },
+    {
+      "driverId": "D-108",
+      "policyNumber": "PA1000105",
+      "firstName": "Chris",
+      "birthDate": "1963-01-01",
+      "licenseState": "NC",
+      "violations": [
+        {
+          "violationDate": "2023-11-04",
+          "code": "DUI"
+        },
+        {
+          "violationDate": "2023-12-05",
+          "code": "RED"
+        }
+      ]
+    }
+  ]
+}

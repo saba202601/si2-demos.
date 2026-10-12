@@ -1,0 +1,268 @@
+{
+  "invoices": [
+    {
+      "invoiceId": "INV-5000",
+      "policyNumber": "PA1000101",
+      "termEffectiveDate": "2025-01-01",
+      "billPlan": "FULL",
+      "totalDue": 1211.64,
+      "installments": [
+        {
+          "installmentNo": 1,
+          "dueDate": "2025-01-01",
+          "amount": 302.91,
+          "status": "OPEN"
+        },
+        {
+          "installmentNo": 2,
+          "dueDate": "2025-04-02",
+          "amount": 302.91,
+          "status": "OPEN"
+        },
+        {
+          "installmentNo": 3,
+          "dueDate": "2025-07-02",
+          "amount": 302.91,
+          "status": "OPEN"
+        },
+        {
+          "installmentNo": 4,
+          "dueDate": "2025-10-01",
+          "amount": 302.91,
+          "status": "OPEN"
+        }
+      ]
+    },
+    {
+      "invoiceId": "INV-5001",
+      "policyNumber": "PA1000102",
+      "termEffectiveDate": "2024-02-01",
+      "billPlan": "FULL",
+      "totalDue": 2943.36,
+      "installments": [
+        {
+          "installmentNo": 1,
+          "dueDate": "2024-02-01",
+          "amount": 735.84,
+          "status": "PAID"
+        },
+        {
+          "installmentNo": 2,
+          "dueDate": "2024-05-02",
+          "amount": 735.84,
+          "status": "OPEN"
+        },
+        {
+          "installmentNo": 3,
+          "dueDate": "2024-08-01",
+          "amount": 735.84,
+          "status": "OPEN"
+        },
+        {
+          "installmentNo": 4,
+          "dueDate": "2024-10-31",
+          "amount": 735.84,
+          "status": "OPEN"
+        }
+      ]
+    },
+    {
+      "invoiceId": "INV-5002",
+      "policyNumber": "PA1000103",
+      "termEffectiveDate": "2025-03-01",
+      "billPlan": "QTR",
+      "totalDue": 2680.93,
+      "installments": [
+        {
+          "installmentNo": 1,
+          "dueDate": "2025-03-01",
+          "amount": 670.23,
+          "status": "OPEN"
+        },
+        {
+          "installmentNo": 2,
+          "dueDate": "2025-05-31",
+          "amount": 670.23,
+          "status": "PAID"
+        },
+        {
+          "installmentNo": 3,
+          "dueDate": "2025-08-30",
+          "amount": 670.23,
+          "status": "PAID"
+        },
+        {
+          "installmentNo": 4,
+          "dueDate": "2025-11-29",
+          "amount": 670.23,
+          "status": "PAID"
+        }
+      ]
+    },
+    {
+      "invoiceId": "INV-5003",
+      "policyNumber": "HO2000201",
+      "termEffectiveDate": "2024-04-01",
+      "billPlan": "MONTHLY",
+      "totalDue": 1916.48,
+      "installments": [
+        {
+          "installmentNo": 1,
+          "dueDate": "2024-04-01",
+          "amount": 479.12,
+          "status": "OPEN"
+        },
+        {
+          "installmentNo": 2,
+          "dueDate": "2024-07-01",
+          "amount": 479.12,
+          "status": "OPEN"
+        },
+        {
+          "installmentNo": 3,
+          "dueDate": "2024-09-30",
+          "amount": 479.12,
+          "status": "OPEN"
+        },
+        {
+          "installmentNo": 4,
+          "dueDate": "2024-12-30",
+          "amount": 479.12,
+          "status": "PAID"
+        }
+      ]
+    },
+    {
+      "invoiceId": "INV-5004",
+      "policyNumber": "HO2000202",
+      "termEffectiveDate": "2025-05-01",
+      "billPlan": "MONTHLY",
+      "totalDue": 2572.38,
+      "installments": [
+        {
+          "installmentNo": 1,
+          "dueDate": "2025-05-01",
+          "amount": 643.1,
+          "status": "PAID"
+        },
+        {
+          "installmentNo": 2,
+          "dueDate": "2025-07-31",
+          "amount": 643.1,
+          "status": "PAID"
+        },
+        {
+          "installmentNo": 3,
+          "dueDate": "2025-10-30",
+          "amount": 643.1,
+          "status": "OPEN"
+        },
+        {
+          "installmentNo": 4,
+          "dueDate": "2026-01-29",
+          "amount": 643.1,
+          "status": "PAID"
+        }
+      ]
+    },
+    {
+      "invoiceId": "INV-5005",
+      "policyNumber": "PA1000104",
+      "termEffectiveDate": "2024-06-01",
+      "billPlan": "MONTHLY",
+      "totalDue": 734.98,
+      "installments": [
+        {
+          "installmentNo": 1,
+          "dueDate": "2024-06-01",
+          "amount": 183.75,
+          "status": "PAID"
+        },
+        {
+          "installmentNo": 2,
+          "dueDate": "2024-08-31",
+          "amount": 183.75,
+          "status": "OPEN"
+        },
+        {
+          "installmentNo": 3,
+          "dueDate": "2024-11-30",
+          "amount": 183.75,
+          "status": "PAID"
+        },
+        {
+          "installmentNo": 4,
+          "dueDate": "2025-03-01",
+          "amount": 183.75,
+          "status": "OPEN"
+        }
+      ]
+    },
+    {
+      "invoiceId": "INV-5006",
+      "policyNumber": "CA3000301",
+      "termEffectiveDate": "2025-07-01",
+      "billPlan": "MONTHLY",
+      "totalDue": 902.57,
+      "installments": [
+        {
+          "installmentNo": 1,
+          "dueDate": "2025-07-01",
+          "amount": 225.64,
+          "status": "OPEN"
+        },
+        {
+          "installmentNo": 2,
+          "dueDate": "2025-09-30",
+          "amount": 225.64,
+          "status": "PAID"
+        },
+        {
+          "installmentNo": 3,
+          "dueDate": "2025-12-30",
+          "amount": 225.64,
+          "status": "OPEN"
+        },
+        {
+          "installmentNo": 4,
+          "dueDate": "2026-03-31",
+          "amount": 225.64,
+          "status": "PAID"
+        }
+      ]
+    },
+    {
+      "invoiceId": "INV-5007",
+      "policyNumber": "PA1000105",
+      "termEffectiveDate": "2024-08-01",
+      "billPlan": "MONTHLY",
+      "totalDue": 926.57,
+      "installments": [
+        {
+          "installmentNo": 1,
+          "dueDate": "2024-08-01",
+          "amount": 231.64,
+          "status": "OPEN"
+        },
+        {
+          "installmentNo": 2,
+          "dueDate": "2024-10-31",
+          "amount": 231.64,
+          "status": "PAID"
+        },
+        {
+          "installmentNo": 3,
+          "dueDate": "2025-01-30",
+          "amount": 231.64,
+          "status": "PAID"
+        },
+        {
+          "installmentNo": 4,
+          "dueDate": "2025-05-01",
+          "amount": 231.64,
+          "status": "PAID"
+        }
+      ]
+    }
+  ]
+}

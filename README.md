@@ -30,6 +30,16 @@ name, type, description or factor) and **Not needed**. Each app adds only a smal
 | Business Rule Engine | 🧩 Rule gaps tab | `si2_common/rules_gaps.py` | fields and codes a rule uses that the rule vocabulary lacks (rules R09-R11 are the demo) |
 | Rating Engine | 🧩 Rating gaps tab | `si2_common/rating_gaps.py` | values on incoming quotes with no factor: new state, Rideshare use, 500/1000 limit, $2,000 deductible; drafted factors are flagged until an actuary confirms them |
 
+### Initial load (Migration Workbench, Step 0)
+
+Upload Excel, CSV, JSON, XML / ACORD, SQL / PL-SQL scripts (read, never executed), PDF (simple text tables) or an API
+returning JSON. SI² profiles every column (codes with leading zeros stay text; dates and amounts in any format),
+proposes primary keys, foreign keys and pick lists with a confidence and the evidence (declared in the DDL, nested in
+the file, found in the data, or the policy term in force on the loss date), the SME approves, and SI² creates the
+tables (surrogate key + business key, effective dating), loads them parent-first, quarantines rows it cannot load and
+reconciles row counts and money totals. SQLite DDL and SQL Server DDL are generated. Engine: `migrate/initial_load.py`;
+sample upload set: `migrate/initial_load_samples/`.
+
 Tests: `python -m pytest tests iso_bureau/tests -q`.
 
 ## Bureau Reporting Workbench (`bureau/`)

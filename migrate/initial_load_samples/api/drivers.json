@@ -1,0 +1,64 @@
+{
+  "page": 1,
+  "next": "si2://sample-api/drivers_p2",
+  "data": [
+    {
+      "driverId": "D-100",
+      "policyNumber": "PA1000101",
+      "firstName": "Taylor",
+      "birthDate": "2002-04-07",
+      "licenseState": "FL",
+      "violations": [
+        {
+          "violationDate": "2023-08-12",
+          "code": "DUI"
+        },
+        {
+          "violationDate": "2023-01-01",
+          "code": "RED"
+        }
+      ]
+    },
+    {
+      "driverId": "D-101",
+      "policyNumber": "PA1000102",
+      "firstName": "Taylor",
+      "birthDate": "1971-04-23",
+      "licenseState": "NJ",
+      "violations": [
+        {
+          "violationDate": "2023-06-15",
+          "code": "DUI"
+        },
+        {
+          "violationDate": "2023-06-12",
+          "code": "SPD"
+        }
+      ]
+    },
+    {
+      "driverId": "D-102",
+      "policyNumber": "PA1000102",
+      "firstName": "Alex",
+      "birthDate": "1961-04-16",
+      "licenseState": "NJ"
+    },
+    {
+      "driverId": "D-103",
+      "policyNumber": "PA1000103",
+      "firstName": "Jordan",
+      "birthDate": "1968-08-20",
+      "licenseState": "MA",
+      "violations": [
+        {
+          "violationDate": "2023-01-16",
+          "code": "DUI"
+        },
+        {
+          "violationDate": "2023-06-26",
+          "code": "DUI"
+        }
+      ]
+    }
+  ]
+}
