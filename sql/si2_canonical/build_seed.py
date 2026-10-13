@@ -312,6 +312,16 @@ APP_SOURCE = {"Core canonical": "SI2 Core", "ISO bureau": "ISO", "NCCI bureau": 
               "Rule engine": "SI2 Rules", "Rating engine": "SI2 Rating"}
 
 
+def merge_ext(ext):
+    """One row per (object, attribute): several values are joined, so the unique key holds."""
+    vals = collections.OrderedDict()
+    for ot, pl, oc, n, v in sorted(set(ext)):
+        vals.setdefault((ot, pl, oc, n), [])
+        if v not in vals[(ot, pl, oc, n)]:
+            vals[(ot, pl, oc, n)].append(v)
+    return [(*k, "; ".join(v)) for k, v in vals.items()]
+
+
 def build() -> str:
     out: list[str] = []
     w = out.append
@@ -625,8 +635,9 @@ def build() -> str:
     w("-- Where-used")
     useen, urows = set(), []
     for u in usage:
-        if u[0] in elements and (u[0], u[1], u[2], u[3]) not in useen:
-            useen.add((u[0], u[1], u[2], u[3]))
+        uk = (u[0], u[1].upper(), str(u[2] or "").upper(), u[3].upper())
+        if u[0] in elements and uk not in useen:
+            useen.add(uk)
             urows.append(u)
     values_insert(out, f"INSERT canon.ElementUsage (ElementId, UsedIn, ObjectName, FieldName, CreatedBy)\nSELECT e.ElementId, v.u, v.o, v.f, {q(BY)}",
                   ["c", "u", "o", "f"], urows,
@@ -637,7 +648,7 @@ def build() -> str:
     if ext:
         w("-- Extension attributes")
         values_insert(out, f"INSERT canon.ExtensionAttribute (ObjectType, ObjectId, AttributeName, AttributeValue, CreatedBy)\nSELECT v.ot, e.ElementId, v.n, v.val, {q(BY)}",
-                      ["ot", "pl", "oc", "n", "val"], sorted(set(ext)),
+                      ["ot", "pl", "oc", "n", "val"], merge_ext(ext),
                       "JOIN canon.DataElement e ON e.ElementCode = v.oc AND e.ScopeId = 1\n"
                       "WHERE NOT EXISTS (SELECT 1 FROM canon.ExtensionAttribute x WHERE x.ObjectType = v.ot AND x.ObjectId = e.ElementId AND x.AttributeName = v.n AND x.ScopeId = 1)")
 

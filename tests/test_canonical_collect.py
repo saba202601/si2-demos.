@@ -21,6 +21,10 @@ MASTER = {
 class FakeReader:
     db = "RuleEngine"
 
+    @property
+    def label(self):
+        return self.db
+
     def __init__(self, tables):
         self.tables = tables
 

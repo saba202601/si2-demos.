@@ -83,8 +83,8 @@ def add_option(pl, code, name=None, desc=None):
 
 # ------------------------------------------------------------------------------------------ database readers
 class Reader:
-    def __init__(self, con, db: str):
-        self.con, self.db = con, db
+    def __init__(self, con, db: str, label: str | None = None):
+        self.con, self.db, self.label = con, db, label or db
 
     def exists(self) -> bool:
         return self.one("SELECT DB_ID(?) AS x", self.db) is not None
@@ -115,7 +115,7 @@ class Reader:
 
 
 def read_rule_engine(r: Reader) -> dict:
-    cat = new_catalog(r.db)
+    cat = new_catalog(r.label)
     pls = {}
     for p in r.rows("dbo", "PickList", ["PickListID", "PickListName", "Description"], "ExpirationDate"):
         pls[p["PickListID"]] = add_picklist(cat, f"RE:{p['PickListID']}", snake(p["PickListName"]), p["PickListName"], p["Description"])
@@ -126,24 +126,24 @@ def read_rule_engine(r: Reader) -> dict:
             opts[o["OptionID"]] = add_option(pl, o["OptionCode"], o["OptionName"])
     for a in r.rows("dbo", "PickListAlias", ["PickListID", "Alias", "AliasSourceSystem"], "ExpirationDate"):
         if a["PickListID"] in pls and clean(a["Alias"]):
-            pls[a["PickListID"]]["aliases"].append((clean(a["Alias"]), clean(a["AliasSourceSystem"]) or r.db))
+            pls[a["PickListID"]]["aliases"].append((clean(a["Alias"]), clean(a["AliasSourceSystem"]) or r.label))
     for a in r.rows("dbo", "PickListOptionAlias", ["OptionID", "AliasCode", "AliasName", "AliasSourceSystem"], "ExpirationDate"):
         o = opts.get(a["OptionID"])
         if o:
             for v in (a["AliasCode"], a["AliasName"]):
                 if clean(v):
-                    o["aliases"].append((clean(v), clean(a["AliasSourceSystem"]) or r.db))
+                    o["aliases"].append((clean(v), clean(a["AliasSourceSystem"]) or r.label))
     for d in r.rows("dbo", "DataElement", ["DataElementID", "DataElementName", "BusinessDefinition", "Module", "DataType", "PickListID", "Mandatory"],
                     "ExpirationDate"):
         pl = pls.get(d["PickListID"])
         cat["elements"][f"RE:{d['DataElementID']}"] = {
             "code": snake(d["DataElementName"]), "name": clean(d["DataElementName"]), "desc": clean(d["BusinessDefinition"]),
             "dtype": dtype(d["DataType"], pl is not None), "picklist_key": f"RE:{d['PickListID']}" if pl else None,
-            "aliases": [(str(d["DataElementID"]), r.db)], "module": clean(d["Module"])}
+            "aliases": [(str(d["DataElementID"]), r.label)], "module": clean(d["Module"])}
     for a in r.rows("dbo", "DataElementAlias", ["DataElementID", "Alias", "AliasSourceSystem"], "ExpirationDate"):
         e = cat["elements"].get(f"RE:{a['DataElementID']}")
         if e and clean(a["Alias"]):
-            e["aliases"].append((clean(a["Alias"]), clean(a["AliasSourceSystem"]) or r.db))
+            e["aliases"].append((clean(a["Alias"]), clean(a["AliasSourceSystem"]) or r.label))
     for x in r.rows("dbo", "Rule", ["RuleID", "State", "Product", "Module", "SubModule", "BusinessRule", "RuleJSON", "EffectiveDate", "Status"],
                     "ExpirationDate"):
         if "reject" in str(x["Status"] or "").lower():
@@ -160,7 +160,7 @@ def read_rule_engine(r: Reader) -> dict:
 
 
 def read_bureau_reporting(r: Reader) -> dict:
-    cat = new_catalog(r.db)
+    cat = new_catalog(r.label)
     for p in r.rows("ref", "PickList", ["PickListCode", "PickListName", "Description", "OwnerBureauCode"], "ExpirationDate"):
         add_picklist(cat, f"BR:{p['PickListCode']}", p["PickListCode"], p["PickListName"], p["Description"],
                      clean(p["OwnerBureauCode"]) or "BUREAU")
@@ -171,12 +171,12 @@ def read_bureau_reporting(r: Reader) -> dict:
     for a in r.rows("ref", "PickListAlias", ["PickListCode", "AliasName", "SourceSystemCode"], "ExpirationDate"):
         pl = cat["picklists"].get(f"BR:{a['PickListCode']}")
         if pl and clean(a["AliasName"]):
-            pl["aliases"].append((clean(a["AliasName"]), clean(a["SourceSystemCode"]) or r.db))
+            pl["aliases"].append((clean(a["AliasName"]), clean(a["SourceSystemCode"]) or r.label))
     for a in r.rows("ref", "PickListOptionAlias", ["PickListCode", "OptionCode", "AliasValue", "SourceSystemCode"], "ExpirationDate"):
         pl = cat["picklists"].get(f"BR:{a['PickListCode']}")
         o = pl["options"].get(str(a["OptionCode"]).upper()) if pl and a["OptionCode"] else None
         if o and clean(a["AliasValue"]):
-            o["aliases"].append((clean(a["AliasValue"]), clean(a["SourceSystemCode"]) or r.db))
+            o["aliases"].append((clean(a["AliasValue"]), clean(a["SourceSystemCode"]) or r.label))
     for d in r.rows("ref", "DataElement", ["ElementCode", "ElementName", "BusinessDefinition", "DataType", "PickListCode", "CanonicalElementName",
                                            "BureauFieldRef", "LayoutCode", "IsFiller"], "ExpirationDate"):
         if d["IsFiller"] in (1, True):
@@ -188,11 +188,11 @@ def read_bureau_reporting(r: Reader) -> dict:
             "aliases": [], "bureau": True})
         for v in (d["CanonicalElementName"], d["BureauFieldRef"]):
             if clean(v) and not re.fullmatch(r"\d+", str(v).strip()):
-                e["aliases"].append((clean(v), r.db))
+                e["aliases"].append((clean(v), r.label))
     for a in r.rows("ref", "DataElementAlias", ["ElementCode", "AliasName", "SourceSystemCode"], "ExpirationDate"):
         e = cat["elements"].get(f"BR:{a['ElementCode']}")
         if e and clean(a["AliasName"]):
-            e["aliases"].append((clean(a["AliasName"]), clean(a["SourceSystemCode"]) or r.db))
+            e["aliases"].append((clean(a["AliasName"]), clean(a["SourceSystemCode"]) or r.label))
     for x in r.rows("rul", "BureauRule", ["RuleCode", "ReportTypeCode", "LayoutCode", "ElementCode", "RuleType", "Severity", "BureauEditCode",
                                           "RuleParamsJson", "SqlPredicate", "Message", "EffectiveDate"], "ExpirationDate"):
         cat["rules"].append({"kind": "BR", "code": clean(x["RuleCode"]), "name": (clean(x["Message"]) or x["RuleCode"])[:200],
@@ -207,7 +207,7 @@ def read_bureau_reporting(r: Reader) -> dict:
 
 
 def read_iso(r: Reader) -> dict:
-    cat = new_catalog(r.db)
+    cat = new_catalog(r.label)
     keep = lambda row: "reject" not in str(row.get("status") or "").lower()  # noqa: E731
     for p in r.rows("dbo", "picklist", ["picklist_code", "picklist_name", "business_description", "status"], "exp_date"):
         if keep(p):
@@ -219,12 +219,12 @@ def read_iso(r: Reader) -> dict:
     for a in r.rows("dbo", "picklist_alias", ["picklist_code", "alias_name", "alias_context", "status"], "exp_date"):
         pl = cat["picklists"].get(f"ISO:{a['picklist_code']}")
         if pl and keep(a) and clean(a["alias_name"]):
-            pl["aliases"].append((clean(a["alias_name"]), (clean(a["alias_context"]) or r.db).split(":")[-1]))
+            pl["aliases"].append((clean(a["alias_name"]), (clean(a["alias_context"]) or r.label).split(":")[-1]))
     for a in r.rows("dbo", "picklist_option_alias", ["picklist_code", "option_code", "source_system", "source_value", "status"], "exp_date"):
         pl = cat["picklists"].get(f"ISO:{a['picklist_code']}")
         o = pl["options"].get(str(a["option_code"]).upper()) if pl and a["option_code"] else None
         if o and keep(a) and clean(a["source_value"]):
-            o["aliases"].append((clean(a["source_value"]), clean(a["source_system"]) or r.db))
+            o["aliases"].append((clean(a["source_value"]), clean(a["source_system"]) or r.label))
     for b in r.rows("dbo", "bureau_code_map", ["bureau_code", "picklist_code", "option_code", "bureau_value", "status"], "exp_date"):
         if keep(b) and clean(b["bureau_value"]):
             cat["bureau_codes"].append((f"ISO:{b['picklist_code']}", clean(b["option_code"]), clean(b["bureau_code"]) or "ISO", clean(b["bureau_value"])))
@@ -238,7 +238,7 @@ def read_iso(r: Reader) -> dict:
     for a in r.rows("dbo", "element_alias", ["element_code", "alias_name", "alias_context", "status"], "exp_date"):
         e = cat["elements"].get(f"ISO:{a['element_code']}")
         if e and keep(a) and clean(a["alias_name"]):
-            e["aliases"].append((clean(a["alias_name"]), (clean(a["alias_context"]) or r.db).split(":")[-1]))
+            e["aliases"].append((clean(a["alias_name"]), (clean(a["alias_context"]) or r.label).split(":")[-1]))
     for x in r.rows("dbo", "business_rule", ["rule_code", "rule_name", "rule_category", "lob_scope", "state_scope", "element_code", "expression_json",
                                              "severity", "message", "business_description", "eff_date", "status"], "exp_date"):
         if keep(x):
@@ -255,6 +255,56 @@ def read_iso(r: Reader) -> dict:
 
 
 READERS = {"RuleEngine": read_rule_engine, "BureauReporting": read_bureau_reporting, "ISOBureauReporting": read_iso}
+SIGNATURES = [  # how a database is recognized, whatever its name
+    (read_iso, [("dbo", "canonical_element"), ("dbo", "picklist_option")]),
+    (read_bureau_reporting, [("ref", "DataElement"), ("ref", "PickListOption")]),
+    (read_rule_engine, [("dbo", "DataElement"), ("dbo", "PickListOption")]),
+]
+KEYWORDS = re.compile(r"element|pick|option|alias|synonym|rule|code|lookup|list|canonical|dictionar|glossar|term|domain|layout|field|"
+                      r"mapping|reference|ref_|enum|valid|value", re.I)
+
+
+def detect(r: Reader):
+    for fn, tables in SIGNATURES:
+        if all(r.cols(sch, t) for sch, t in tables):
+            return fn
+    return None
+
+
+def user_databases(con) -> list[str]:
+    cur = con.cursor()
+    cur.execute("SELECT name FROM sys.databases WHERE database_id > 4 AND state_desc = 'ONLINE' AND name NOT LIKE 'SI2%' ORDER BY name")
+    return [r[0] for r in cur.fetchall()]
+
+
+def discover(con, server: str, path: Path) -> None:
+    """Every user database: tables, row counts, columns; a few sample rows of tables that look like reference data."""
+    cur = con.cursor()
+    with open(path, "w", encoding="utf-8") as fh:
+        fh.write(f"Discovery of {server} at {dt.datetime.now():%Y-%m-%d %H:%M}\n")
+        for db in user_databases(con):
+            r = Reader(con, db)
+            kind = detect(r)
+            fh.write(f"\n=== DATABASE {db}  ({kind.__name__ if kind else 'not a known SI2 structure'})\n")
+            try:
+                cur.execute(f"SELECT s.name, t.name, SUM(p.rows) FROM [{db}].sys.tables t JOIN [{db}].sys.schemas s ON s.schema_id = t.schema_id "
+                            f"JOIN [{db}].sys.partitions p ON p.object_id = t.object_id AND p.index_id IN (0, 1) GROUP BY s.name, t.name ORDER BY s.name, t.name")
+                tables = cur.fetchall()
+            except Exception as ex:  # noqa: BLE001
+                fh.write(f"  could not list tables: {ex}\n")
+                continue
+            for sch, t, n in tables:
+                cur.execute(f"SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH FROM [{db}].INFORMATION_SCHEMA.COLUMNS "
+                            "WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? ORDER BY ORDINAL_POSITION", sch, t)
+                cols = cur.fetchall()
+                fh.write(f"  {sch}.{t}  ({n} rows): " + ", ".join(f"{c}:{ty}{'' if ln is None else f'({ln})'}" for c, ty, ln in cols) + "\n")
+                if KEYWORDS.search(t) and n and n < 200000:
+                    try:
+                        cur.execute(f"SELECT TOP (5) * FROM [{db}].[{sch}].[{t}]")
+                        for row in cur.fetchall():
+                            fh.write("      | " + " | ".join(str(v)[:60] for v in row) + "\n")
+                    except Exception as ex:  # noqa: BLE001
+                        fh.write(f"      (sample failed: {ex})\n")
 
 
 # ------------------------------------------------------------------------------------------ the master model
@@ -555,29 +605,44 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--server", default=os.environ.get("SI2_MSSQL_SERVER", "SABAHOME\\SQLEXPRESS02"))
     ap.add_argument("--database", default="SI2Canonical")
-    ap.add_argument("--only", default=",".join(READERS), help="comma-separated source databases")
+    ap.add_argument("--only", default="auto", help="comma-separated source databases, or 'auto' (every database with a known structure)")
+    ap.add_argument("--source-server", default=None, help="read the sources from another server (default: --server)")
+    ap.add_argument("--discover", action="store_true", help="write a list of every database, table and column on the source server")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--approve-as", default=None, help="second person who approves the proposals")
     ap.add_argument("--scan-all", action="store_true", help="also scan every other user database column by column")
     a = ap.parse_args()
 
     con = connect(a.server, a.database)
+    src_server = a.source_server or a.server
+    scon = con if src_server == a.server else connect(src_server, "master")
+    suffix = "" if src_server == a.server else "@" + src_server.split("\\")[-1]
+    stamp = dt.datetime.now().strftime("%Y%m%d_%H%M")
+    if a.discover:
+        path = HERE / f"discover_{src_server.replace(chr(92), '_')}_{stamp}.txt"
+        discover(scon, src_server, path)
+        print(f"Discovery written: {path}")
     cats = []
-    for db in [d.strip() for d in a.only.split(",") if d.strip()]:
-        r = Reader(con, db)
+    names = user_databases(scon) if a.only == "auto" else [d.strip() for d in a.only.split(",") if d.strip()]
+    print(f"Sources on {src_server}:")
+    for db in names:
+        r = Reader(scon, db, (db + suffix)[:60])
         if not r.exists():
-            print(f"  {db:<20} not on this server, skipped")
+            print(f"  {db:<24} not on this server, skipped")
+            continue
+        fn = detect(r)
+        if not fn:
+            print(f"  {db:<24} not a known structure (see --discover)")
             continue
         try:
-            cat = READERS[db](r)
+            cat = fn(r)
         except Exception as ex:  # noqa: BLE001
-            print(f"  {db:<20} could not be read: {ex}")
+            print(f"  {db:<24} could not be read: {ex}")
             continue
         n_opt = sum(len(p["options"]) for p in cat["picklists"].values())
-        print(f"  {db:<20} {len(cat['elements'])} elements, {len(cat['picklists'])} pick lists, {n_opt} options, {len(cat['rules'])} rules")
+        print(f"  {db:<24} {len(cat['elements'])} elements, {len(cat['picklists'])} pick lists, {n_opt} options, {len(cat['rules'])} rules")
         cats.append(cat)
     proposals = plan(cats, Index(load_master(con)))
-    stamp = dt.datetime.now().strftime("%Y%m%d_%H%M")
     report = HERE / f"collect_report_{stamp}.csv"
     with open(report, "w", newline="", encoding="utf-8-sig") as fh:
         w = csv.writer(fh)
@@ -599,9 +664,10 @@ def main() -> int:
     runs = {}
     for src in sorted({p["source"] for p in proposals}):
         cur.execute("IF NOT EXISTS (SELECT 1 FROM intake.SourceSystem WHERE SourceSystemCode = ?) "
-                    "INSERT intake.SourceSystem (SourceSystemCode, Name, Kind, DatabaseName) VALUES (?, ?, 'DATABASE', ?)", src, src, src, src)
+                    "INSERT intake.SourceSystem (SourceSystemCode, Name, Kind, DatabaseName) VALUES (?, ?, 'DATABASE', ?)", src, src, src,
+                    src.split("@")[0])
         cur.execute("SET NOCOUNT ON; INSERT intake.ScanRun (SourceSystemCode, DatabaseName, StartedBy, Message) "
-                    "VALUES (?, ?, ?, N'Catalog collection'); SELECT CAST(SCOPE_IDENTITY() AS int);", src, src, COLLECTOR)
+                    "VALUES (?, ?, ?, N'Catalog collection'); SELECT CAST(SCOPE_IDENTITY() AS int);", src, src.split("@")[0], COLLECTOR)
         runs[src] = cur.fetchone()[0]
     for p in proposals:
         cur.execute("EXEC gov.usp_RequestChange @ObjectType = ?, @ChangeType = ?, @ObjectCode = ?, @PayloadJson = ?, @RequestedBy = ?, "
@@ -625,7 +691,7 @@ def main() -> int:
             print(f"  {src}: {summary}")
             for r in (sets[1] if len(sets) > 1 else [])[:20]:
                 print(f"    FAILED {r[1]} {r[3]}: {r[5]}")
-    if a.scan_all:
+    if a.scan_all and src_server == a.server:
         cur.execute("SELECT name FROM sys.databases WHERE database_id > 4 AND name NOT LIKE 'SI2%' AND state_desc = 'ONLINE'")
         for (db,) in cur.fetchall():
             cur.execute("EXEC intake.usp_ScanDatabase @SourceDatabase = ?, @StartedBy = ?", db, COLLECTOR)
