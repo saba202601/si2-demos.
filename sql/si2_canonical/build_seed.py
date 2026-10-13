@@ -29,6 +29,9 @@ from bureau import edits as NE  # noqa: E402
 from iso_bureau import catalog as C  # noqa: E402
 from si2_common import registry as R  # noqa: E402
 
+sys.path.insert(0, str(HERE))
+import domain_extra as X  # noqa: E402
+
 BY = "SI2 seed"
 BASE = "2020-01-01"
 
@@ -110,17 +113,23 @@ def subject_of(code: str, app_entities: set) -> str:
                           "OCCUPATION", "LUMP_SUM", "RETROSPECTIVE", "LEGAL_NATURE", "TYPE_PLAN", "ESTIMATED_STATE", "EXPENSE_CONSTANT", "AUDIT_FREQ",
                           "BILLING_FREQ", "MANUAL_CHARGED", "CLASSIFICATION_WORDING", "JURISDICTION"]),
         ("CLAIM_FINANCIAL", ["PAID", "RESERVE", "ALAE", "RECOVERY", "SETTLEMENT", "INCURRED", "PAYMENT", "REPAIR_ESTIMATE", "TRANSACTION_AMOUNT"]),
-        ("CLAIM", ["CLAIM", "LOSS", "CAT_CODE", "ATTORNEY", "REPORT_DATE", "CLOSING", "CAUSE"]),
-        ("UNDERWRITING", ["SUBMISSION", "UW_", "RISK_SCORE", "TOTAL_INSURED", "DECISION"]),
-        ("DRIVER", ["DRIVER", "VIOLATION", "PRIOR_CLAIMS", "YEARS_LICENSED", "LICENSE"]),
-        ("VEHICLE", ["VEHICLE", "VIN", "MAKE", "SYMBOL", "ANNUAL_MILES", "TELEMATICS", "RIDESHARE", "MODEL_YEAR"]),
-        ("PROPERTY", ["CONSTRUCTION", "PROTECTION_CLASS", "ROOF", "OCCUPANCY", "YEAR_BUILT", "SQUARE", "COINSURANCE", "WIND_HAIL", "COAST"]),
+        ("CLAIM", ["CLAIM", "LOSS", "CAT_CODE", "ATTORNEY", "REPORT_DATE", "CLOSING", "CAUSE", "CATASTROPHE", "LITIGATION", "ADJUSTER",
+                   "DAYS_TO_REPORT"]),
+        ("UNDERWRITING", ["SUBMISSION", "UW_", "RISK_SCORE", "TOTAL_INSURED", "DECISION", "QUOTE", "CYBER", "RECORDS_HELD", "NAICS", "SIC_CODE",
+                          "LEGAL_ENTITY", "ANNUAL_REVENUE", "YEARS_IN_BUSINESS", "BUSINESS_DESCRIPTION", "PRIOR_CARRIER"]),
+        ("DRIVER", ["DRIVER", "VIOLATION", "PRIOR_CLAIMS", "YEARS_LICENSED", "LICENSE", "GOOD_STUDENT"]),
+        ("VEHICLE", ["VEHICLE", "VIN", "MAKE", "SYMBOL", "ANNUAL_MILES", "TELEMATICS", "RIDESHARE", "MODEL_YEAR", "BODY_STYLE", "FUEL",
+                     "ANTI_THEFT", "GARAGING", "ODOMETER"]),
+        ("PROPERTY", ["CONSTRUCTION", "PROTECTION_CLASS", "ROOF", "OCCUPANCY", "YEAR_BUILT", "SQUARE", "COINSURANCE", "WIND_HAIL", "COAST",
+                      "DWELLING", "STORIES", "UNITS", "FOUNDATION", "ALARM", "SPRINKLER", "WIND_MITIGATION", "FLOOD", "FIRE_STATION",
+                      "HYDRANT", "WILDFIRE", "REPLACEMENT_COST"]),
         ("COVERAGE", ["COVERAGE", "LIMIT", "DEDUCTIBLE", "INSURING_AGREEMENT", "SUBLINE", "PROJECT_CATEGORY"]),
         ("RATING", ["RATE", "TERRITORY", "CLASS", "EXPOSURE", "UNITS", "FACTOR", "SYMBOL"]),
         ("PREMIUM", ["PREMIUM", "ACCOUNTING", "TRANSACTION", "POLICY_FEE"]),
         ("PRODUCER", ["PRODUCER", "AGENT", "CHANNEL", "COMMISSION"]),
         ("LOCATION", ["ZIP", "ADDRESS", "LOCATION", "STATE", "CITY", "COUNTY"]),
-        ("PARTY", ["PARTY", "INSURED", "NAME", "EMAIL", "PHONE", "FEIN", "BIRTH", "MARITAL", "GENDER"]),
+        ("PARTY", ["PARTY", "INSURED", "NAME", "EMAIL", "PHONE", "FEIN", "BIRTH", "MARITAL", "GENDER", "CUSTOMER", "LANGUAGE", "CONTACT",
+                   "LAPSE_RISK"]),
         ("BUREAU", ["FILLER", "COMPANY_USE", "MAJOR_LINE", "FILED_FORM"]),
         ("POLICY", ["POLICY", "CANCELLATION", "LINE_OF_BUSINESS", "FORM", "STATUS", "SEQUENCE", "RISK_ITEM", "RISK_TYPE"]),
     ]
@@ -398,7 +407,7 @@ def build() -> str:
         options.append((pl, oc, on, "Company option (no ISO code)", lob, "*", 500, BASE))
 
     # Domain lists
-    for code, name, desc, lib, opts in DOMAIN_LISTS:
+    for code, name, desc, lib, opts in DOMAIN_LISTS + [(c, n, d, lb, [(oc, on, None) for oc, on in o]) for c, n, d, lb, o in X.LISTS]:
         picklists[code] = (name, desc, lib, None)
         for i, (oc, on, od) in enumerate(opts):
             options.append((code, oc, on, od, "*", "*", (i + 1) * 10, BASE))
@@ -515,7 +524,7 @@ def build() -> str:
                         elements[code]["type"] = "CODE"
                     elif elements[code]["pl"] != ncci_code_of[a]:
                         ext.append(("ELEMENT", None, code, "NCCI pick list", ncci_code_of[a]))
-    for code, name, desc, dtype, pl, pii in EXTRA_ELEMENTS:
+    for code, name, desc, dtype, pl, pii in EXTRA_ELEMENTS + X.ELEMENTS:
         if code in elements:
             elements[code].update({"pl": elements[code]["pl"] or pl})
             continue

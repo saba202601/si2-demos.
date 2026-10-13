@@ -5,10 +5,10 @@ exactly which version a client saw, and redeploy it.
 
 ## v1.1.0 (in development)
 
-* **SI² Canonical Master on SQL Server** (`sql/si2_canonical/`): 185 data elements, 154 pick lists, 920 options,
+* **SI² Canonical Master on SQL Server** (`sql/si2_canonical/`): 247 data elements, 179 pick lists, 1,092 options,
   860+ synonyms, 788 ISO / NCCI code mappings, 82 rules with 35 test cases; propose → second-person approval;
   GLOBAL / COMPANY / PERSON scopes; extension attributes; system-versioned history; scan another database and
-  propose what is missing (alias, synonym, abbreviation and value-fingerprint matching). Installer with self-test.
+  propose what is missing (alias, synonym, abbreviation and value-fingerprint matching); collector for the RuleEngine, BureauReporting and ISOBureauReporting databases. Installer with self-test.
 
 * **Role-Based Super Intelligence** (`app_roles.py`, deploy as `si2-roles`): 15 roles in 5 departments from the
   role workbook, each with an SI² workbench, decisions with reasons, decision boundaries under two-person approval,
