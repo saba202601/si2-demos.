@@ -44,7 +44,7 @@ def snake(s) -> str:
 
 def short_code(s: str, n: int) -> str:
     s = str(s)
-    return s if len(s) <= n else s[: n - 7] + "~" + hashlib.md5(s.encode()).hexdigest()[:6].upper()
+    return s if len(s) <= n else s[: n - 7] + "_" + hashlib.md5(s.encode()).hexdigest()[:6].upper()
 
 
 def clean(v):
@@ -556,6 +556,56 @@ def read_features(r: Reader) -> dict:
     return cat
 
 
+def guess_type(name: str) -> str:
+    n = snake(name)
+    if re.search(r"(_DATE|_DT|DATE_TIME|TIMESTAMP)$", n) or n.endswith("_DATE") or n.startswith("DATE_"):
+        return "DATETIME" if "TIME" in n else "DATE"
+    if re.search(r"(AMOUNT|AMT|PREMIUM|LIMIT|DEDUCTIBLE_AMOUNT|COST|VALUE|PRICE|FEE|BALANCE|PAYMENT|RESERVE|PAID)$", n):
+        return "AMOUNT"
+    if re.search(r"(PERCENT|PCT|RATE|RATIO|FACTOR)$", n):
+        return "DECIMAL"
+    if re.search(r"(COUNT|NUMBER_OF|_QTY|YEARS|_AGE|_DAYS)$", n) or n.startswith("NUMBER_OF"):
+        return "INTEGER"
+    if re.search(r"(_IND|_FLAG|INDICATOR)$", n) or n.startswith(("IS_", "HAS_")):
+        return "BOOLEAN"
+    return "TEXT"
+
+
+KNOWN_OPTION_CODES = {("LEGAL_ENTITY_TYPE", norm('SUBCHAPTER "S" CORPORATION')): "S_CORP"}
+
+
+def read_definitions(path: Path, skipped: list | None = None) -> list[dict]:
+    """A CSV (Source, Object, Name, Business Definition) completing the items a collection held back."""
+    skipped = skipped if skipped is not None else []
+    cats = {}
+    with open(path, encoding="utf-8-sig", newline="") as fh:
+        for row in csv.DictReader(fh):
+            src, obj, name, desc = row["Source"], row["Object"], clean(row["Name"]), clean(row["Business Definition"])
+            if not name or not desc:
+                continue
+            cat = cats.setdefault(src, new_catalog(src))
+            if obj == "ELEMENT":
+                cat["elements"].setdefault(f"DE:{norm(name)}", {"code": snake(name), "name": name[:200], "desc": desc, "dtype": guess_type(name),
+                                                               "picklist_key": None, "aliases": [(name, src)], "curated": True})
+            elif obj == "OPTION" and "." in name:
+                plc, raw = name.split(".", 1)
+                code, label = (raw.split("=", 1) + [None])[:2] if "=" in raw else (raw, None)
+                code = code.strip()
+                if (not code or code.endswith(":") or (len(code) > 40 and " " not in code)
+                        or len(re.findall(r"DEDUCTIBLE", code.upper())) > 1):
+                    skipped.append((src, obj, name, "not a single value (several values joined, or a fragment)"))
+                    continue
+                code = KNOWN_OPTION_CODES.get((plc, norm(code)), code)
+                pl = add_picklist(cat, f"PL:{plc}", plc, plc)
+                ccode = code if re.fullmatch(r"[A-Z0-9_]+", code) else short_code(snake(code.replace(">=", "GE_").replace("<=", "LE_")
+                                                                                     .replace(">", "GT_").replace("<", "LT_")), 60)
+                o = add_option(pl, ccode, (label or raw)[:300], desc)
+                for t in (raw, code):
+                    if o and norm(t) != norm(o["code"]):
+                        o["aliases"].append((t, src))
+    return list(cats.values())
+
+
 READERS = {"RuleEngine": read_rule_engine, "BureauReporting": read_bureau_reporting, "ISOBureauReporting": read_iso}
 SIGNATURES = [  # how a database is recognized, whatever its name; one database can hold several of these
     (read_iso, [("dbo", "canonical_element"), ("dbo", "picklist_option")]),
@@ -950,6 +1000,7 @@ def main() -> int:
     ap.add_argument("--discover", action="store_true", help="write a list of every database, table and column on the source server")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--approve-as", default=None, help="second person who approves the proposals")
+    ap.add_argument("--definitions", default=None, help="CSV of held-back items with their business definitions")
     ap.add_argument("--approve-seed", action="store_true", help="first approve the seed's pending changes (as --approve-as)")
     ap.add_argument("--scan-all", action="store_true", help="also scan every other user database column by column")
     a = ap.parse_args()
@@ -972,6 +1023,12 @@ def main() -> int:
         print(f"Discovery written: {path}")
     cats = []
     names = user_databases(scon) if a.only == "auto" else [d.strip() for d in a.only.split(",") if d.strip()]
+    if a.definitions:
+        def_skipped = []
+        cats = read_definitions(Path(a.definitions), def_skipped)
+        names = []
+        print(f"Definitions file {a.definitions}: " + ", ".join(f"{c['source']} {len(c['elements'])} elements, "
+                                                              f"{sum(len(p['options']) for p in c['picklists'].values())} options" for c in cats))
     print(f"Sources on {src_server}:")
     for db in names:
         r = Reader(scon, db, (db + suffix)[:60])
@@ -993,6 +1050,8 @@ def main() -> int:
                   f"  ({fn.__name__})")
             cats.append(cat)
     ix = Index(load_master(con))
+    if a.definitions:
+        ix.skipped += def_skipped
     proposals = plan(cats, ix)
     report = HERE / f"collect_report_{stamp}.csv"
     with open(report, "w", newline="", encoding="utf-8-sig") as fh:
