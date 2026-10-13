@@ -54,6 +54,40 @@ def clean(v):
     return v or None
 
 
+PREFIXES = re.compile(r"^(GLOBAL[._]|DE_|CDM[._]|CN_|GW_)", re.I)
+LIST_SUFFIX = re.compile(r"(?i)[ _]?(options?|picklist|pick list|list|codes?|values|lov)$")
+
+
+def variants(*texts, picklist: bool = False) -> list[str]:
+    """Ways a name may appear: as is, without a GLOBAL. / DE_ prefix, its last dotted part, and for lists without 'Options' / 'Code'."""
+    out = []
+    for t in texts:
+        t = clean(t)
+        if not t:
+            continue
+        cands = [t, PREFIXES.sub("", t)]
+        if "." in t:
+            cands.append(t.split(".")[-1])
+        if picklist:
+            cands += [LIST_SUFFIX.sub("", c) for c in list(cands)]
+        for c in cands:
+            if c and c not in out:
+                out.append(c)
+    return out
+
+
+def good_text(s, name=None, n: int = 12) -> bool:
+    s = clean(s)
+    return bool(s) and len(s) >= n and norm(s) != norm(name) and s.lower() not in ("none", "nan", "tbd", "null")
+
+
+CLEAN_NAME = re.compile(r"^[A-Za-z][A-Za-z0-9 _./&()#%'-]{1,119}$")
+
+
+def clean_name(s) -> bool:
+    return bool(s) and bool(CLEAN_NAME.match(str(s).strip())) and "(e.g" not in str(s)
+
+
 DTYPES = {"text": "TEXT", "string": "TEXT", "an": "TEXT", "integer": "INTEGER", "int": "INTEGER", "number": "DECIMAL", "n": "DECIMAL",
           "decimal": "DECIMAL", "currency": "AMOUNT", "amount": "AMOUNT", "amt": "AMOUNT", "money": "AMOUNT", "percent": "PERCENT",
           "date": "DATE", "d": "DATE", "datetime": "DATETIME", "pick list": "CODE", "picklist": "CODE", "code": "CODE", "boolean": "BOOLEAN"}
@@ -68,9 +102,9 @@ def new_catalog(source: str) -> dict:
     return {"source": source, "picklists": {}, "elements": {}, "rules": [], "bureau_codes": []}
 
 
-def add_picklist(cat, key, code=None, name=None, desc=None, library="COMPANY"):
+def add_picklist(cat, key, code=None, name=None, desc=None, library="COMPANY", element=None):
     pl = cat["picklists"].setdefault(key, {"code": clean(code), "name": clean(name), "desc": clean(desc), "library": library,
-                                           "aliases": [], "options": {}})
+                                           "aliases": [], "options": {}, "element": clean(element)})
     return pl
 
 
@@ -139,7 +173,7 @@ def read_rule_engine(r: Reader) -> dict:
         cat["elements"][f"RE:{d['DataElementID']}"] = {
             "code": snake(d["DataElementName"]), "name": clean(d["DataElementName"]), "desc": clean(d["BusinessDefinition"]),
             "dtype": dtype(d["DataType"], pl is not None), "picklist_key": f"RE:{d['PickListID']}" if pl else None,
-            "aliases": [(str(d["DataElementID"]), r.label)], "module": clean(d["Module"])}
+            "aliases": [(str(d["DataElementID"]), r.label)], "module": clean(d["Module"]), "curated": True}
     for a in r.rows("dbo", "DataElementAlias", ["DataElementID", "Alias", "AliasSourceSystem"], "ExpirationDate"):
         e = cat["elements"].get(f"RE:{a['DataElementID']}")
         if e and clean(a["Alias"]):
@@ -185,7 +219,7 @@ def read_bureau_reporting(r: Reader) -> dict:
         e = cat["elements"].setdefault(key, {
             "code": snake(d["ElementCode"]), "name": clean(d["ElementName"]), "desc": clean(d["BusinessDefinition"]),
             "dtype": dtype(d["DataType"], bool(d["PickListCode"])), "picklist_key": f"BR:{d['PickListCode']}" if d["PickListCode"] else None,
-            "aliases": [], "bureau": True})
+            "aliases": [], "bureau": True, "curated": True})
         for v in (d["CanonicalElementName"], d["BureauFieldRef"]):
             if clean(v) and not re.fullmatch(r"\d+", str(v).strip()):
                 e["aliases"].append((clean(v), r.label))
@@ -234,7 +268,7 @@ def read_iso(r: Reader) -> dict:
             cat["elements"][f"ISO:{d['element_code']}"] = {
                 "code": snake(d["element_code"]), "name": clean(d["element_name"]), "desc": clean(d["business_description"]),
                 "dtype": dtype(d["data_type"], bool(d["picklist_code"])), "picklist_key": f"ISO:{d['picklist_code']}" if d["picklist_code"] else None,
-                "aliases": [], "bureau": True}
+                "aliases": [], "bureau": True, "curated": True}
     for a in r.rows("dbo", "element_alias", ["element_code", "alias_name", "alias_context", "status"], "exp_date"):
         e = cat["elements"].get(f"ISO:{a['element_code']}")
         if e and keep(a) and clean(a["alias_name"]):
@@ -254,21 +288,292 @@ def read_iso(r: Reader) -> dict:
     return cat
 
 
+# ------------------------------------------------------------------------------------------ prior-version knowledge stores
+def split_list(v) -> list[str]:
+    """'a, b' or '["a","b"]' -> ['a', 'b']."""
+    v = clean(v)
+    if not v:
+        return []
+    if v.startswith("["):
+        try:
+            return [clean(x) for x in json.loads(v) if clean(x)]
+        except ValueError:
+            pass
+    return [clean(x) for x in re.split(r"[,;|]", v) if clean(x)]
+
+
+def active(row, col="IsActive") -> bool:
+    return row.get(col) not in (0, False)
+
+
+def read_cdm_model(r: Reader) -> dict:
+    """cdm.DataElement / DataElementSynonym / PickList / PickListOption / PickListSynonym / PickListOptionSynonym + rules (NeurologyInsurance)."""
+    cat = new_catalog(r.label)
+    pls = {}
+    for p in r.rows("cdm", "PickList", ["PickListID", "PickListName", "Description", "PickListCode"]):
+        pls[p["PickListID"]] = add_picklist(cat, f"PL:{p['PickListID']}", p["PickListCode"], p["PickListName"], p["Description"])
+        pls[p["PickListID"]]["aliases"].append((p["PickListName"], r.label))
+    for a in r.rows("cdm", "PickListSynonym", ["PickListID", "Synonym", "SourceSystem", "IsActive"]):
+        if a["PickListID"] in pls and active(a) and clean(a["Synonym"]):
+            pls[a["PickListID"]]["aliases"].append((clean(a["Synonym"]), clean(a["SourceSystem"]) or r.label))
+    opts = {}
+    for o in r.rows("cdm", "PickListOption", ["PickListOptionID", "PickListID", "OptionCode", "OptionLabel", "IsActive"]):
+        if o["PickListID"] in pls and active(o):
+            opts[o["PickListOptionID"]] = add_option(pls[o["PickListID"]], o["OptionCode"], o["OptionLabel"])
+    for a in r.rows("cdm", "PickListOptionSynonym", ["PickListOptionID", "Synonym", "SourceSystem", "IsActive"]):
+        o = opts.get(a["PickListOptionID"])
+        if o and active(a) and clean(a["Synonym"]):
+            o["aliases"].append((clean(a["Synonym"]), clean(a["SourceSystem"]) or r.label))
+    by_name = {norm(p["name"]): k for k, p in cat["picklists"].items()}
+    for d in r.rows("cdm", "DataElement", ["DataElementID", "CanonicalName", "BusinessDefinition", "DataType", "DomainName", "IsPicklist",
+                                           "IsSensitive", "DataElementCode", "SubjectArea", "IsActive"]):
+        if not active(d) or not clean_name(d["CanonicalName"]):
+            continue
+        name = d["CanonicalName"]
+        pk = by_name.get(norm(d["DomainName"])) if d["DomainName"] else None
+        cat["elements"][f"DE:{d['DataElementID']}"] = {
+            "code": snake(name.replace(".", "_")), "name": name.split(".")[-1] if name.count(".") == 1 else name,
+            "desc": clean(d["BusinessDefinition"]), "dtype": dtype(d["DataType"], pk is not None), "picklist_key": pk,
+            "aliases": [(name, r.label)] + ([(d["DataElementCode"], r.label)] if clean(d["DataElementCode"]) and d["DataElementCode"] != name else []),
+            "pii": bool(d["IsSensitive"]), "curated": True}
+    for a in r.rows("cdm", "DataElementSynonym", ["DataElementID", "Synonym", "SourceSystem", "IsActive"]):
+        e = cat["elements"].get(f"DE:{a['DataElementID']}")
+        if e and active(a) and clean(a["Synonym"]):
+            e["aliases"].append((clean(a["Synonym"]), clean(a["SourceSystem"]) or r.label))
+    for x in r.rows("cdm", "Rule_Master", ["RuleID", "RuleName", "RuleDescription", "RuleCategory", "Severity", "IsActive", "EffectiveDate"],
+                    "ExpirationDate"):
+        if active(x) and clean(x["RuleName"]):
+            cat["rules"].append({"kind": "GEN", "code": f"RM-{x['RuleID']}", "name": clean(x["RuleName"])[:200], "desc": clean(x["RuleDescription"]),
+                                 "category": clean(x["RuleCategory"]) or "Other", "severity": clean(x["Severity"]), "spec": {"source_rule_id": x["RuleID"]},
+                                 "effective": str(x["EffectiveDate"])[:10] if x["EffectiveDate"] else None})
+    conds = defaultdict(list)
+    for c in r.rows("cdm", "Rule_Condition", ["RuleID", "ConditionJSON"]):
+        conds[c["RuleID"]].append(c["ConditionJSON"])
+    acts = defaultdict(list)
+    for c in r.rows("cdm", "Rule_Action", ["RuleID", "ActionJSON"]):
+        acts[c["RuleID"]].append(c["ActionJSON"])
+    for x in cat["rules"]:
+        rid = x["spec"]["source_rule_id"]
+        x["spec"].update({"conditions": [_json(c) for c in conds.get(rid, [])], "actions": [_json(a) for a in acts.get(rid, [])]})
+    for x in r.rows("cdm", "BusinessRule", ["BusinessRuleID", "RuleName", "RuleType", "Severity", "RuleExpression", "IsActive", "EffectiveDate",
+                                            "Comments"], "ExpirationDate"):
+        if active(x) and clean(x["RuleName"]):
+            cat["rules"].append({"kind": "GEN", "code": f"BR-{x['BusinessRuleID']}", "name": clean(x["RuleName"])[:200],
+                                 "desc": clean(x["Comments"]), "category": clean(x["RuleType"]) or "Rating", "severity": clean(x["Severity"]),
+                                 "condition_text": clean(x["RuleExpression"]), "spec": {"expression": x["RuleExpression"]},
+                                 "effective": str(x["EffectiveDate"])[:10] if x["EffectiveDate"] else None})
+    return cat
+
+
+def _json(v):
+    try:
+        return json.loads(v) if v else None
+    except ValueError:
+        return v
+
+
+def read_canonical_hub(r: Reader) -> dict:
+    """PnC_CanonicalHub: cdm.DataElement (5,600), cdm.PickListOptions (3,800) with ISO / NCCI codes, syn.* synonyms, cdm.Peril."""
+    cat = new_catalog(r.label)
+    els = {}
+    for d in r.rows("cdm", "DataElement", ["DataElementID", "GlobalName", "DataElementName", "BusinessDefinition", "Description", "DataType",
+                                           "IsPickListApplicable", "PickListName", "BusinessName", "Status", "IsAnonymizationSensitive"], "ExpirationDate"):
+        name = clean(d["BusinessName"]) or clean(d["DataElementName"]) or clean(d["GlobalName"])
+        if not clean_name(d["GlobalName"]) or not clean_name(name) or str(d["Status"] or "").upper() in ("REJECTED", "RETIRED", "DEPRECATED"):
+            continue
+        desc = d["BusinessDefinition"] if good_text(d["BusinessDefinition"], name) else d["Description"]
+        e = {"code": snake(d["GlobalName"]), "name": name, "desc": clean(desc), "dtype": dtype(d["DataType"], False), "picklist_key": None,
+             "aliases": [(d["GlobalName"], r.label)] + ([(d["DataElementName"], r.label)] if clean(d["DataElementName"]) else []),
+             "pii": bool(d["IsAnonymizationSensitive"])}
+        els[d["DataElementID"]] = e
+        cat["elements"][f"DE:{d['DataElementID']}"] = e
+        if d["IsPickListApplicable"] in (1, True):
+            pl = add_picklist(cat, f"PL:{d['DataElementID']}", clean(d["PickListName"]) or d["GlobalName"], clean(d["PickListName"]) or name,
+                              element=name)
+            e["picklist_key"] = f"PL:{d['DataElementID']}"
+            e["dtype"] = "CODE"
+    opts = {}
+    for o in r.rows("cdm", "PickListOptions", ["PickListOptionID", "DataElementID", "PickListOptionCode", "PickListOptionName", "DisplayLabel",
+                                               "OptionDefinition", "ISOCode", "NCCICode", "IsActive"], "ExpirationDate"):
+        pl = cat["picklists"].get(f"PL:{o['DataElementID']}")
+        if not pl:
+            e = els.get(o["DataElementID"])
+            if not e:
+                continue
+            pl = add_picklist(cat, f"PL:{o['DataElementID']}", e["code"], e["name"], element=e["name"])
+            e["picklist_key"] = f"PL:{o['DataElementID']}"
+        if not active(o):
+            continue
+        opt = add_option(pl, o["PickListOptionCode"], clean(o["PickListOptionName"]) or clean(o["DisplayLabel"]), o["OptionDefinition"])
+        if opt:
+            opts[o["PickListOptionID"]] = (pl, opt)
+            if clean(o["DisplayLabel"]) and norm(o["DisplayLabel"]) != norm(opt["name"]):
+                opt["aliases"].append((clean(o["DisplayLabel"]), r.label))
+            for bureau, code in (("ISO", o["ISOCode"]), ("NCCI", o["NCCICode"])):
+                if clean(code):
+                    cat["bureau_codes"].append((f"PL:{o['DataElementID']}", opt["code"], bureau, clean(code)[:30]))
+    auto = lambda a: str(a.get("Source") or "").upper() == "RULE" or "auto" in str(a.get("Comments") or "").lower()  # noqa: E731
+    for a in r.rows("syn", "DataElementSynonyms", ["DataElementID", "Synonym", "Source", "IsActive", "Comments", "Status"], "ExpirationDate"):
+        e = els.get(a["DataElementID"])
+        if e and active(a) and not auto(a) and clean(a["Synonym"]):
+            e["aliases"].append((clean(a["Synonym"]), clean(a["Source"]) or r.label))
+    for a in r.rows("cdm", "DataElement_Synonym", ["DataElementID", "SynonymLabel", "IsActive"], "ExpirationDate"):
+        e = els.get(a["DataElementID"])
+        if e and active(a) and clean(a["SynonymLabel"]):
+            e["aliases"].append((clean(a["SynonymLabel"]), r.label))
+    for a in r.rows("syn", "PickListSynonyms", ["PickListOptionID", "Synonym", "Source", "IsActive", "Comments", "Status"], "ExpirationDate"):
+        po = opts.get(a["PickListOptionID"])
+        if po and active(a) and not auto(a) and clean(a["Synonym"]):
+            po[1]["aliases"].append((clean(a["Synonym"]), clean(a["Source"]) or r.label))
+    for tbl, col in (("PickList_Option_Synonym", "SynonymLabel"), ("PickList_Synonym", "Synonym")):
+        for a in r.rows("cdm", tbl, ["PickListOptionID", col]):
+            po = opts.get(a["PickListOptionID"])
+            if po and clean(a[col]) and "sample" not in str(a[col]).lower():
+                po[1]["aliases"].append((clean(a[col]), r.label))
+    peril = add_picklist(cat, "PERIL", "PERIL", "Peril", "Perils (causes of loss) used in coverage definitions.")
+    for p in r.rows("cdm", "Peril", ["PerilCode", "PerilName", "IsActive"]):
+        if active(p):
+            add_option(peril, p["PerilCode"], p["PerilName"])
+    return cat
+
+
+def read_semantic_hub(r: Reader) -> dict:
+    """SemanticMappingHub: GlobalDataElementRegistry (5,200) and GlobalPickListInsurance (4,400) with ISO / NCCI codes and synonyms."""
+    cat = new_catalog(r.label)
+    for d in r.rows("dbo", "GlobalDataElementRegistry", ["Data_Element_Name", "Synonyms", "Business_Definition", "Business_Description",
+                                                         "Data_Type", "Pick_List_Is_Applicable", "Pick_List_Name", "SuggestedSynonyms"], "ExpirationDate"):
+        name = clean(d["Data_Element_Name"])
+        if not clean_name(name):
+            continue
+        key = f"DE:{norm(name)}"
+        e = cat["elements"].setdefault(key, {"code": snake(name), "name": name, "desc": None, "dtype": dtype(d["Data_Type"], False),
+                                             "picklist_key": None, "aliases": []})
+        for t in (d["Business_Definition"], d["Business_Description"]):
+            if not e["desc"] and good_text(t, name):
+                e["desc"] = clean(t)
+        e["aliases"] += [(a, r.label) for a in split_list(d["Synonyms"])]
+        if d["Pick_List_Is_Applicable"] in (1, True) and clean(d["Pick_List_Name"]):
+            e["picklist_key"] = f"PL:{norm(d['Pick_List_Name'])}"
+            e["dtype"] = "CODE"
+    for o in r.rows("dbo", "GlobalPickListInsurance", ["Data_Element_Name", "PickOptionCode", "PickListOption_Name", "DisplayLabel_EN",
+                                                       "Option_Definition", "ISO_Code", "NCCI_Code", "Synonyms", "IsDeprecated"], "ExpirationDate"):
+        if o["IsDeprecated"] in (1, True) or not clean(o["Data_Element_Name"]):
+            continue
+        key = f"PL:{norm(o['Data_Element_Name'])}"
+        pl = add_picklist(cat, key, o["Data_Element_Name"], o["Data_Element_Name"], element=LIST_SUFFIX.sub("", o["Data_Element_Name"]))
+        label = clean(o["DisplayLabel_EN"]) or clean(o["PickListOption_Name"])
+        if label and "." in label and " " not in label:          # 'CoverageType.BI' style names carry no label
+            label = None
+        opt = add_option(pl, o["PickOptionCode"], label or o["PickOptionCode"], o["Option_Definition"])
+        if not opt:
+            continue
+        opt["aliases"] += [(a, r.label) for a in split_list(o["Synonyms"])]
+        for bureau, code in (("ISO", o["ISO_Code"]), ("NCCI", o["NCCI_Code"])):
+            if clean(code):
+                cat["bureau_codes"].append((key, opt["code"], bureau, clean(code)[:30]))
+    st = add_picklist(cat, "STATE", "STATE", "State")
+    for j in r.rows("dbo", "GlobalJurisdictionRegistry", ["JurisdictionCodeAlpha", "JurisdictionCodeNumeric", "JurisdictionName", "IsActive"]):
+        if active(j) and clean(j["JurisdictionCodeAlpha"]):
+            o = add_option(st, j["JurisdictionCodeAlpha"], j["JurisdictionName"])
+            if clean(j["JurisdictionCodeNumeric"]):
+                o["aliases"].append((clean(j["JurisdictionCodeNumeric"]), r.label))
+    return cat
+
+
+def read_ai_mapping(r: Reader) -> dict:
+    """AIMapping: CanonicalDataElements_Staging and CanonicalPicklistOptions_Staging (curated), DataElements (definitions only)."""
+    cat = new_catalog(r.label)
+    for d in r.rows("dbo", "CanonicalDataElements_Staging", ["Data_Element_Name", "Business_Definition", "Data_Type", "IsPII",
+                                                              "Pick_List_Is_Applicable", "Pick_List_Name", "Comments"]):
+        name = clean(d["Data_Element_Name"])
+        if clean_name(name):
+            pk = f"PL:{norm(d['Pick_List_Name'])}" if str(d["Pick_List_Is_Applicable"]) in ("1", "True", "Y") and clean(d["Pick_List_Name"]) else None
+            cat["elements"][f"DE:{norm(name)}"] = {"code": snake(name), "name": name, "desc": clean(d["Business_Definition"]),
+                                                   "dtype": dtype(d["Data_Type"], pk is not None), "picklist_key": pk, "aliases": [],
+                                                   "pii": str(d["IsPII"]) in ("1", "True"), "curated": True}
+    for o in r.rows("dbo", "CanonicalPicklistOptions_Staging", ["Pick_List_Name", "Option_Code", "Option_Label", "Option_Definition",
+                                                                "StandardName_From_CSV", "Alias_Labels", "Is_Active"]):
+        if o["Is_Active"] in (0, False) or not clean(o["Pick_List_Name"]):
+            continue
+        pl = add_picklist(cat, f"PL:{norm(o['Pick_List_Name'])}", o["Pick_List_Name"], clean(o["StandardName_From_CSV"]) or o["Pick_List_Name"],
+                          element=o["StandardName_From_CSV"])
+        if clean(o["StandardName_From_CSV"]):
+            pl["aliases"].append((o["Pick_List_Name"], r.label))
+        opt = add_option(pl, o["Option_Code"] if not re.fullmatch(r"\d+", str(o["Option_Code"] or "")) else snake(o["Option_Label"]),
+                         o["Option_Label"], o["Option_Definition"])
+        if opt:
+            if re.fullmatch(r"\d+", str(o["Option_Code"] or "")):
+                opt["aliases"].append((str(o["Option_Code"]), r.label))
+            opt["aliases"] += [(a, r.label) for a in split_list(o["Alias_Labels"])]
+    for d in r.rows("dbo", "DataElements", ["Data Element Name", "Business_Definition", "Business_Description", "Data_Type"]):
+        name = clean(d["Data Element Name"])
+        if clean_name(name) and f"DE:{norm(name)}" not in cat["elements"]:
+            desc = next((clean(t) for t in (d["Business_Definition"], d["Business_Description"]) if good_text(t, name)), None)
+            cat["elements"][f"DE:{norm(name)}"] = {"code": snake(name), "name": name, "desc": desc, "dtype": dtype(d["Data_Type"], False),
+                                                   "picklist_key": None, "aliases": []}
+    return cat
+
+
+def read_master_picklist(r: Reader) -> dict:
+    """SabaAIModel: dbo.MasterPickList with Guidewire / Duck Creek / Majesco / Insurity mappings, and field definitions."""
+    cat = new_catalog(r.label)
+    for o in r.rows("dbo", "MasterPickList", ["FieldName", "PickListOptionCode", "PickListOptionName", "BusinessName", "BusinessRules",
+                                              "PickListSource", "IsActive", "VendorMappingGuidewire", "VendorMappingDuckCreek",
+                                              "VendorMappingMajesco", "VendorMappingInsurity"], "ExpirationDate"):
+        if not active(o) or not clean(o["FieldName"]):
+            continue
+        pl = add_picklist(cat, f"PL:{norm(o['FieldName'])}", o["FieldName"], o["FieldName"], element=o["FieldName"],
+                          library=str(o["PickListSource"] or "COMPANY")[:30])
+        opt = add_option(pl, o["PickListOptionCode"], o["PickListOptionName"], o["BusinessRules"])
+        if opt:
+            if clean(o["BusinessName"]) and norm(o["BusinessName"]) != norm(opt["name"]):
+                opt["aliases"].append((clean(o["BusinessName"]), r.label))
+            for vendor, col in (("Guidewire", "VendorMappingGuidewire"), ("DuckCreek", "VendorMappingDuckCreek"),
+                                ("Majesco", "VendorMappingMajesco"), ("Insurity", "VendorMappingInsurity")):
+                if clean(o[col]):
+                    opt["aliases"].append((clean(o[col]), vendor))
+    for d in r.rows("SabaAImodel", "FieldDefinitions", ["System", "FieldName", "DataType", "BusinessDefinition", "Description"], "ExpirationDate"):
+        name = clean(d["BusinessDefinition"]) if clean_name(d["BusinessDefinition"]) and len(str(d["BusinessDefinition"])) <= 60 else clean(d["FieldName"])
+        if not clean_name(name):
+            continue
+        e = cat["elements"].setdefault(f"DE:{norm(name)}", {"code": snake(name), "name": name, "desc": clean(d["Description"]),
+                                                            "dtype": dtype(d["DataType"], False), "picklist_key": None, "aliases": []})
+        if clean(d["FieldName"]) and norm(d["FieldName"]) != norm(name):
+            e["aliases"].append((clean(d["FieldName"]), clean(d["System"]) or r.label))
+    return cat
+
+
+def read_features(r: Reader) -> dict:
+    """Governance: GovernanceData.PandCFeatures (field name + business definition by line and module)."""
+    cat = new_catalog(r.label)
+    for d in r.rows("GovernanceData", "PandCFeatures", ["FieldName", "BusinessDefinition", "SystemName"]):
+        name = clean(d["FieldName"])
+        if clean_name(name):
+            e = cat["elements"].setdefault(f"DE:{norm(name)}", {"code": snake(name), "name": name, "desc": None, "dtype": "TEXT",
+                                                                "picklist_key": None, "aliases": []})
+            if not e["desc"] and good_text(d["BusinessDefinition"], name):
+                e["desc"] = clean(d["BusinessDefinition"])
+    return cat
+
+
 READERS = {"RuleEngine": read_rule_engine, "BureauReporting": read_bureau_reporting, "ISOBureauReporting": read_iso}
-SIGNATURES = [  # how a database is recognized, whatever its name
+SIGNATURES = [  # how a database is recognized, whatever its name; one database can hold several of these
     (read_iso, [("dbo", "canonical_element"), ("dbo", "picklist_option")]),
     (read_bureau_reporting, [("ref", "DataElement"), ("ref", "PickListOption")]),
     (read_rule_engine, [("dbo", "DataElement"), ("dbo", "PickListOption")]),
+    (read_cdm_model, [("cdm", "DataElementSynonym"), ("cdm", "PickListOption")]),
+    (read_canonical_hub, [("cdm", "DataElement"), ("cdm", "PickListOptions")]),
+    (read_semantic_hub, [("dbo", "GlobalDataElementRegistry"), ("dbo", "GlobalPickListInsurance")]),
+    (read_ai_mapping, [("dbo", "CanonicalDataElements_Staging"), ("dbo", "CanonicalPicklistOptions_Staging")]),
+    (read_master_picklist, [("dbo", "MasterPickList")]),
+    (read_features, [("GovernanceData", "PandCFeatures")]),
 ]
 KEYWORDS = re.compile(r"element|pick|option|alias|synonym|rule|code|lookup|list|canonical|dictionar|glossar|term|domain|layout|field|"
                       r"mapping|reference|ref_|enum|valid|value", re.I)
 
 
-def detect(r: Reader):
-    for fn, tables in SIGNATURES:
-        if all(r.cols(sch, t) for sch, t in tables):
-            return fn
-    return None
+def detect(r: Reader) -> list:
+    return [fn for fn, tables in SIGNATURES if all(r.cols(sch, t) for sch, t in tables)]
 
 
 def user_databases(con) -> list[str]:
@@ -285,7 +590,7 @@ def discover(con, server: str, path: Path) -> None:
         for db in user_databases(con):
             r = Reader(con, db)
             kind = detect(r)
-            fh.write(f"\n=== DATABASE {db}  ({kind.__name__ if kind else 'not a known SI2 structure'})\n")
+            fh.write(f"\n=== DATABASE {db}  ({', '.join(k.__name__ for k in kind) if kind else 'not a known SI2 structure'})\n")
             try:
                 cur.execute(f"SELECT s.name, t.name, SUM(p.rows) FROM [{db}].sys.tables t JOIN [{db}].sys.schemas s ON s.schema_id = t.schema_id "
                             f"JOIN [{db}].sys.partitions p ON p.object_id = t.object_id AND p.index_id IN (0, 1) GROUP BY s.name, t.name ORDER BY s.name, t.name")
@@ -316,7 +621,8 @@ def load_master(con) -> dict:
         cols = [c[0] for c in cur.description]
         return [dict(zip(cols, r)) for r in cur.fetchall()]
     return {
-        "elements": q("SELECT ElementId AS id, ElementCode AS code, Name AS name FROM canon.DataElement WHERE ScopeId = 1 AND Status <> 'EXPIRED'"),
+        "elements": q("SELECT e.ElementId AS id, e.ElementCode AS code, e.Name AS name, p.PickListCode AS pl FROM canon.DataElement e "
+                      "LEFT JOIN canon.PickList p ON p.PickListId = e.PickListId WHERE e.ScopeId = 1 AND e.Status <> 'EXPIRED'"),
         "picklists": q("SELECT PickListId AS id, PickListCode AS code, Name AS name FROM canon.PickList WHERE ScopeId = 1 AND Status <> 'EXPIRED'"),
         "options": q("SELECT OptionId AS id, PickListId AS pl, OptionCode AS code, OptionName AS name FROM canon.PickListOption "
                      "WHERE ScopeId = 1 AND Status <> 'EXPIRED'"),
@@ -334,6 +640,8 @@ class Index:
 
     def __init__(self, m: dict):
         self.el_code = {e["code"]: e for e in m["elements"]}
+        self.el_pl = {e["code"]: e.get("pl") for e in m["elements"] if e.get("pl")}
+        self.skipped = []
         self.pl_code = {p["code"]: p for p in m["picklists"]}
         pl_by_id = {p["id"]: p["code"] for p in m["picklists"]}
         el_by_id = {e["id"]: e["code"] for e in m["elements"]}
@@ -390,15 +698,19 @@ class Index:
     def known_synonym(self, ot, key, text) -> bool:
         return (ot, key, norm(text), "*") in self.syn
 
-    def find_picklist(self, code, name):
-        for t in (code, name, re.sub(r"(?i)\s*code$", "", str(name or "")), re.sub(r"(?i)_?code$", "", str(code or ""))):
-            if t and norm(t) in self.pl_key:
+    def find_picklist(self, code, name, aliases=(), element=None):
+        for t in variants(code, name, *[a for a, _ in aliases], picklist=True):
+            if norm(t) in self.pl_key:
                 return self.pl_key[norm(t)]
+        if element:                                   # the list of the element it belongs to (CoverageTypeOptions -> COVERAGE)
+            el = self.find_element(None, element)
+            if el and el in self.el_pl:
+                return self.el_pl[el]
         return None
 
     def find_element(self, code, name, aliases=()):
-        for t in (code, name, *[a for a, _ in aliases]):
-            if t and norm(t) in self.el_key:
+        for t in variants(code, name, *[a for a, _ in aliases]):
+            if norm(t) in self.el_key:
                 return self.el_key[norm(t)]
         return None
 
@@ -437,11 +749,14 @@ def plan(cats: list[dict], ix: Index) -> list[dict]:
         pl_map = {}
         # pick lists and their options
         for key, p in cat["picklists"].items():
-            master = ix.find_picklist(p["code"], p["name"])
+            master = ix.find_picklist(p["code"], p["name"], p["aliases"], p.get("element"))
             if master:
                 pl_map[key] = master
+            elif not p["options"]:
+                continue
             else:
-                code = short_code(snake(p["code"] or p["name"]), 60)
+                base = p["name"] or p["code"]
+                code = short_code(snake(PREFIXES.sub("", base.split(".")[-1] if "." in base else base)), 60)
                 while code in ix.pl_code:
                     code = short_code(code + "_" + snake(src)[:10], 60)
                 ix.pl_code[code] = {"code": code}
@@ -449,7 +764,7 @@ def plan(cats: list[dict], ix: Index) -> list[dict]:
                 ix.pl_key.setdefault(norm(p["name"]), code)
                 pl_map[key] = code
                 propose("PICKLIST", "ADD", code, f"{src}: new pick list {code} ({p['name']}, {len(p['options'])} options)",
-                        {"code": code, "name": (p["name"] or code)[:200], "description": p["desc"] or f"Collected from {src}.",
+                        {"code": code, "name": (p["name"] or code)[:200], "description": (p["desc"] or f"Collected from {src}.")[:2000],
                          "library": str(p["library"] or "COMPANY")[:30]}, src)
                 ix._own("PICKLIST", code, code, p["name"])
             plc = pl_map[key]
@@ -459,13 +774,16 @@ def plan(cats: list[dict], ix: Index) -> list[dict]:
                 synonym("PICKLIST", plc, a, s, src)
             for o in p["options"].values():
                 oc = ix.find_option(plc, o["code"], o["name"], o["aliases"])
+                if not oc and (len(o["code"]) > 60 or not re.match(r"^[\w .,/&()+#%'-]+$", o["code"])):
+                    ix.skipped.append((src, "OPTION", f"{plc}.{o['code']}", "code is not a clean code"))
+                    continue
                 if not oc:
                     oc = o["code"][:60]
                     ix.opt[plc][norm(oc)] = oc
                     ix.opt[plc].setdefault(norm(o["name"]), oc)
                     ix._own("OPTION", f"{plc}.{oc}", oc, o["name"])
                     propose("OPTION", "ADD", f"{plc}.{oc}", f"{src}: new option {plc}.{oc} ({o['name']})",
-                            {"picklist": plc, "code": oc, "name": (o["name"] or oc)[:300], "description": o["desc"], "sort": 500}, src)
+                            {"picklist": plc, "code": oc, "name": (o["name"] or oc)[:300], "description": (o["desc"] or "")[:2000] or None, "sort": 500}, src)
                 for t in (o["code"], o["name"]):
                     synonym("OPTION", f"{plc}.{oc}", t, src, src, picklist=plc, code=oc, typ="VALUE")
                 for a, s in o["aliases"]:
@@ -489,6 +807,9 @@ def plan(cats: list[dict], ix: Index) -> list[dict]:
                 for a, s in e["aliases"]:
                     synonym("ELEMENT", master, a, s, src)
                 continue
+            if not (e.get("curated") or good_text(e.get("desc"), e["name"]) or e.get("picklist_key") in pl_map):
+                ix.skipped.append((src, "ELEMENT", e["name"], "no business definition"))
+                continue
             code = short_code(e["code"] or snake(e["name"]), 80)
             while code in ix.el_code:
                 code = short_code(code + "_" + snake(src)[:10], 80)
@@ -504,12 +825,15 @@ def plan(cats: list[dict], ix: Index) -> list[dict]:
                     ix.syn.add(("ELEMENT", code, norm(a), "*"))
             plc = pl_map.get(e.get("picklist_key"))
             propose("ELEMENT", "ADD", code, f"{src}: new data element {code} ({e['name']})",
-                    {"code": code, "name": (e["name"] or code)[:200], "description": e["desc"] or f"Collected from {src}; SME to describe.",
-                     "data_type": e["dtype"] if plc or e["dtype"] != "CODE" else "TEXT", "picklist": plc, "is_bureau": bool(e.get("bureau")),
+                    {"code": code, "name": (e["name"] or code)[:200], "description": (e["desc"] or f"Collected from {src}; SME to describe.")[:2000],
+                     "data_type": e["dtype"] if plc or e["dtype"] != "CODE" else "TEXT", "picklist": plc, "is_bureau": bool(e.get("bureau")), "is_pii": bool(e.get("pii")),
                      "synonyms": syns}, src)
             ix._own("ELEMENT", code, code, e["name"])
         # rules
         for x in cat["rules"]:
+            x["source"] = src
+            if x["kind"] == "GEN" and x["code"]:
+                x["code"] = f"{snake(src.split('@')[0])[:14]}-{x['code']}"
             code = short_code(x["code"], 40) if x["code"] else None
             if not code or code in ix.rules:
                 continue
@@ -541,11 +865,16 @@ def ruleset_for(x) -> tuple[str, str]:
         return short_code("RULEENGINE_" + snake(x["module"]), 60), PURPOSE.get(str(x["module"]).lower(), "OTHER")
     if x["kind"] == "BR":
         return "BUREAU_REPORTING", "BUREAU"
+    if x["kind"] == "GEN":
+        cat = str(x.get("category") or "Other")
+        purpose = PURPOSE.get(cat.lower()) or ("BUREAU" if "bureau" in cat.lower() else "DATA_QUALITY" if cat.lower() in ("etl", "dq", "data quality")
+                                               else "RATING" if cat.upper() in ("CREDIT_PCT", "SURCHARGE_PCT") else "OTHER")
+        return short_code(snake(x["source"].split("@")[0])[:24] + "_" + snake(cat)[:30], 60), purpose
     return "ISO_BUREAU", "BUREAU"
 
 
 def rule_payload(x, code, rs, el_map) -> dict:
-    p = {"ruleset": rs, "code": code, "name": x["name"][:200], "description": x.get("desc"), "lob": str(x.get("lob") or "*")[:60],
+    p = {"ruleset": rs, "code": code, "name": x["name"][:200], "description": (x.get("desc") or "")[:2000] or None, "lob": str(x.get("lob") or "*")[:60],
          "state": str(x.get("state") or "*").replace("ALL", "*")[:200], "expression": x.get("spec") or None, "effective_from": x.get("effective")}
     if x["kind"] == "RE":
         then = (x["spec"].get("then") or [{}]) if isinstance(x["spec"], dict) else [{}]
@@ -581,12 +910,23 @@ def rule_payload(x, code, rs, el_map) -> dict:
     elif x["kind"] == "BR":
         p.update({"rule_type": "VALIDATION", "action_type": "WARN" if x["severity"] == "WARNING" else "REJECT", "severity": x["severity"],
                   "message": x.get("desc"), "condition_text": (x.get("condition_text") or "")[:2000], "target_element": el_map.get(x.get("element_key"))})
+    elif x["kind"] == "GEN":
+        cat = str(x.get("category") or "").upper()
+        rt = {"RATING": "PRICING", "CREDIT_PCT": "PRICING", "SURCHARGE_PCT": "PRICING", "ETL": "TRANSFORMATION", "ELIGIBILITY": "ELIGIBILITY",
+              "UNDERWRITING": "REFERRAL", "CLAIMS": "ROUTING", "FRAUD": "ALERT"}.get(cat, "VALIDATION")
+        sev = str(x.get("severity") or "").upper()
+        p.update({"rule_type": rt, "action_type": cat if cat in ("CREDIT_PCT", "SURCHARGE_PCT") else "FLAG",
+                  "severity": "ERROR" if sev in ("HIGH", "CRITICAL", "ERROR") else "WARNING" if sev in ("MEDIUM", "WARNING") else "INFO",
+                  "message": (x.get("desc") or "")[:500] or None, "condition_text": (x.get("condition_text") or x.get("desc") or "")[:2000] or None})
     else:
         cat = str(x.get("category") or "VALIDATION").upper()
         p.update({"rule_type": cat if cat in ("VALIDATION", "DERIVATION", "TRANSFORMATION") else "VALIDATION",
                   "action_type": {"DERIVATION": "SET_VALUE", "TRANSFORMATION": "CALCULATE"}.get(cat, "REJECT" if x["severity"] == "ERROR" else "WARN"),
                   "severity": x["severity"] if x["severity"] in ("INFO", "WARNING", "ERROR") else "ERROR", "message": x.get("message"),
                   "target_element": el_map.get(x.get("element_key"))})
+    for k, n in (("message", 500), ("condition_text", 2000), ("action_value", 400), ("name", 200), ("description", 2000)):
+        if isinstance(p.get(k), str):
+            p[k] = p[k][:n]
     return {k: v for k, v in p.items() if v not in (None, "")}
 
 
@@ -610,10 +950,18 @@ def main() -> int:
     ap.add_argument("--discover", action="store_true", help="write a list of every database, table and column on the source server")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--approve-as", default=None, help="second person who approves the proposals")
+    ap.add_argument("--approve-seed", action="store_true", help="first approve the seed's pending changes (as --approve-as)")
     ap.add_argument("--scan-all", action="store_true", help="also scan every other user database column by column")
     a = ap.parse_args()
 
     con = connect(a.server, a.database)
+    if a.approve_seed and a.approve_as:
+        c0 = con.cursor()
+        c0.execute("SELECT RequestId FROM gov.ChangeRequest WHERE Status = 'PENDING' AND Source = 'SEED' ORDER BY RequestId")
+        for (rid,) in c0.fetchall():
+            c0.execute("EXEC gov.usp_Decide @RequestId = ?, @DecidedBy = ?, @Approve = 1, @Note = N'Seeded ISO change', @Quiet = 1", rid, a.approve_as)
+        c0.execute("SELECT COUNT(*) FROM gov.ChangeRequest WHERE Source = 'SEED' AND Status = 'APPROVED'")
+        print(f"Seed changes approved: {c0.fetchone()[0]}")
     src_server = a.source_server or a.server
     scon = con if src_server == a.server else connect(src_server, "master")
     suffix = "" if src_server == a.server else "@" + src_server.split("\\")[-1]
@@ -630,19 +978,22 @@ def main() -> int:
         if not r.exists():
             print(f"  {db:<24} not on this server, skipped")
             continue
-        fn = detect(r)
-        if not fn:
+        fns = detect(r)
+        if not fns:
             print(f"  {db:<24} not a known structure (see --discover)")
             continue
-        try:
-            cat = fn(r)
-        except Exception as ex:  # noqa: BLE001
-            print(f"  {db:<24} could not be read: {ex}")
-            continue
-        n_opt = sum(len(p["options"]) for p in cat["picklists"].values())
-        print(f"  {db:<24} {len(cat['elements'])} elements, {len(cat['picklists'])} pick lists, {n_opt} options, {len(cat['rules'])} rules")
-        cats.append(cat)
-    proposals = plan(cats, Index(load_master(con)))
+        for fn in fns:
+            try:
+                cat = fn(r)
+            except Exception as ex:  # noqa: BLE001
+                print(f"  {db:<24} {fn.__name__} could not be read: {ex}")
+                continue
+            n_opt = sum(len(p["options"]) for p in cat["picklists"].values())
+            print(f"  {db:<24} {len(cat['elements'])} elements, {len(cat['picklists'])} pick lists, {n_opt} options, {len(cat['rules'])} rules"
+                  f"  ({fn.__name__})")
+            cats.append(cat)
+    ix = Index(load_master(con))
+    proposals = plan(cats, ix)
     report = HERE / f"collect_report_{stamp}.csv"
     with open(report, "w", newline="", encoding="utf-8-sig") as fh:
         w = csv.writer(fh)
@@ -655,6 +1006,13 @@ def main() -> int:
     print(f"\n{len(proposals)} proposal(s):")
     for (s, ot), n in sorted(counts.items()):
         print(f"  {s:<20} {ot:<12} {n}")
+    if ix.skipped:
+        skip = HERE / f"collect_skipped_{stamp}.csv"
+        with open(skip, "w", newline="", encoding="utf-8-sig") as fh:
+            w = csv.writer(fh)
+            w.writerow(["Source", "Object", "Name", "Why not proposed"])
+            w.writerows(ix.skipped)
+        print(f"Not proposed (kept out of the master until an SME adds them): {len(ix.skipped)} -> {skip}")
     print(f"Report: {report}")
     if a.dry_run or not proposals:
         print("Dry run: nothing written." if a.dry_run else "Nothing missing: the master already has everything.")

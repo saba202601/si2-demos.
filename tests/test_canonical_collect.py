@@ -126,3 +126,45 @@ def test_bureau_and_iso_readers():
     assert len(rule["code"]) <= 40 and rule["payload"]["target_element"] == "POLICY_NUMBER" and rule["payload"]["action_type"] == "REJECT"
     assert ("BUREAU_CODE", "STATE.TX.ISO") in codes
     assert ("ELEMENT", "ACCT_DATE") not in codes                                                    # rejected rows are ignored
+
+
+def test_prior_version_knowledge_stores():
+    cdm = FakeReader({
+        "PickList": [{"PickListID": 2, "PickListName": "GLOBAL.YesNo", "PickListCode": "GLOBAL_YN", "Description": "Standard Yes/No/Unknown"},
+                     {"PickListID": 9, "PickListName": "GLOBAL.OpeningProtection", "PickListCode": "GLOBAL_OPEN_PROT"}],
+        "PickListSynonym": [{"PickListID": 2, "Synonym": "Yes / No", "SourceSystem": "GLOBAL"}],
+        "PickListOption": [{"PickListOptionID": 4, "PickListID": 2, "OptionCode": "Y", "OptionLabel": "Yes"},
+                           {"PickListOptionID": 6, "PickListID": 2, "OptionCode": "U", "OptionLabel": "Unknown"},
+                           {"PickListOptionID": 7, "PickListID": 9, "OptionCode": "FULL", "OptionLabel": "Full"}],
+        "PickListOptionSynonym": [{"PickListOptionID": 4, "Synonym": "TRUE", "SourceSystem": "GLOBAL"}],
+        "DataElement": [{"DataElementID": 1, "CanonicalName": "Policy.PolicyNumber", "BusinessDefinition": "Carrier policy identifier"},
+                        {"DataElementID": 5, "CanonicalName": "Risk.State", "BusinessDefinition": "Primary state of risk"},
+                        {"DataElementID": 7, "CanonicalName": "HO.Input.RoofAgeYears", "BusinessDefinition": "Roof age in years at inception"},
+                        {"DataElementID": 8, "CanonicalName": "DE_\"CoverageType(e.g.", "BusinessDefinition": "junk"}],
+        "DataElementSynonym": [{"DataElementID": 1, "Synonym": "ContractNumber", "SourceSystem": "SystemY"}],
+        "Rule_Master": [{"RuleID": 2, "RuleName": "HO Roof Age < 10", "RuleDescription": "Roof age under 10 years qualifies for credit.",
+                         "RuleCategory": "Rating", "Severity": "LOW"}],
+    })
+    cdm.db = "NeurologyInsurance@SQLEXPRESS"
+    sem = FakeReader({
+        "GlobalDataElementRegistry": [{"Data_Element_Name": "LiabilityLimit", "Synonyms": "CoverageLimit, MaxLiability",
+                                       "Business_Definition": "Maximum liability coverage allowed"},
+                                      {"Data_Element_Name": "RoofType", "Business_Definition": ""}],
+        "GlobalPickListInsurance": [{"Data_Element_Name": "ConstructionTypeOptions", "PickOptionCode": "FRM", "PickListOption_Name": "ConstructionType.FRM",
+                                     "DisplayLabel_EN": "Frame", "Synonyms": '["WoodFrame", "LightFrame"]', "ISO_Code": "ISO_CT1"}],
+    })
+    sem.db = "SemanticMappingHub@SQLEXPRESS"
+    ix = K.Index(MASTER)
+    p = K.plan([K.read_cdm_model(cdm), K.read_semantic_hub(sem)], ix)
+    codes = {(x["object_type"], x["code"]) for x in p}
+    assert ("PICKLIST", "YES_NO") not in codes and ("OPTION", "YES_NO.U") in codes          # GLOBAL.YesNo is YES_NO; Unknown is new
+    assert ("PICKLIST", "OPENING_PROTECTION") in codes                                       # GLOBAL_ prefix removed
+    assert ("ELEMENT", "POLICY_POLICY_NUMBER") not in codes and ("ELEMENT", "RISK_STATE") not in codes
+    assert ("ELEMENT", "HO_INPUT_ROOF_AGE_YEARS") in codes and not any("COVERAGETYPE(E" in c.upper() for _, c in codes)
+    assert ("ELEMENT", "LIABILITY_LIMIT") in codes and ("ELEMENT", "ROOF_TYPE") not in codes   # no definition -> not proposed
+    assert any(s[1] == "ELEMENT" and s[2] == "RoofType" for s in ix.skipped)
+    assert ("OPTION", "CONSTRUCTION.FR") not in codes                                         # Frame already there
+    syn = {(x["code"], x["payload"]["text"]) for x in p if x["object_type"] == "SYNONYM"}
+    assert ("CONSTRUCTION.FR", "FRM") in syn and ("CONSTRUCTION.FR", "WoodFrame") in syn and ("POLICY_NUMBER", "ContractNumber") in syn
+    rule = next(x for x in p if x["object_type"] == "RULE")
+    assert rule["code"] == "NEUROLOGY_INSU-RM-2" and rule["payload"]["rule_type"] == "PRICING"
