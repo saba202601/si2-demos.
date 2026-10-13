@@ -41,6 +41,7 @@ CSS = """
 # the demo hub: suggested order for a client walk-through
 DEMOS = [
     ("SI² Command Center", "https://si2-command.streamlit.app", "ROI calculator, bureau reporting calendar, all demos"),
+    ("Role-Based Super Intelligence", "https://si2-roles.streamlit.app", "15 roles, 5 departments: SI² prepares, the person decides"),
     ("Canonical Data Model", "https://si2-canonical.streamlit.app", "Start here: one company model, where-used across every app"),
     ("Legacy-to-Cloud Migration Workbench", "https://si2-migrate.streamlit.app", "Initial load, mapping, gaps, delta loads, sign-off"),
     ("ISO Bureau Reporting", "https://si2-iso-bureau.streamlit.app", "All ISO lines: effective-dated layouts, generate, validate, submit"),
@@ -52,6 +53,13 @@ DEMOS = [
 ]
 
 TOURS = {
+    "Role-Based Super Intelligence": [
+        "**Overview**: 15 roles in 5 departments, each with how many decisions were made and how often people agreed with SI².",
+        "**Underwriter**: every submission scored and explained; accept / refer / decline within your own boundaries.",
+        "**Claims Adjuster**: triage, image damage, liability and a reserve range; changes above your authority go to a second person.",
+        "**Reinsurance → Enterprise Risk**: choose a catastrophe program and see the solvency ratio move from gross to net.",
+        "**Compliance**: fairness of SI²'s recommendations and of people's decisions, restricted factors, and the full audit trail.",
+    ],
     "SI² Command Center": [
         "**💰 ROI calculator**: enter a carrier's hours and error rates; every SI² assumption is editable.",
         "**📅 Reporting calendar**: NCCI and ISO submissions due in the next 12 months, with status.",

@@ -8,7 +8,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 APPS = ["app_hub", "app_canonical", "app_migration", "app_iso_bureau", "app_bureau", "app_rules", "app_rating",
-        "app_claims", "app_fraud"]
+        "app_claims", "app_fraud", "app_roles"]
 
 
 @pytest.fixture(autouse=True)

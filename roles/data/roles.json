@@ -1,0 +1,122 @@
+[
+ {
+  "department": "Core Underwriting & Pricing Roles",
+  "role": "Underwriter",
+  "today": "Reviews applications, applies underwriting guidelines, orders inspections/reports, evaluates risk factors (property condition, location, claims history, credit where allowed), decides accept/reject/modify terms and price, manages referrals and authority limits",
+  "tomorrow": "Acts as high-judgment risk strategist: reviews SI-generated risk scores and explanations, focuses on complex/edge cases, portfolio strategy, and novel risks; sets and refines SI decision boundaries; spends most time on exceptions, large accounts, and emerging exposures",
+  "tasks": "Assess individual or portfolio risk; decide accept/reject/price",
+  "si": "Real-time multi-source risk scoring (property data, claims history, geospatial, climate, behavioral, IoT); dynamic guideline updates; explainable risk drivers; portfolio-level concentration detection far beyond human capacity"
+ },
+ {
+  "department": "Core Underwriting & Pricing Roles",
+  "role": "Pricing Analyst / Product Pricing",
+  "today": "Builds and maintains rate plans, analyzes loss experience, calculates relativities and trends, supports rate filings, monitors competitive position and rate adequacy",
+  "tomorrow": "Designs and governs continuous pricing systems: sets strategic pricing objectives, validates SI rate recommendations, monitors fairness and regulatory compliance, and rapidly tests new rating variables or product structures",
+  "tasks": "Set rates, relativities, and rate plans",
+  "si": "Continuous feedback loops from claims, market, and external data; automatic detection of rate inadequacy or leakage; rapid simulation of rate changes under thousands of scenarios"
+ },
+ {
+  "department": "Core Underwriting & Pricing Roles",
+  "role": "Catastrophe / Specialty Underwriter",
+  "today": "Evaluates complex or high-severity risks (CAT, cyber, energy, etc.), uses vendor models and internal tools, assesses accumulation and capacity, structures terms",
+  "tomorrow": "Orchestrates SI-driven scenario engines and capacity allocation; focuses on model governance, emerging perils, and structuring innovative covers for risks that models still struggle with",
+  "tasks": "Evaluate high-severity or complex risks",
+  "si": "High-fidelity scenario generation, climate and secondary-peril modeling, real-time event impact estimation, and portfolio stress testing at machine scale"
+ },
+ {
+  "department": "Claims & Loss Roles",
+  "role": "Claims Adjuster / Handler",
+  "today": "Receives first notice of loss, investigates coverage and liability, inspects damage (or reviews photos/estimates), sets and adjusts reserves, negotiates settlements, manages vendors and litigation",
+  "tomorrow": "Handles complex, disputed, or high-severity claims; oversees SI triage, damage assessment, and reserve recommendations; focuses on customer empathy, negotiation strategy, and litigation management",
+  "tasks": "Investigate, evaluate liability, set reserves, settle claims",
+  "si": "Automated first-notice-of-loss triage, image/video damage assessment, liability prediction, reserve setting with uncertainty quantification, and early fraud flagging"
+ },
+ {
+  "department": "Claims & Loss Roles",
+  "role": "Special Investigations Unit (SIU) / Fraud Investigator",
+  "today": "Reviews red-flag claims, conducts interviews and surveillance, analyzes patterns across claims, coordinates with law enforcement, builds cases for denial or prosecution",
+  "tomorrow": "Directs SI-prioritized investigations; focuses on sophisticated rings, new fraud typologies, and legal strategy; spends far less time on routine pattern hunting",
+  "tasks": "Detect and investigate claim fraud",
+  "si": "Graph-based network detection, multi-claim pattern mining, behavioral anomaly scoring, and prioritization of high-probability cases with supporting evidence packages"
+ },
+ {
+  "department": "Claims & Loss Roles",
+  "role": "Loss Control / Risk Engineering Specialist",
+  "today": "Conducts on-site or virtual inspections, identifies hazards, writes recommendations, follows up on compliance, supports underwriting and large-account risk management",
+  "tomorrow": "Designs and validates SI-generated risk scores and mitigation plans; prioritizes high-impact site visits; partners with clients on advanced risk-reduction programs informed by continuous sensor and imagery data",
+  "tasks": "Identify physical or operational hazards and recommend mitigations",
+  "si": "Automated site risk scoring from imagery, IoT, and inspection data; predictive hazard prioritization; generation of tailored mitigation recommendations with expected loss reduction"
+ },
+ {
+  "department": "Actuarial, Risk & Capital Roles",
+  "role": "Actuary (Pricing, Reserving, Capital)",
+  "today": "Develops frequency/severity models, sets reserves and IBNR, performs rate indications, supports capital modeling and regulatory filings, validates models",
+  "tomorrow": "Governs and interprets SI model ecosystems; focuses on model risk, emerging risk quantification, capital strategy, and regulatory dialogue; spends less time on manual model building",
+  "tasks": "Build models for frequency/severity, reserves, capital requirements",
+  "si": "Faster and more accurate model development; automatic feature discovery; continuous model monitoring and recalibration; richer scenario and stochastic modeling"
+ },
+ {
+  "department": "Actuarial, Risk & Capital Roles",
+  "role": "Enterprise Risk / Capital Manager",
+  "today": "Aggregates risks across the company, runs stress and scenario tests, monitors solvency and risk appetite, supports capital allocation and reinsurance decisions",
+  "tomorrow": "Operates continuous risk dashboards powered by SI; sets risk appetite frameworks, stress-test regimes, and capital allocation rules; focuses on strategic risk trade-offs and board-level communication",
+  "tasks": "Measure and manage aggregate risk, solvency, and capital allocation",
+  "si": "Real-time enterprise risk aggregation across lines, geographies, and perils; dynamic capital allocation; early warning of emerging concentrations or model drift"
+ },
+ {
+  "department": "Actuarial, Risk & Capital Roles",
+  "role": "Reinsurance Specialist",
+  "today": "Designs and places treaties and facultative covers, analyzes recovery potential, manages relationships with reinsurers, monitors treaty performance",
+  "tomorrow": "Uses SI to optimize structures and counterparty selection in near real time; focuses on innovative risk transfer, alternative capital, and strategic relationship management",
+  "tasks": "Structure and price reinsurance; manage recoveries",
+  "si": "Optimized treaty and facultative design; rapid catastrophe and severity scenario analysis; counterparty and basis-risk intelligence"
+ },
+ {
+  "department": "Distribution, Customer & Operations Roles",
+  "role": "Agent / Broker / Producer Support",
+  "today": "Advises clients on coverage needs, prepares submissions, compares quotes, handles renewals and mid-term changes, manages client relationships",
+  "tomorrow": "Becomes a trusted risk advisor: leverages SI for instant personalized recommendations, coverage gap analysis, and competitive intelligence; focuses on relationship depth and complex advice",
+  "tasks": "Match customers to products; advise on coverage",
+  "si": "Personalized risk and coverage recommendations; real-time competitive and suitability intelligence; identification of under- or over-insured exposures"
+ },
+ {
+  "department": "Distribution, Customer & Operations Roles",
+  "role": "Customer Service / Policy Service",
+  "today": "Answers policy and billing questions, processes endorsements and cancellations, handles complaints, supports retention efforts",
+  "tomorrow": "Supervises SI-powered service and handles only the most complex or sensitive interactions; focuses on retention strategy and high-empathy moments",
+  "tasks": "Handle inquiries, endorsements, and retention",
+  "si": "Instant context-aware answers drawn from full policy, claims, and external data; proactive retention risk scoring and next-best-action recommendations"
+ },
+ {
+  "department": "Distribution, Customer & Operations Roles",
+  "role": "Product Manager",
+  "today": "Defines product features and coverages, coordinates with actuarial/underwriting/IT, monitors product performance and competitive landscape, drives product changes",
+  "tomorrow": "Continuously iterates products using SI market and loss-cost intelligence; focuses on strategic product vision, regulatory navigation, and rapid experimentation",
+  "tasks": "Design and evolve products and coverages",
+  "si": "Rapid market and loss-cost intelligence; simulated product performance under changing risk landscapes; identification of coverage gaps or emerging needs"
+ },
+ {
+  "department": "Supporting Intelligence & Oversight Roles",
+  "role": "Data / Analytics / Insights Teams",
+  "today": "Extracts and cleans data, builds reports and dashboards, develops predictive models, supports business questions from other departments",
+  "tomorrow": "Designs, governs, and audits SI systems; focuses on data quality, model risk management, insight prioritization, and translating SI outputs into business action",
+  "tasks": "Deliver models, reports, and decision support",
+  "si": "Automated data fusion, feature engineering, and insight generation; continuous monitoring of model performance and data quality"
+ },
+ {
+  "department": "Supporting Intelligence & Oversight Roles",
+  "role": "Compliance / Regulatory / Audit",
+  "today": "Monitors adherence to regulations and internal policies, reviews underwriting and claims decisions for fairness and compliance, prepares regulatory filings and responses",
+  "tomorrow": "Oversees SI decision systems for fairness, explainability, and regulatory compliance; focuses on policy design, exception handling, and regulator engagement",
+  "tasks": "Ensure adherence to rules and fair practices",
+  "si": "Automated monitoring of decisions for bias, unfair discrimination, or regulatory breaches; audit-trail generation and exception prioritization"
+ },
+ {
+  "department": "Supporting Intelligence & Oversight Roles",
+  "role": "Strategy / Emerging Risk Teams",
+  "today": "Scans external trends (climate, technology, regulation, society), assesses long-term impact on the portfolio and business model, informs strategic planning",
+  "tomorrow": "Runs continuous SI-powered horizon scanning and scenario generation; focuses on strategic interpretation, prioritization of emerging risks, and board-level recommendations",
+  "tasks": "Identify long-term threats and opportunities",
+  "si": "Continuous scanning of scientific, climate, technological, and societal signals; generation of plausible future risk scenarios and strategic implications"
+ }
+]

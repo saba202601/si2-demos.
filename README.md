@@ -12,9 +12,28 @@ All data is synthetic. Codes, record layouts and rating factors are illustrative
 | `app_claims.py` | Claims Triage | https://si2-claims.streamlit.app |
 | `app_migration.py` | Legacy-to-Cloud Migration Workbench | https://si2-migrate.streamlit.app |
 | `app_fraud.py` | Fraud Engine | https://si2-fraud.streamlit.app |
+| `app_roles.py` | Role-Based Super Intelligence (15 roles, 5 departments); engines in `roles/` | https://si2-roles.streamlit.app |
 | `app_iso_bureau.py` | ISO Bureau Reporting, all lines (PA, HO, CA, CP, GL, IM, CR, BP, FI, BR); see `iso_bureau/README.md` | https://si2-iso-bureau.streamlit.app |
 
 Shared code lives in `si2_common/` (branding, access code, synthetic data, rule evaluator, and the Canonical Gaps engine and screen).
+
+### Role-Based Super Intelligence (v1.1.0, in development)
+
+`app_roles.py` turns the 15 roles in `roles/data/Role_based_AI.xlsx` into one workbench each. SI² prepares, the
+person decides: every recommendation is explained, a different decision needs a reason, and decision boundaries
+(authority, appetite, targets) change only with a second person. Everything runs inside SI² on one synthetic company
+(`roles/book.py`, a 1-in-40 sample shown at company scale); no other tools or legacy systems.
+
+| Department | Roles and what SI² does |
+|---|---|
+| Core Underwriting & Pricing | Underwriter (score, explain, accept / refer / decline); Pricing (rate adequacy with credibility, leakage, rate-change simulation); Catastrophe (5,000-year event set, EP curves, event impact) |
+| Claims & Loss | Claims Adjuster (triage, image damage, liability, reserve range, authority escalation); SIU (fraud networks with evidence); Loss Control (site risk and mitigation value) |
+| Actuarial, Risk & Capital | Actuary (triangle, chain ladder, bootstrap, feature discovery, monitoring); ERM (capital, solvency, appetite, early warnings); Reinsurance (16 XoL structures, counterparty, basis risk) |
+| Distribution, Customer & Operations | Agent support (coverage gaps, competitive position); Customer Service (lapse risk, next best action); Product Manager (performance, coverage demand, endorsement break-even) |
+| Supporting Intelligence & Oversight | Data team (data quality, model registry, insight feed); Compliance (adverse impact by group, restricted factors, audit trail); Strategy (emerging risks, scenarios) |
+
+Tests: `tests/test_roles.py` (planted fraud rings found, Texas homeowners rate inadequacy flagged, reinsurance lifts
+solvency, chain ladder reconciles, every role renders).
 
 ### Canonical Gaps
 

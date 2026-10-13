@@ -3,6 +3,13 @@
 SI² demos follow semantic versioning: MAJOR.MINOR.PATCH. Each release is a git tag (`v1.0.0`) so you can always say
 exactly which version a client saw, and redeploy it.
 
+## v1.1.0 (in development)
+
+* **Role-Based Super Intelligence** (`app_roles.py`, deploy as `si2-roles`): 15 roles in 5 departments from the
+  role workbook, each with an SI² workbench, decisions with reasons, decision boundaries under two-person approval,
+  the intelligence it adds, and Ask SI². Claims reserve changes above authority go to a second person; the
+  Reinsurance choice drives the Enterprise Risk solvency view; Compliance sees fairness of SI² and of people.
+
 ## v1.0.0 (2026-10-12)
 
 First tagged release.
