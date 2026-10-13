@@ -10,6 +10,12 @@ exactly which version a client saw, and redeploy it.
   GLOBAL / COMPANY / PERSON scopes; extension attributes; system-versioned history; scan another database and
   propose what is missing (alias, synonym, abbreviation and value-fingerprint matching); collector for the RuleEngine, BureauReporting and ISOBureauReporting databases. Installer with self-test.
 
+* **Rule engine and Rule Studio** (`sql/si2_canonical/06_rule_engine.sql`, `07_rule_library.sql`, `app_rule_studio.py`):
+  rules scoped by company, line, product, state, channel and program; most-specific override; ordered phases;
+  18 role-owned templates; 16 roles with authority limits; decision tables; a 71-rule library for 9 lines with 149
+  generated tests; plain-English rule drafting (optional Claude, always checked against the canonical model);
+  impact on a synthetic book; Saba proposes, Sabasi approves.
+
 * **Role-Based Super Intelligence** (`app_roles.py`, deploy as `si2-roles`): 15 roles in 5 departments from the
   role workbook, each with an SI² workbench, decisions with reasons, decision boundaries under two-person approval,
   the intelligence it adds, and Ask SI². Claims reserve changes above authority go to a second person; the

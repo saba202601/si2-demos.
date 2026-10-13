@@ -105,7 +105,7 @@ def subject_of(code: str, app_entities: set) -> str:
     c = code
     rules = [
         ("REINSURANCE", ["TREATY", "REINSUR", "CEDED", "RETENTION", "LAYER", "AM_BEST"]),
-        ("CAPITAL", ["SOLVENCY", "CAPITAL", "APPETITE"]),
+        ("CAPITAL", ["SOLVENCY", "CAPITAL", "APPETITE", "LOSS_RATIO", "COMBINED_RATIO", "EXPENSE_RATIO", "PREMIUM_GROWTH", "RETENTION_RATE", "RATE_CHANGE"]),
         ("BILLING", ["INVOICE", "BILL", "DUE_DATE", "BALANCE", "PAYMENT_METHOD", "PAYMENT_PLAN", "INSTALLMENT"]),
         ("FRAUD", ["FRAUD", "SIU"]),
         ("MEDICAL", ["PROVIDER", "PROCEDURE", "ICD", "PLACE_SERVICE", "SERVICE_DATE", "AMOUNT_CHARGED", "BILL_IDENTIFICATION", "LINE_IDENTIFICATION", "NETWORK_SERVICE"]),
@@ -409,7 +409,8 @@ def build() -> str:
                     syn.append(("OPTION", ncci_code_of[fname], cd[:60], val, "VALUE", "*"))
 
     # Company additions to standard lists (not ISO-reported)
-    for pl, oc, on, lob in [("LOB", "WC", "Workers Compensation", "*"),
+    for pl, oc, on, lob in [("LOB", "WC", "Workers Compensation", "*"), ("LOB", "UMB", "Umbrella / Excess Liability", "*"),
+                            ("LOB", "CYB", "Cyber Liability", "*"),
                             ("COVERAGE", "DWELL", "Coverage A - Dwelling", "HO"), ("COVERAGE", "OTHSTR", "Coverage B - Other Structures", "HO"),
                             ("COVERAGE", "PERSPROP", "Coverage C - Personal Property", "HO"), ("COVERAGE", "LOU", "Coverage D - Loss of Use", "HO"),
                             ("COVERAGE", "PERSLIAB", "Coverage E - Personal Liability", "HO"), ("COVERAGE", "MEDPAY", "Coverage F - Medical Payments", "HO"),

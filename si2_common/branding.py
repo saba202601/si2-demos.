@@ -93,6 +93,12 @@ TOURS = {
         "**Rules (draft)**: enter your name, *Submit the draft for approval*.",
         "**✅ Approvals**: change the sidebar name and approve; the draft goes to production.",
         "**Run on submissions** now uses the approved rules."],
+    "Rule Studio": [
+        "**Ask SI²**: pick a role and an example, e.g. *Decline homes in Georgia with a roof older than 20 years*, then *Draft the rule*.",
+        "SI² shows the rule in plain English, notices it replaces the countrywide roof rule in Georgia, writes the tests and the impact.",
+        "*Send for approval as Saba*; switch the sidebar to **Sabasi** and approve it under **Approvals**.",
+        "**Try a case**: change a fact and see every rule that fired, and why.",
+        "**Coverage by role**: rules by owner and line, gaps, idle rules and conflicts."],
     "Rating Engine": [
         "**📥 Incoming quotes**: 7 of 8 quotes cannot be rated.",
         "**🧩 Rating gaps**: rate AL as GA, add the 500/1000 and $2,000 factors (SI² drafts them).",

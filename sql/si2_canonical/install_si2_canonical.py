@@ -68,7 +68,8 @@ def install(server: str, db: str, demo: bool, demo_db: str = "SI2_SourceDemo", q
     say(f"Server {server}: database {db}")
     con.cursor().execute(f"IF DB_ID(N'{db}') IS NULL CREATE DATABASE [{db}];")
     exists = query(con, f"SELECT OBJECT_ID(N'[{db}].canon.DataElement') AS x")[0][0]["x"]
-    steps = ([] if exists else ["01_schema.sql"]) + ["02_procedures.sql", "03_seed.sql"] + (["04_demo_source.sql"] if demo else [])
+    steps = ([] if exists else ["01_schema.sql"]) + ["02_procedures.sql", "03_seed.sql", "06_rule_engine.sql",
+                                                       "07_rule_library.sql"] + (["04_demo_source.sql"] if demo else [])
     if exists:
         say("  schema already there: keeping it (procedures refreshed, missing seed rows added)")
     for f in steps:
@@ -83,6 +84,55 @@ def install(server: str, db: str, demo: bool, demo_db: str = "SI2_SourceDemo", q
 
 
 # ------------------------------------------------------------------------------------------- self-test
+def rule_engine_checks(server, db, con, check, one) -> None:
+    """Rule engine: library loaded, a Georgia rule proposed by Saba from Python and approved by Sabasi, read back by the Rule Studio."""
+    sys.path.insert(0, str(HERE))
+    import rule_engine as E
+    import rule_repo as R
+    n = one("SELECT (SELECT COUNT(*) FROM rules.Role) r, (SELECT COUNT(*) FROM rules.RuleTemplate) t, (SELECT COUNT(*) FROM rules.RuleScope) s, "
+            "(SELECT COUNT(*) FROM rules.DecisionTableRow) d, (SELECT COUNT(*) FROM rules.RoleAuthority) a, "
+            "(SELECT COUNT(*) FROM rules.BusinessRule WHERE OwnerRole IS NOT NULL) o")
+    check("rule library: roles, templates, scopes, tables, authority", n["r"] >= 16 and n["t"] >= 18 and n["s"] > 100 and n["d"] >= 25 and n["a"] >= 13
+          and n["o"] >= 140, f"{n['r']} roles, {n['t']} templates, {n['s']} scope rows, {n['d']} table rows, {n['a']} authority rows, {n['o']} rules with an owner")
+    cat = one("SELECT States, Lines, Companies FROM rules.vw_RuleCatalog WHERE RuleCode = 'HO-E01-FL'")
+    check("catalog shows where a rule applies", (cat["States"], cat["Lines"], cat["Companies"]) == ("FL", "HO", "SIM"), str(cat))
+    repo = R.SqlRepo(server, db)
+    rule = E.Rule("HO-E01-GA", "Roof older than 20 years (Georgia)", "DECLINE", [("ROOF_AGE", ">", "20", None)], phase="ELIGIBILITY",
+                  scope={"COMPANY": ["SIM"], "LOB": ["HO"], "STATE": ["GA"]}, override_key="HO_ROOF_AGE_LIMIT", role="UNDERWRITER",
+                  template="UW_DECLINE", severity="ERROR", effective_from="2026-01-01")
+    rid = repo.propose("RULE", "ADD", rule.code, R.rule_payload(rule, "UW_ELIGIBILITY", "ELIGIBILITY", E.generate_tests(rule)), "Saba", "Georgia roof limit")
+    try:
+        repo.decide(rid, "Saba")
+        check("Rule Studio: two-person rule", False)
+    except ValueError as ex:
+        check("Rule Studio: two-person rule", "Two-person" in str(ex), str(ex)[:80])
+    status, result = repo.decide(rid, "Sabasi")
+    check("Rule Studio: Sabasi approves Saba's rule", status == "APPROVED", result)
+    live = repo.rule("HO-E01-GA")
+    ga = E.evaluate(repo.rules, {"COMPANY": "SIM", "LOB": "HO", "STATE": "GA"}, {"ROOF_AGE": 22}, "2026-10-13")
+    fl = E.evaluate(repo.rules, {"COMPANY": "SIM", "LOB": "HO", "STATE": "FL"}, {"ROOF_AGE": 22}, "2026-10-13")
+    check("Georgia rule overrides countrywide, Florida keeps its own", live is not None and live.scope == rule.scope
+          and [r.code for r, _ in ga.fired if r.override_key] == ["HO-E01-GA"] and [r.code for r, _ in fl.fired if r.override_key] == ["HO-E01-FL"])
+    t = query(con, "EXEC rules.usp_RunTests")
+    check("generated tests pass in SQL Server too", t[0][0]["Failed"] == 0 and one("SELECT COUNT(*) n FROM rules.RuleTestCase t JOIN rules.BusinessRule r "
+          "ON r.RuleId = t.RuleId WHERE r.RuleCode = 'HO-E01-GA'")["n"] == 2, f"{t[0][0]['Passed']} passed, {t[0][0]['Failed']} failed")
+    rid = repo.propose("AUTHORITY", "ADD", "UNDERWRITER.BIND_TIV.*", {"role": "UNDERWRITER", "authority": "BIND_TIV", "lob": "*", "limit": 3000000,
+                                                                    "effective_from": "2026-11-01"}, "Saba", "raise")
+    repo.decide(rid, "Sabasi")
+    rows = sorted((a["status"], a["effective_to"] or "") for a in repo.authority if (a["role"], a["authority"], a["lob"]) == ("UNDERWRITER", "BIND_TIV", "*"))
+    check("new authority limit closes the old one", rows == [("ACTIVE", ""), ("EXPIRED", "2026-10-31")], str(rows))
+    rid = repo.propose("DTABLE_ROW", "ADD", "CANCEL_NOTICE_DAYS", {"table": "CANCEL_NOTICE_DAYS", "inputs": {"STATE": "AL", "CANCEL_REASON": "UW"},
+                                                                  "outputs": {"NOTICE_DAYS": 20}}, "Saba", "AL")
+    repo.decide(rid, "Sabasi")
+    hit = E.lookup(repo.engine_tables()["CANCEL_NOTICE_DAYS"], {"STATE": "AL", "CANCEL_REASON": "UW"})
+    check("decision table row added and used", hit == {"NOTICE_DAYS": 20}, str(hit))
+    rid = repo.propose("TEMPLATE", "ADD", "UW_REFER_TEST", {"code": "UW_REFER_TEST", "name": "Test template", "owner_role": "UNDERWRITER",
+                                                           "sentence": "Refer when {conditions}", "questions": [{"name": "conditions"}]}, "Saba", "t")
+    check("new template", repo.decide(rid, "Sabasi")[0] == "APPROVED" and repo.template("UW_REFER_TEST") is not None)
+    repo.cn.close()
+
+
+
 def selftest(server: str, keep: bool) -> int:
     db, demo_db = "SI2Canonical_SelfTest", "SI2_SourceDemo_SelfTest"
     master = connect(server)
@@ -178,6 +228,7 @@ def selftest(server: str, keep: bool) -> int:
     hist = one("SELECT COUNT(*) n FROM canon.PickListOption FOR SYSTEM_TIME ALL o JOIN canon.PickList p ON p.PickListId=o.PickListId "
                "WHERE p.PickListCode='ROOF_SHAPE' AND o.OptionCode='FLAT'")["n"]
     check("expire, never delete, history kept", hist == 2 and one("SELECT Status FROM canon.vw_PickListOption WHERE PickList='ROOF_SHAPE' AND OptionCode='FLAT'")["Status"] == "EXPIRED")
+    rule_engine_checks(server, db, con, check, one)
     check("no requests left failed", one("SELECT COUNT(*) n FROM gov.ChangeRequest WHERE Status='FAILED'")["n"] == 0)
     con.close()
     if not keep:

@@ -87,3 +87,33 @@ proposed. `--scan-all` also scans every other database column by column.
 `python sql/si2_canonical/build_seed.py` (from the repository root) rebuilds `03_seed.sql` from the ISO catalog,
 the NCCI / WCIO code lists, the company-model harvest, the migration and legacy code tables, the rule engine and
 the role boundaries.
+
+## Rule engine and Rule Studio
+
+Every business rule, for every line, product, state, company and role, in one engine with the same governance as
+the canonical model. Double-click **`run_rule_engine.bat`**: it self-tests on throw-away databases, then adds the
+rule engine (`06_rule_engine.sql`) and the rule library (`07_rule_library.sql`) to SI2Canonical. Re-running only adds
+what is missing. Log: `rule_engine_log.txt`.
+
+* **Where a rule applies** (`rules.RuleScope`): company, line, product, state, channel, program; empty means everywhere.
+* **Overrides**: rules that share an override key compete and the most specific wins (state > product > program >
+  company > line), so a Florida roof rule replaces the countrywide one in Florida only.
+* **Phases** run in order: data, eligibility, referral, rating, forms, compliance, billing, routing, authority, alerts.
+  The outcome is DECLINE > REFER > ACCEPT; surcharges and credits combine into a premium factor.
+* **Templates** (`rules.RuleTemplate`): 18 rule shapes, each owned by a role, with the questions SI² asks.
+* **Roles** (`rules.Role`) and **authority** (`rules.RoleAuthority`): 16 roles from CEO to data steward; a new limit
+  closes the old one the day before.
+* **Decision tables** (`rules.DecisionTable`, `rules.DecisionTableRow`): notice days, minimum premium, commission;
+  the most specific row wins and `*` matches anything. Illustrative values are marked.
+* **Library** (`rule_library.py` → `07_rule_library.sql`): 2 synthetic companies, 14 products, 71 rules across
+  homeowners, auto, umbrella, BOP, property, GL, commercial auto, WC, cyber, pricing, compliance, billing, claims,
+  SIU, distribution and executive guardrails, 149 generated test cases. Regulated values are illustrative: confirm them.
+* **Engine** (`rule_engine.py`): the same condition semantics as `rules.usp_TestRule`; explains every decision;
+  generates test cases; finds conflicts; measures the impact of a new rule on a synthetic book (`synthetic_book.py`).
+
+**Rule Studio** (`app_rule_studio.py`; on the PC, the `si2_rule_studio` folder → `run_rule_studio.bat`): a person picks
+their role and says what they want in plain English, e.g. *Decline homes in Georgia with a roof older than 20 years*.
+SI² picks the template, reads the conditions and where it applies, notices it replaces HO-E01 in Georgia, writes the
+tests and shows the impact on the synthetic book. Saba sends it for approval; Sabasi approves it; only then is it live.
+With `ANTHROPIC_API_KEY` set, Claude reads the sentence first and every element and code it returns is checked
+against the canonical model. Without `SI2_SQL_SERVER` the Studio runs on an in-memory copy of the library.

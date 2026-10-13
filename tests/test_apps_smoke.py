@@ -8,7 +8,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 APPS = ["app_hub", "app_canonical", "app_migration", "app_iso_bureau", "app_bureau", "app_rules", "app_rating",
-        "app_claims", "app_fraud", "app_roles"]
+        "app_claims", "app_fraud", "app_roles", "app_rule_studio"]
 
 
 @pytest.fixture(autouse=True)
@@ -28,5 +28,5 @@ def test_app_renders(app):
     assert not at.exception, at.exception[0].message
     nav = [r for r in at.radio if r.key in ("step", "page")]
     for value in (nav[0].options if nav else []):
-        nav[0].set_value(value).run()
+        at.radio(key=nav[0].key).set_value(value).run()     # fresh element: pages drop their own widgets
         assert not at.exception, f"{app} · {value}: {at.exception[0].message}"

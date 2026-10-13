@@ -359,6 +359,20 @@ BEGIN
             SELECT @id, CONVERT(int, c.[key]) + 1, canon.fn_ElementId(JSON_VALUE(c.value, '$.element'), @scopeId),
                    UPPER(JSON_VALUE(c.value, '$.operator')), JSON_VALUE(c.value, '$.value1'), JSON_VALUE(c.value, '$.value2'), @by
             FROM OPENJSON(@j, '$.conditions') c;
+            -- rule engine: template, phase, owner role, override key, where it applies, and its test cases
+            IF COL_LENGTH(N'rules.BusinessRule', N'Phase') IS NOT NULL
+                EXEC sp_executesql N'UPDATE rules.BusinessRule SET TemplateCode = JSON_VALUE(@j, ''$.template''), Phase = JSON_VALUE(@j, ''$.phase''),
+                        OwnerRole = JSON_VALUE(@j, ''$.owner_role''), OverrideKey = JSON_VALUE(@j, ''$.override_key''),
+                        ParametersJson = JSON_QUERY(@j, ''$.parameters'') WHERE RuleId = @id', N'@j nvarchar(max), @id int', @j = @j, @id = @id;
+            IF OBJECT_ID(N'rules.RuleScope') IS NOT NULL
+                EXEC sp_executesql N'INSERT rules.RuleScope (RuleId, Dimension, ScopeValue, CreatedBy)
+                        SELECT DISTINCT @id, UPPER(d.[key]), LEFT(v.value, 60), @by
+                        FROM OPENJSON(@j, ''$.applies_to'') d CROSS APPLY OPENJSON(d.value) v
+                        WHERE UPPER(d.[key]) IN (''COMPANY'', ''LOB'', ''PRODUCT'', ''STATE'', ''CHANNEL'', ''PROGRAM'') AND LEN(v.value) > 0',
+                     N'@j nvarchar(max), @id int, @by nvarchar(100)', @j = @j, @id = @id, @by = @by;
+            INSERT rules.RuleTestCase (RuleId, Name, InputJson, ExpectedFires, CreatedBy)
+            SELECT @id, LEFT(JSON_VALUE(t.value, '$.name'), 200), JSON_QUERY(t.value, '$.input'), TRY_CONVERT(bit, JSON_VALUE(t.value, '$.fires')), @by
+            FROM OPENJSON(@j, '$.tests') t WHERE JSON_QUERY(t.value, '$.input') IS NOT NULL;
             SET @Result = N'Rule ' + @code + N' added.'; RETURN;
         END;
         SET @id = rules.fn_RuleId(@code, @scopeId);
@@ -379,6 +393,46 @@ BEGIN
             UPDATE rules.BusinessRule SET Status = 'EXPIRED', EffectiveTo = @to WHERE RuleId = @id;
             SET @Result = N'Rule ' + @code + N' expired.'; RETURN;
         END;
+    END;
+
+    /* ---- RULE TEMPLATE */
+    IF @ot = 'TEMPLATE' AND @ct = 'ADD'
+    BEGIN
+        EXEC sp_executesql N'INSERT rules.RuleTemplate (TemplateCode, Name, OwnerRole, Phase, RuleType, ActionType, Sentence, Description, QuestionsJson, ExampleText, CreatedBy)
+                VALUES (@code, ISNULL(JSON_VALUE(@j, ''$.name''), @code), JSON_VALUE(@j, ''$.owner_role''), ISNULL(JSON_VALUE(@j, ''$.phase''), ''REFERRAL''),
+                        ISNULL(JSON_VALUE(@j, ''$.rule_type''), ''REFERRAL''), ISNULL(JSON_VALUE(@j, ''$.action_type''), ''REFER''),
+                        ISNULL(JSON_VALUE(@j, ''$.sentence''), @code), JSON_VALUE(@j, ''$.description''), ISNULL(JSON_QUERY(@j, ''$.questions''), N''[]''),
+                        JSON_VALUE(@j, ''$.example''), @by)',
+            N'@j nvarchar(max), @code nvarchar(300), @by nvarchar(100)', @j = @j, @code = @code, @by = @by;
+        SET @Result = N'Template ' + @code + N' added.'; RETURN;
+    END;
+
+    /* ---- DECISION TABLE ROW */
+    IF @ot = 'DTABLE_ROW' AND @ct = 'ADD'
+    BEGIN
+        EXEC sp_executesql N'INSERT rules.DecisionTableRow (TableCode, InputsJson, OutputsJson, Note, EffectiveFrom, CreatedBy)
+                VALUES (JSON_VALUE(@j, ''$.table''), JSON_QUERY(@j, ''$.inputs''), JSON_QUERY(@j, ''$.outputs''), JSON_VALUE(@j, ''$.note''), @from, @by)',
+            N'@j nvarchar(max), @from date, @by nvarchar(100)', @j = @j, @from = @from, @by = @by;
+        SET @Result = N'Row added to ' + ISNULL(JSON_VALUE(@j, '$.table'), N'?') + N'.'; RETURN;
+    END;
+    IF @ot = 'DTABLE_ROW' AND @ct = 'EXPIRE'
+    BEGIN
+        EXEC sp_executesql N'UPDATE rules.DecisionTableRow SET Status = ''EXPIRED'', EffectiveTo = @to WHERE RowId = TRY_CONVERT(int, JSON_VALUE(@j, ''$.row_id''))',
+            N'@j nvarchar(max), @to date', @j = @j, @to = @to;
+        SET @Result = N'Row expired.'; RETURN;
+    END;
+
+    /* ---- ROLE AUTHORITY (a new limit ends the open one the day before) */
+    IF @ot = 'AUTHORITY' AND @ct = 'ADD'
+    BEGIN
+        EXEC sp_executesql N'UPDATE rules.RoleAuthority SET EffectiveTo = DATEADD(day, -1, @from), Status = ''EXPIRED''
+                WHERE RoleCode = JSON_VALUE(@j, ''$.role'') AND AuthorityType = JSON_VALUE(@j, ''$.authority'')
+                  AND LobScope = ISNULL(JSON_VALUE(@j, ''$.lob''), ''*'') AND EffectiveTo IS NULL AND Status = ''ACTIVE'';
+                INSERT rules.RoleAuthority (RoleCode, AuthorityType, LobScope, LimitAmount, Notes, EffectiveFrom, CreatedBy)
+                VALUES (JSON_VALUE(@j, ''$.role''), JSON_VALUE(@j, ''$.authority''), ISNULL(JSON_VALUE(@j, ''$.lob''), ''*''),
+                        TRY_CONVERT(decimal(19,2), JSON_VALUE(@j, ''$.limit'')), JSON_VALUE(@j, ''$.note''), @from, @by)',
+            N'@j nvarchar(max), @from date, @by nvarchar(100)', @j = @j, @from = @from, @by = @by;
+        SET @Result = N'Authority for ' + ISNULL(JSON_VALUE(@j, '$.role'), N'?') + N' set.'; RETURN;
     END;
 
     SET @msg = N'Unsupported change: ' + @ot + N' ' + @ct + N'.';
