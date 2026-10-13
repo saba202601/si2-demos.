@@ -17,6 +17,13 @@ All data is synthetic. Codes, record layouts and rating factors are illustrative
 
 Shared code lives in `si2_common/` (branding, access code, synthetic data, rule evaluator, and the Canonical Gaps engine and screen).
 
+### SI² Canonical Master on SQL Server
+
+`sql/si2_canonical/`: one database for data elements, pick lists, options, synonyms for all of them, bureau codes,
+where-used and the rule engine, with two-person approval, company / person scopes, full history and a scan that
+collects from another database and proposes what is missing. `python install_si2_canonical.py --selftest`, then
+`python install_si2_canonical.py --demo`. See `sql/si2_canonical/README.md`.
+
 ### Role-Based Super Intelligence (v1.1.0, in development)
 
 `app_roles.py` turns the 15 roles in `roles/data/Role_based_AI.xlsx` into one workbench each. SI² prepares, the
