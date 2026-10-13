@@ -200,3 +200,12 @@ def test_rule_studio_end_to_end(monkeypatch):
     assert any("APPROVED" in s.value and "HO-E06" in s.value for s in at.success)
     repo = at.session_state["repo"]
     assert repo.rule("HO-E06").override_key == "HO_ROOF_AGE_LIMIT"
+
+
+def test_approval_ladder_is_not_an_override():
+    new = E.Rule("HO-A01", "Coverage A above 2,000,000", "APPROVE_BY", [("COVERAGE_A_LIMIT", ">", "2000000", None)], phase="AUTHORITY",
+                 action_value="CUO", scope={"COMPANY": ["SIM"], "LOB": ["HO"], "STATE": ["FL"]})
+    assert {x["rule"].code: x["kind"] for x in A.related(new, L.RULES)} == {"HO-R03": "ladder"}
+    assert [(v, who, c) for v, who, c, _ in A.ladder(new, L.RULES)] == [(1_000_000, "Senior Underwriter", "HO-R03"), (2_000_000, "CUO", "HO-A01")]
+    imp = E.impact(L.RULES, new, B.book(), DAY)
+    assert imp["fires"] > 0                                                 # the book now has high-value homes

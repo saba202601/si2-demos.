@@ -28,7 +28,8 @@ def _policy_facts(rng: random.Random, lob: str, state: str) -> dict:
                   "PROTECTION_CLASS": f"{_pick(rng, range(1, 11), [4, 8, 12, 14, 14, 12, 10, 9, 9, 8]):02d}",
                   "FLOOD_ZONE": _pick(rng, ["X", "X500", "AE", "A", "VE", "V"], [60, 12, 15, 6, 5, 2] if coastal else [80, 10, 7, 3, 0, 0]),
                   "DISTANCE_TO_COAST": round(rng.uniform(0.1, 30 if coastal else 300), 1), "YEAR_BUILT": rng.randint(1920, 2025),
-                  "COVERAGE_A_LIMIT": rng.randrange(150_000, 1_500_000, 10_000), "COVERAGE_C_LIMIT": rng.randrange(50_000, 400_000, 5_000),
+                  "COVERAGE_A_LIMIT": (rng.randrange(1_500_000, 5_000_000, 50_000) if rng.random() < 0.08    # high-value homes
+                                       else rng.randrange(150_000, 1_500_000, 10_000)), "COVERAGE_C_LIMIT": rng.randrange(50_000, 400_000, 5_000),
                   "WILDFIRE_SCORE": rng.randint(0, 100), "WIND_MITIGATION": _pick(rng, ["", "HURRICANE_STRAPS", "SHUTTERS", "FORTIFIED", "ROOF_DECK"], [55, 20, 12, 5, 8]),
                   "ALARM_TYPE": _pick(rng, ["NONE", "LOCAL", "CENTRAL", "POLICE_FIRE"], [45, 30, 20, 5]), "PRIOR_CLAIMS": _pick(rng, [0, 1, 2, 3], [65, 22, 9, 4])})
     elif lob == "PA":

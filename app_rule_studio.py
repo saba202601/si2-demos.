@@ -141,6 +141,10 @@ def draft_rule(d: dict, code: str, template: dict) -> E.Rule:
                   message=d.get("message") or d["name"], effective_from=d["effective_from"])
 
 
+def _fmt_amount(v: float) -> str:
+    return str(int(v)) if float(v).is_integer() else str(v)
+
+
 def suggest_code(template: dict, scope: dict) -> str:
     lob = (scope.get("LOB") or [""])[0]
     fixed = TEMPLATE_PREFIX.get(template["code"])
@@ -241,7 +245,13 @@ def page_ask():
     st.success(plain(rule))
     if override:
         st.info(f"Here it replaces **{override.code} {override.name}** ({plain(override)}). Everywhere else {override.code} still applies.")
+    steps = A.ladder(rule, repo.rules)
+    if steps:
+        st.info("**Approval ladder** (a case above several levels needs each of them): " + " → ".join(
+            f"{'**' if new else ''}{who} above {E._show(_fmt_amount(v))}{' (this rule)**' if new else f' ({c})'}" for v, who, c, new in steps))
     for x in rel:
+        if x["kind"] == "ladder":
+            continue
         if x["rule"] is not override:
             st.warning(f"Related: **{x['rule'].code}** {plain(x['rule'])} — {x['kind']}.")
     problems = [f"{c[0]} is not a canonical data element" for c in rule.conditions if c[0] not in repo.catalog.elements]

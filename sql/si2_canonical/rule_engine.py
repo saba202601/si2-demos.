@@ -334,6 +334,15 @@ def impact(rules: list[Rule], new_rule: Rule, book: list[dict], as_of: str | Non
         out["premium_before"] += prem * b.premium_factor if b.outcome != "DECLINE" else 0
         out["premium_after"] += prem * a.premium_factor if a.outcome != "DECLINE" else 0
         key = f"{b.outcome} → {a.outcome}"
+        if b.outcome == a.outcome:
+            def more(after, before):
+                rest = list(before)
+                return [x for x in after if not (x in rest and not rest.remove(x))]
+            extra = [f"needs {x}" for x in more(a.approvals, b.approvals)] + [f"routed to {x}" for x in more(a.routes, b.routes)] + \
+                    [f"form {x}" for x in more(a.forms, b.forms)] + [f"alert {x}" for x in more(a.alerts, b.alerts)]
+            if a.premium_factor != b.premium_factor:
+                extra.append(f"premium factor {b.premium_factor} → {a.premium_factor}")
+            key = f"still {a.outcome}, " + (", ".join(extra) or "other change")
         if (b.outcome, b.premium_factor, b.routes, b.forms, b.approvals, b.alerts) != (a.outcome, a.premium_factor, a.routes, a.forms, a.approvals, a.alerts):
             out["changed"] += 1
             out["by_outcome"][key] = out["by_outcome"].get(key, 0) + 1

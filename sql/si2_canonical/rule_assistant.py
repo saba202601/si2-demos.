@@ -395,8 +395,31 @@ def related(rule: Rule, rules: list[Rule]) -> list[dict]:
             continue
         broader = all(not r.scope.get(d) or not rule.scope.get(d) or set(rule.scope[d]) <= set(r.scope[d]) for d in r.scope)
         overlap = all(not r.scope.get(d) or not rule.scope.get(d) or set(r.scope[d]) & set(rule.scope[d]) for d in set(r.scope) | set(rule.scope))
-        if broader and rule.specificity() > r.specificity():
+        if overlap and _rung(rule) and _rung(r) and _rung(r)[0] == _rung(rule)[0] and \
+                (_rung(r)[1] != _rung(rule)[1] or (r.action_value or "") != (rule.action_value or "")):
+            out.append({"rule": r, "kind": "ladder"})        # another level of the same approval ladder, never a replacement
+        elif broader and rule.specificity() > r.specificity():
             out.append({"rule": r, "kind": "replaces here" if r.override_key else "also applies"})
         elif overlap:
             out.append({"rule": r, "kind": "overlaps"})
     return out
+
+
+def _rung(rule: Rule):
+    """(element, threshold) when the rule is one level of an approval ladder: approval above an amount."""
+    if rule.action != "APPROVE_BY" or len(rule.conditions) != 1 or rule.conditions[0][1] not in (">", ">="):
+        return None
+    try:
+        return rule.conditions[0][0], float(rule.conditions[0][2])
+    except (TypeError, ValueError):
+        return None
+
+
+def ladder(rule: Rule, rules: list[Rule]) -> list[tuple]:
+    """Every level of the approval ladder this rule belongs to, lowest first: [(threshold, approver, code, is_new)]."""
+    me = _rung(rule)
+    if not me:
+        return []
+    steps = [(me[1], rule.action_value, rule.code, True)]
+    steps += [(_rung(x["rule"])[1], x["rule"].action_value, x["rule"].code, False) for x in related(rule, rules) if x["kind"] == "ladder"]
+    return sorted(steps, key=lambda s: s[0]) if len(steps) > 1 else []
