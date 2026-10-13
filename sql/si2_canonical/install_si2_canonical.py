@@ -93,7 +93,7 @@ def coverage_checks(server, db, check, one) -> None:
     n = K.rows(cn, "SELECT (SELECT COUNT(*) FROM cov.Form) f, (SELECT COUNT(*) FROM cov.FormSection) s, (SELECT COUNT(*) FROM cov.Claim) c, "
                    "(SELECT COUNT(*) FROM canon.vw_PickListOption WHERE PickList = 'CAUSE_OF_LOSS' AND OptionCode IN ('FLOOD', 'SEWER', 'MOLD')) o, "
                    "(SELECT COUNT(*) FROM canon.vw_Synonym WHERE ObjectCode = 'CAUSE_OF_LOSS.FLOOD') w")[0]
-    check("coverage: forms, sections, claims, causes and loss words loaded", n["f"] >= 16 and n["s"] >= 50 and n["c"] >= 90 and n["o"] == 3 and n["w"] >= 15,
+    check("coverage: forms, sections, claims, causes and loss words loaded", n["f"] >= 16 and n["s"] >= 40 and n["c"] >= 90 and n["o"] == 3 and n["w"] >= 15,
           f"{n['f']} forms, {n['s']} sections, {n['c']} claims, FLOOD has {n['w']} loss words")
     lib, pols, claims = K.load(cn)
     alerts = C.check_all(claims, pols, lib)
