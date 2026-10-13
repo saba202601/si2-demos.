@@ -57,7 +57,8 @@ ALIASES = {
     "reported": "DAYS_TO_REPORT", "report lag": "DAYS_TO_REPORT", "attorney": "ATTORNEY_INDICATOR", "lawyer": "ATTORNEY_INDICATOR",
     "represented": "ATTORNEY_INDICATOR", "lawsuit": "LITIGATION_IND", "litigation": "LITIGATION_IND", "litigated": "LITIGATION_IND",
     "in suit": "LITIGATION_IND", "catastrophe": "CATASTROPHE_IND", "cat event": "CATASTROPHE_IND", "payment": "CLAIM_PAYMENT_AMOUNT",
-    "payments": "CLAIM_PAYMENT_AMOUNT", "incurred": "INCURRED_LOSS", "claim amount": "INCURRED_LOSS", "loss amount": "INCURRED_LOSS",
+    "payments": "CLAIM_PAYMENT_AMOUNT", "pays": "CLAIM_PAYMENT_AMOUNT", "pay": "CLAIM_PAYMENT_AMOUNT", "paid": "CLAIM_PAYMENT_AMOUNT",
+    "settlement": "CLAIM_PAYMENT_AMOUNT", "settle": "CLAIM_PAYMENT_AMOUNT", "incurred": "INCURRED_LOSS", "claim amount": "INCURRED_LOSS", "loss amount": "INCURRED_LOSS",
     "days notice": "NOTICE_DAYS_GIVEN", "days of notice": "NOTICE_DAYS_GIVEN", "notice": "NOTICE_DAYS_GIVEN", "unlicensed": "PRODUCER_LICENSED_IND",
     "not licensed": "PRODUCER_LICENSED_IND", "producer licensed": "PRODUCER_LICENSED_IND", "credit score": "INSURANCE_SCORE_IND",
     "insurance score": "INSURANCE_SCORE_IND", "underlying": "UNDERLYING_LIABILITY_LIMIT", "flood zone": "FLOOD_ZONE",
@@ -82,13 +83,18 @@ VALUE_WORDS = {
     "good student": ("GOOD_STUDENT_IND", "=", "Y"), "non-payment": ("CANCEL_REASON", "=", "NONPAY"),
     "nonpayment": ("CANCEL_REASON", "=", "NONPAY"), "non payment": ("CANCEL_REASON", "=", "NONPAY"), "tracking device": ("ANTI_THEFT", "=", "TRACKING"),
 }
+TEXT_TYPES = {"TEXT", "CODE", "STRING", "VARCHAR", "NVARCHAR", "CHAR"}
+NUMERIC_OPS = {">", ">=", "<", "<=", "BETWEEN"}
+AUTHORITY_WORDS = re.compile(r"\b(can|may|allowed to|able to)\s+(pay|approve|bind|reserve|settle|refund)\b.{0,30}\b(up to|under|below|less than)\b|"
+                             r"\b(payment|settlement|reserve|binding|bind) authority\b|\bauthority (of|is|up to)\b", re.I)
 NEGATION = re.compile(r"\b(no|without|not|lacks?|lacking|missing|never|non)\b[\w\s-]{0,12}$", re.I)
 
 TEMPLATE_WORDS = [  # (template, words) checked in order; the first with a hit wins unless the role prefers another hit
     ("SIU_REFER", ["siu", "fraud", "special investigation"]),
     ("REIN_FAC", ["reinsurance", "facultative", "fac "]),
     ("EXEC_ALERT", ["alert", "loss ratio", "combined ratio", "expense ratio", "retention", "premium growth", "notify the ceo", "tell the ceo"]),
-    ("CLAIM_AUTHORITY", ["claim payment", "payment above", "payments above", "payments over", "payment over", "reserve above", "reserve change"]),
+    ("CLAIM_AUTHORITY", ["claim payment", "payment authority", "pay up to", "pays more than", "pay more than", "settle", "settlement",
+                         "reserve authority", "payment above", "payments above", "payments over", "payment over", "reserve above", "reserve change"]),
     ("RATE_CHANGE_CAP", ["rate change", "rate increase"]),
     ("UW_AUTHORITY", ["approval", "approve", "authority", "sign off", "sign-off", "sign-off"]),
     ("RATE_SURCHARGE", ["surcharge", "load ", "loading", "charge more", "debit"]),
@@ -194,6 +200,8 @@ def _condition(element: str, clause: str, before: str, catalog, mention: str) ->
             if len(vals) == 1:
                 return (element, "<>" if neg else "=", vals[0], None)
             return (element, "NOT IN" if neg else "IN", ",".join(vals), None)
+    if e.get("type") in TEXT_TYPES and not e.get("picklist"):
+        return None                                   # a name, number or free text is never compared with an amount
     ratio = element.endswith(("_RATIO", "_RATE")) or element in ("LOSS_RATIO", "RETENTION_RATE")
 
     def value(m):
@@ -337,6 +345,11 @@ def parse(text: str, catalog, templates: list[dict], role: str | None = None) ->
             notes.append(f"I saw '{m['phrase']}' ({catalog.name(m['element'])}) but no value for it.")
     joins = [rest[max(mentions[i - 1]["end"], mentions[i]["start"] - 16):mentions[i]["start"]] for i in range(1, len(mentions))]
     logic = "ANY" if len(conds) > 1 and any(re.search(r"\bor\s+(?:[a-z-]+\s+){0,2}$", j) for j in joins) else "ALL"
+    if t["action"] == "APPROVE_BY":                     # "up to 25,000" in an authority rule: approval is needed above it
+        conds = [(c[0], ">" if c[1] in ("<", "<=") else c[1], c[2], c[3]) for c in conds]
+    if AUTHORITY_WORDS.search(text):
+        notes.append("This sounds like a person's authority limit. A limit for a role is set under **Authority** (for example Claims Adjuster, "
+                     "claim payment, 25,000); a rule here says who must approve above an amount.")
     if not conds:
         notes.append("I could not find a condition. Add one below: pick the data element, the comparison and the value.")
     return {"template": code, "conditions": conds, "logic": logic, "scope": scope, "action_value": action_value,
@@ -373,6 +386,8 @@ def with_claude(text: str, catalog, templates: list[dict], role: str | None, ask
         c = list(c) + [None] * (4 - len(c))
         el, op = str(c[0]).upper(), str(c[1]).upper()
         if el not in catalog.elements or op not in {"=", "<>", ">", ">=", "<", "<=", "IN", "NOT IN", "BETWEEN", "IS NULL", "IS NOT NULL", "LIKE", "NOT LIKE"}:
+            return None
+        if op in NUMERIC_OPS and catalog.elements[el].get("type") in TEXT_TYPES and not catalog.elements[el].get("picklist"):
             return None
         opts = {o for o, _ in catalog.element_options(el)}
         if opts and c[2] is not None and op in ("=", "<>", "IN", "NOT IN"):

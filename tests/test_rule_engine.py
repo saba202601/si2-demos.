@@ -228,3 +228,13 @@ def test_my_desk_for_each_role(monkeypatch):
     at.selectbox(key="desk_role").set_value("CLAIMS_ADJUSTER").run()
     at.text_input(key="desk_q_CLAIMS_ADJUSTER").set_value("Can I pay 30,000 on a claim?").run()
     assert any("needs **Claims Manager**" in m.value for m in at.markdown)
+
+
+def test_text_elements_never_compared_with_amounts():
+    repo = R.MemoryRepo()
+    repo.catalog.elements["ADJUSTER_NAME"] = {"name": "Adjuster Name", "description": "", "subject": "CLAIM", "type": "TEXT", "picklist": None}
+    d = A.parse("Decline when adjuster name is at most 25,000", repo.catalog, repo.templates, "CLAIMS_ADJUSTER")
+    assert d["conditions"] == []
+    d = A.parse("Adjuster can pay up to 25,000", repo.catalog, repo.templates, "CLAIMS_ADJUSTER")
+    assert (d["template"], d["conditions"]) == ("CLAIM_AUTHORITY", [("CLAIM_PAYMENT_AMOUNT", ">", "25000", None)])
+    assert any("Authority" in n for n in d["notes"])
