@@ -223,6 +223,13 @@ BEGIN
                 ISNULL(JSON_VALUE(@j, '$.lob'), '*'), JSON_VALUE(@j, '$.release'), @from, @by);
         SET @Result = N'Bureau code added.'; RETURN;
     END;
+    IF @ot = 'BUREAU_CODE' AND @ct = 'EXPIRE'
+    BEGIN
+        SET @id = TRY_CONVERT(int, JSON_VALUE(@j, '$.id'));
+        IF NOT EXISTS (SELECT 1 FROM canon.BureauCodeMap WHERE BureauCodeMapId = @id) THROW 50005, N'Bureau code not found.', 1;
+        UPDATE canon.BureauCodeMap SET Status = 'EXPIRED', EffectiveTo = @to WHERE BureauCodeMapId = @id;
+        SET @Result = N'Bureau code expired.'; RETURN;
+    END;
 
     /* ---- DATA ELEMENT */
     IF @ot = 'ELEMENT'
