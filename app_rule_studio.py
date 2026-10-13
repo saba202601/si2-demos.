@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import datetime as dt
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -28,6 +29,7 @@ import rule_assistant as A  # noqa: E402
 import rule_engine as E  # noqa: E402
 import rule_repo as R  # noqa: E402
 import synthetic_book as B  # noqa: E402
+import coverage as CV  # noqa: E402
 from si2_common import ai, branding, gate  # noqa: E402
 
 branding.page("Rule Studio", "Every rule for every line, product, state, company and role: asked in plain English, tested, approved by two people.")
@@ -114,7 +116,7 @@ with st.sidebar:
     st.markdown("**Signed in as**")
     user = st.selectbox("Person", ["Saba", "Sabasi"], key="user", label_visibility="collapsed",
                         help="Two-person rule: one person proposes, the other approves.")
-    page = st.radio("Go to", ["Ask SI²", "Rule library", "Try a case", "Decision tables", "Authority", "Approvals", "Coverage by role"], key="page")
+    page = st.radio("Go to", ["Ask SI²", "Rule library", "Try a case", "Decision tables", "Authority", "Approvals", "Rules by role", "Claim coverage", "Policy forms"], key="page")
     st.divider()
     if repo.kind == "sql":
         st.success(f"SI2Canonical on {repo.server}")
@@ -474,7 +476,7 @@ def page_approvals():
 
 # ------------------------------------------------------------------------------------------ coverage
 def page_coverage():
-    st.subheader("Coverage by role")
+    st.subheader("Rules by role")
     active = [r for r in repo.rules if r.status == "ACTIVE"]
     grid = {}
     for r in active:
@@ -501,6 +503,182 @@ def page_coverage():
     st.dataframe(pd.DataFrame(cf), hide_index=True, width="stretch") if cf else st.success("No conflicts.")
 
 
+# ------------------------------------------------------------------------------------------ claim coverage
+ROLE_ICON = {"CLAIMS_ADJUSTER": "🧑‍💼", "UNDERWRITER": "📝", "CLAIMS_MANAGER": "👔", "SIU": "🔎"}
+STATUS_ICON = {"COVERED": "✅", "NOT COVERED": "⛔", "REVIEW": "🟡"}
+
+
+def claim_data():
+    """Forms, policies and claims: from SI2Canonical (cov schema) when it is there, otherwise the synthetic set."""
+    if "cov_data" not in st.session_state:
+        data = None
+        if repo.kind == "sql":
+            try:
+                import check_claims as K
+                if repo._q("SELECT OBJECT_ID(N'cov.Claim') AS x")[0]["x"]:
+                    data = K.load(repo.cn) + ("SI2Canonical",)
+            except Exception as exc:  # noqa: BLE001
+                st.session_state.cov_error = str(exc)
+        if data is None:
+            lib = CV.FormLibrary.synthetic()
+            pols = CV.synthetic_policies()
+            data = (lib, pols, CV.synthetic_claims(pols, lib=lib), "synthetic")
+        st.session_state.cov_data = data
+        st.session_state.cov_alerts = CV.check_all(data[2], data[1], data[0])
+    return st.session_state.cov_data
+
+
+def mark(text: str, found: list) -> str:
+    out = text
+    for _, phrase in found:
+        out = re.sub("(?i)(" + re.escape(phrase) + ")", r"**\1**", out, count=1)
+    return out
+
+
+def alert_rows(alerts: list[dict]) -> pd.DataFrame:
+    return pd.DataFrame([{"Claim": a["claim"], "Severity": a["severity"], "Finding": a["title"],
+                          "To": role_name(a["to"]), "Copy": role_name(a["cc"]) if a["cc"] else "", "Adjuster": a["adjuster"] or "",
+                          "Details": a["message"]} for a in alerts])
+
+
+def page_claims():
+    st.subheader("Claim coverage")
+    st.caption("SI² reads the forms attached to the policy and the claim's loss description. Coverage questions go to the adjuster; "
+               "limits, deductibles and coverage changes go to the underwriter with a copy to the claims manager. SI² never denies a claim: people decide.")
+    lib, pols, claims, source = claim_data()
+    alerts = [a for a in st.session_state.cov_alerts if (a["claim"], a["type"], a["message"]) not in st.session_state.get("cov_closed", set())]
+    if st.session_state.get("cov_error"):
+        st.warning(st.session_state.cov_error)
+    st.caption(f"Data: {source} · {len(claims)} claims · {len(pols)} policies · {len(lib.forms)} forms")
+    cols = st.columns(4)
+    for col, role in zip(cols, ["CLAIMS_ADJUSTER", "UNDERWRITER", "CLAIMS_MANAGER", "SIU"]):
+        mine = [a for a in alerts if a["to"] == role]
+        cc = [a for a in alerts if a["cc"] == role]
+        col.metric(f"{ROLE_ICON[role]} {role_name(role)}", len(mine), help=f"Sent to this role; {len(cc)} more as a copy")
+    tab1, tab2, tab3 = st.tabs(["Alert inbox", "One claim", "Check your own words"])
+    with tab1:
+        f1, f2 = st.columns([1, 2])
+        role = f1.selectbox("Inbox of", ["Everyone", "CLAIMS_ADJUSTER", "UNDERWRITER", "CLAIMS_MANAGER", "SIU"],
+                            format_func=lambda r: r if r == "Everyone" else role_name(r), key="cov_role")
+        kinds = sorted({a["title"] for a in alerts})
+        pick = f2.multiselect("Findings", kinds, key="cov_kinds")
+        shown = [a for a in alerts if (role == "Everyone" or role in (a["to"], a["cc"])) and (not pick or a["title"] in pick)]
+        st.dataframe(alert_rows(shown), hide_index=True, width="stretch", height=380)
+    with tab2:
+        nums = [c["claim_number"] for c in claims]
+        flagged = {a["claim"] for a in alerts}
+        num = st.selectbox("Claim", nums, key="cov_claim",
+                           format_func=lambda n: f"{n} · {next(c for c in claims if c['claim_number'] == n)['description'][:70]}" + ("  ⚠️" if n in flagged else ""))
+        claim = next(c for c in claims if c["claim_number"] == num)
+        pol = pols.get(claim["policy_number"])
+        res = CV.check_claim(claim, pol, lib)
+        if pol:
+            st.markdown(f"**Policy {pol['policy_number']}** · {pol['product']} · {pol['state']} · {pol['insured']} · {pol['effective']} to {pol['expiration']}  \n"
+                        f"Forms attached: " + ", ".join(f"`{f}` {lib.forms.get(f, {}).get('title', '(not loaded)')}" for f in pol["forms"]))
+        st.markdown(f"**Loss on {claim['loss_date']}** (reported {claim['reported_date']}) · recorded cause **{CV.CAUSE_NAMES.get(claim['cause'], claim['cause'])}** "
+                    f"under **{claim['coverage']}** · adjuster {claim['adjuster']}")
+        st.info(mark(claim["description"], res["causes"]) + (f"  \n_Notes: {claim['notes']}_" if claim.get("notes") else ""))
+        st.markdown("**What the forms say**")
+        if res["decisions"]:
+            st.dataframe(pd.DataFrame([{"": STATUS_ICON.get(d["status"], ""), "Cause": CV.CAUSE_NAMES.get(d["cause"], d["cause"]), "Coverage": d["coverage"],
+                                        "Decision": d["status"], "Why": d["note"],
+                                        "Form · section": "; ".join(f"{e['form']} · {e['section']}" for e in d["evidence"]),
+                                        "Wording": " ".join(e["text"] for e in d["evidence"])} for d in res["decisions"]]),
+                         hide_index=True, width="stretch")
+        if res["money"]:
+            m = res["money"]
+            st.markdown("**Policy against the claim**")
+            st.dataframe(pd.DataFrame([
+                {"": "Limit", "Policy": m["limit that applies"], "On the claim": m["claim limit"], "Note": "sublimit from an endorsement" if m["sublimit"] else ""},
+                {"": "Deductible", "Policy": m["deductible"], "On the claim": m["claim deductible"], "Note": m["deductible basis"]},
+                {"": "Gross loss", "Policy": None, "On the claim": m["gross loss"], "Note": ""},
+                {"": "Paid + reserve", "Policy": None, "On the claim": (m["paid"] or 0) + (m["reserve"] or 0), "Note": f"paid {m['paid']:,.0f}, reserve {m['reserve']:,.0f}"},
+            ]), hide_index=True, width="stretch")
+            if claim["payments"]:
+                st.caption("Payments: " + "; ".join(f"{float(p['amount']):,.0f} to {p['payee']} on {p['date']}" for p in claim["payments"]))
+        mine = [a for a in alerts if a["claim"] == num]
+        st.markdown(f"**Alerts ({len(mine)})**")
+        if not mine:
+            st.success("Nothing to flag: covered under the attached forms, and the claim matches the policy.")
+        for a in mine:
+            box = st.error if a["severity"] == "HIGH" else st.warning
+            box(f"**{a['title']}** → {ROLE_ICON.get(a['to'], '')} {role_name(a['to'])}" + (f", copy {role_name(a['cc'])}" if a["cc"] else "")
+                + f"  \n{a['message']}" + (f"  \n_{a['evidence'][:400]}_" if a["evidence"] else ""))
+            if user == a["adjuster"]:
+                st.caption("You handle this claim, so you cannot close this alert.")
+            else:
+                c1, c2 = st.columns([3, 1])
+                note = c1.text_input("Why it can be closed", key=f"cl_note_{a['claim']}_{a['type']}", label_visibility="collapsed",
+                                     placeholder=f"Close as {user}: what was done")
+                if c2.button("Close alert", key=f"cl_btn_{a['claim']}_{a['type']}", disabled=not note.strip()):
+                    st.session_state.setdefault("cov_closed", set()).add((a["claim"], a["type"], a["message"]))
+                    if repo.kind == "sql":
+                        try:
+                            rid = repo._q("SELECT TOP (1) AlertId FROM cov.CoverageAlert WHERE ClaimNumber = ? AND AlertType = ? AND Status = 'OPEN'", a["claim"], a["type"])
+                            if rid:
+                                repo.cn.cursor().execute("EXEC cov.usp_CloseAlert ?, ?, ?", rid[0]["AlertId"], user, note)
+                        except Exception as exc:  # noqa: BLE001
+                            st.session_state.cov_error = str(exc)
+                    st.rerun()
+    with tab3:
+        st.caption("Paste a loss description, pick the policy and coverage: SI² reads it against that policy's forms.")
+        pnums = list(pols)
+        c1, c2 = st.columns(2)
+        pn = c1.selectbox("Policy", pnums, key="own_pol", format_func=lambda n: f"{n} · {pols[n]['product']} · {pols[n]['state']} · {', '.join(pols[n]['forms'])}")
+        cov = c2.selectbox("Coverage", list(pols[pn]["coverages"]), key=f"own_cov_{pn}")
+        text = st.text_area("Loss description", key="own_text", height=90,
+                            value="Heavy rain overnight; the sewer backed up through the basement drain and there is mold on the drywall.")
+        if text.strip():
+            p = pols[pn]
+            fake = {"claim_number": "TRY", "policy_number": pn, "loss_date": None, "reported_date": None, "cause": None, "coverage": cov,
+                    "description": text, "notes": "", "adjuster": None, "recorded_limit": None, "recorded_deductible": None, "gross_loss": 0, "paid": 0,
+                    "reserve": 0, "payments": []}
+            r = CV.check_claim(fake, p, lib)
+            st.info(mark(text, r["causes"]))
+            for d in r["decisions"]:
+                (st.success if d["status"] == "COVERED" else st.error if d["status"] == "NOT COVERED" else st.warning)(
+                    f"{STATUS_ICON[d['status']]} **{CV.CAUSE_NAMES.get(d['cause'], d['cause'])}**: {d['status']} — {d['note']}"
+                    + "".join(f"  \n_{e['form']} · {e['section']}: {e['text']}_" for e in d["evidence"]))
+            for a in r["alerts"]:
+                st.caption(f"→ {role_name(a['to'])}: {a['title']}. {a['message']}")
+
+
+def page_forms():
+    st.subheader("Policy forms")
+    st.caption("How SI² reads each form: what it covers, what it excludes, what an endorsement gives back, limits, deductibles and conditions.")
+    lib, pols, claims, source = claim_data()
+    nums = list(lib.forms)
+    num = st.selectbox("Form", nums, key="pf_form", format_func=lambda n: f"{n} · {lib.forms[n].get('title', '')} ({lib.forms[n].get('kind', '').lower()})")
+    used = sum(1 for p in pols.values() if num in p["forms"])
+    st.caption(f"Attached to {used} of {len(pols)} policies.")
+    show_sections(lib.sections[num])
+    with st.expander("Full text"):
+        st.text(lib.forms[num]["text"].strip())
+    st.divider()
+    st.markdown("**Read a form of your own** (PDF or text). It is read here only; to keep it, load the folder with `run_claim_check.bat`.")
+    up = st.file_uploader("Form file", type=["pdf", "txt"], key="pf_upload")
+    if up is not None:
+        try:
+            if up.name.lower().endswith(".pdf"):
+                from pypdf import PdfReader
+                text = "\n".join((pg.extract_text() or "") for pg in PdfReader(up).pages)
+            else:
+                text = up.read().decode("utf-8", errors="replace")
+            show_sections(CV.read_form(Path(up.name).stem, text))
+        except Exception as exc:  # noqa: BLE001
+            st.error(f"Could not read the file: {exc}")
+
+
+def show_sections(sections: list[dict]) -> None:
+    icon = {"COVERED": "✅", "EXCLUSION": "⛔", "ADDS": "➕", "LIMIT": "📏", "DEDUCTIBLE": "💲", "CONDITION": "📋", "DEFINITION": "📖", "OTHER": "·"}
+    st.dataframe(pd.DataFrame([{"": icon.get(s["type"], ""), "Section": s["heading"], "Kind": s["type"].title().replace("Adds", "Gives coverage back"),
+                                "Coverages": ", ".join(s["coverages"]) or "all", "Open perils": "yes" if s["open_perils"] else "",
+                                "Causes it names": ", ".join(CV.CAUSE_NAMES.get(c, c) for c in sorted({c for cl in s["clauses"] for c in cl["causes"]})),
+                                "Amounts": ", ".join(f"{cl['amount']:,.0f}" for cl in s["clauses"] if cl["amount"]) or
+                                           ", ".join(f"{cl['pct_cov_a']:g}% of Cov A" for cl in s["clauses"] if cl["pct_cov_a"])}
+                               for s in sections]), hide_index=True, width="stretch")
+
+
 {"Ask SI²": page_ask, "Rule library": page_library, "Try a case": page_try, "Decision tables": page_tables, "Authority": page_authority,
- "Approvals": page_approvals, "Coverage by role": page_coverage}[page]()
+ "Approvals": page_approvals, "Rules by role": page_coverage, "Claim coverage": page_claims, "Policy forms": page_forms}[page]()
 branding.footer()

@@ -98,7 +98,9 @@ TOURS = {
         "SI² shows the rule in plain English, notices it replaces the countrywide roof rule in Georgia, writes the tests and the impact.",
         "*Send for approval as Saba*; switch the sidebar to **Sabasi** and approve it under **Approvals**.",
         "**Try a case**: change a fact and see every rule that fired, and why.",
-        "**Coverage by role**: rules by owner and line, gaps, idle rules and conflicts."],
+        "**Rules by role**: rules by owner and line, gaps, idle rules and conflicts.",
+        "**Claim coverage**: the alert inbox by role; open CLM-69901 (storm surge recorded as wind) and CLM-69906 (collision paid as comprehensive).",
+        "**Policy forms**: how SI² read each form; upload one of your own PDF forms to see it read."],
     "Rating Engine": [
         "**📥 Incoming quotes**: 7 of 8 quotes cannot be rated.",
         "**🧩 Rating gaps**: rate AL as GA, add the 500/1000 and $2,000 factors (SI² drafts them).",

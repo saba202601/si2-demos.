@@ -69,7 +69,7 @@ def install(server: str, db: str, demo: bool, demo_db: str = "SI2_SourceDemo", q
     con.cursor().execute(f"IF DB_ID(N'{db}') IS NULL CREATE DATABASE [{db}];")
     exists = query(con, f"SELECT OBJECT_ID(N'[{db}].canon.DataElement') AS x")[0][0]["x"]
     steps = ([] if exists else ["01_schema.sql"]) + ["02_procedures.sql", "03_seed.sql", "06_rule_engine.sql",
-                                                       "07_rule_library.sql"] + (["04_demo_source.sql"] if demo else [])
+                                                       "07_rule_library.sql", "08_coverage.sql"] + (["04_demo_source.sql"] if demo else [])
     if exists:
         say("  schema already there: keeping it (procedures refreshed, missing seed rows added)")
     for f in steps:
@@ -84,6 +84,41 @@ def install(server: str, db: str, demo: bool, demo_db: str = "SI2_SourceDemo", q
 
 
 # ------------------------------------------------------------------------------------------- self-test
+def coverage_checks(server, db, check, one) -> None:
+    """Claim coverage: forms read, claims checked from SQL Server give the same findings as in Python, alerts routed, closing rules."""
+    sys.path.insert(0, str(HERE))
+    import check_claims as K
+    import coverage as C
+    cn = K.connect(server, db)
+    n = K.rows(cn, "SELECT (SELECT COUNT(*) FROM cov.Form) f, (SELECT COUNT(*) FROM cov.FormSection) s, (SELECT COUNT(*) FROM cov.Claim) c, "
+                   "(SELECT COUNT(*) FROM canon.vw_PickListOption WHERE PickList = 'CAUSE_OF_LOSS' AND OptionCode IN ('FLOOD', 'SEWER', 'MOLD')) o, "
+                   "(SELECT COUNT(*) FROM canon.vw_Synonym WHERE ObjectCode = 'CAUSE_OF_LOSS.FLOOD') w")[0]
+    check("coverage: forms, sections, claims, causes and loss words loaded", n["f"] >= 16 and n["s"] >= 50 and n["c"] >= 90 and n["o"] == 3 and n["w"] >= 15,
+          f"{n['f']} forms, {n['s']} sections, {n['c']} claims, FLOOD has {n['w']} loss words")
+    lib, pols, claims = K.load(cn)
+    alerts = C.check_all(claims, pols, lib)
+    plib = C.FormLibrary.synthetic()
+    ppols = C.synthetic_policies()
+    expect = C.check_all(C.synthetic_claims(ppols, lib=plib), ppols, plib)
+    key = lambda xs: sorted((a["claim"], a["type"]) for a in xs)  # noqa: E731
+    check("claims checked from SQL Server match the engine", key(alerts) == key(expect), f"{len(alerts)} findings")
+    first, again = K.save_alerts(cn, alerts), K.save_alerts(cn, alerts)
+    check("alerts saved once (re-running adds none)", first == len(alerts) and again == 0, f"{first} added, then {again}")
+    surge = K.rows(cn, "SELECT AlertType, SendTo, CopyTo FROM cov.CoverageAlert WHERE ClaimNumber = 'CLM-69901' ORDER BY AlertType")
+    check("storm surge recorded as wind: cause mismatch, not covered, paid on an exclusion",
+          {r["AlertType"] for r in surge} >= {"CAUSE_MISMATCH", "NOT_COVERED", "PAID_NOT_COVERED"}, str([tuple(r.values()) for r in surge]))
+    lim = K.rows(cn, "SELECT TOP (1) AlertId, AdjusterName, SendTo, CopyTo FROM cov.CoverageAlert WHERE AlertType = 'LIMIT_MISMATCH'")[0]
+    check("limit changed on a claim goes to the underwriter, copy to the claims manager", (lim["SendTo"], lim["CopyTo"]) == ("UNDERWRITER", "CLAIMS_MANAGER"))
+    try:
+        cn.cursor().execute("EXEC cov.usp_CloseAlert ?, ?, N'fine'", lim["AlertId"], lim["AdjusterName"])
+        check("the adjuster cannot close an alert on their own claim", False)
+    except Exception as ex:  # noqa: BLE001
+        check("the adjuster cannot close an alert on their own claim", "cannot close" in str(ex))
+    cn.cursor().execute("EXEC cov.usp_CloseAlert ?, N'Sabasi', N'Limit corrected to the policy limit'", lim["AlertId"])
+    check("the claims manager closes it with a note", K.rows(cn, "SELECT Status FROM cov.CoverageAlert WHERE AlertId = ?", lim["AlertId"])[0]["Status"] == "CLOSED")
+    cn.close()
+
+
 def rule_engine_checks(server, db, con, check, one) -> None:
     """Rule engine: library loaded, a Georgia rule proposed by Saba from Python and approved by Sabasi, read back by the Rule Studio."""
     sys.path.insert(0, str(HERE))
@@ -229,6 +264,7 @@ def selftest(server: str, keep: bool) -> int:
                "WHERE p.PickListCode='ROOF_SHAPE' AND o.OptionCode='FLAT'")["n"]
     check("expire, never delete, history kept", hist == 2 and one("SELECT Status FROM canon.vw_PickListOption WHERE PickList='ROOF_SHAPE' AND OptionCode='FLAT'")["Status"] == "EXPIRED")
     rule_engine_checks(server, db, con, check, one)
+    coverage_checks(server, db, check, one)
     check("no requests left failed", one("SELECT COUNT(*) n FROM gov.ChangeRequest WHERE Status='FAILED'")["n"] == 0)
     con.close()
     if not keep:

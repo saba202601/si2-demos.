@@ -16,6 +16,12 @@ exactly which version a client saw, and redeploy it.
   generated tests; plain-English rule drafting (optional Claude, always checked against the canonical model);
   impact on a synthetic book; Saba proposes, Sabasi approves.
 
+* **Claim coverage check** (`sql/si2_canonical/08_coverage.sql`, `coverage.py`, `check_claims.py`; Rule Studio pages
+  *Claim coverage* and *Policy forms*): reads the policy forms (PDF or text) into covered / excluded / given back /
+  limits / deductibles; reads loss descriptions; decides coverage with the form wording as evidence; checks limits,
+  deductibles, coverage, cause and payments against the policy; routes alerts (adjuster; underwriter with a copy to
+  the claims manager; SIU). Synthetic forms, policies and claims.
+
 * **Role-Based Super Intelligence** (`app_roles.py`, deploy as `si2-roles`): 15 roles in 5 departments from the
   role workbook, each with an SI² workbench, decisions with reasons, decision boundaries under two-person approval,
   the intelligence it adds, and Ask SI². Claims reserve changes above authority go to a second person; the

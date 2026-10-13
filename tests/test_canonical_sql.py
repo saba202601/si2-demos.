@@ -21,7 +21,8 @@ def test_scripts_have_balanced_batches():
 
 
 def test_every_procedure_the_installer_calls_exists():
-    procs = set(re.findall(r"CREATE OR ALTER PROCEDURE (\w+\.\w+)", (SQL / "02_procedures.sql").read_text(encoding="utf-8")))
+    procs = {p for f in ("02_procedures.sql", "06_rule_engine.sql", "08_coverage.sql")
+             for p in re.findall(r"CREATE OR ALTER PROCEDURE (\w+\.\w+)", (SQL / f).read_text(encoding="utf-8"))}
     used = set(re.findall(r"EXEC (\w+\.usp_\w+)", (SQL / "install_si2_canonical.py").read_text(encoding="utf-8")))
     used |= set(re.findall(r"EXEC (\w+\.usp_\w+)", (SQL / "05_how_to.sql").read_text(encoding="utf-8")))
     assert used and used <= procs, used - procs

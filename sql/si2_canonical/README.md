@@ -117,3 +117,28 @@ SI² picks the template, reads the conditions and where it applies, notices it r
 tests and shows the impact on the synthetic book. Saba sends it for approval; Sabasi approves it; only then is it live.
 With `ANTHROPIC_API_KEY` set, Claude reads the sentence first and every element and code it returns is checked
 against the canonical model. Without `SI2_SQL_SERVER` the Studio runs on an in-memory copy of the library.
+
+## Claim coverage check
+
+Double-click **`run_claim_check.bat`**: it self-tests, adds the `cov` tables (`08_coverage.sql`) and checks every claim.
+Put the company's policy forms in a `forms` folder next to it (PDF or text, the file name is the form number) and they
+are read too. Log: `claim_check_log.txt`.
+
+* **Forms** (`cov.Form`, `cov.FormSection`): each form is split into what it covers (open perils or named perils, by
+  coverage), what it excludes, what an endorsement gives back (with its sublimit), limits, deductibles (including a
+  hurricane percentage of Coverage A) and conditions. An exclusion excludes its subject, not the words inside its
+  "unless" or "whether or not" phrases.
+* **Policies** (`cov.Policy`, `cov.PolicyCoverage`, `cov.PolicyForm`): limits and deductibles by coverage, and the
+  forms attached to each policy.
+* **Claims** (`cov.Claim`, `cov.ClaimPayment`): SI² reads the loss description (243 loss words for 40 causes of loss,
+  kept as synonyms of the canonical CAUSE_OF_LOSS options), decides COVERED / NOT COVERED / REVIEW from the attached
+  forms, and compares the limit, deductible, coverage, cause and payments on the claim with the policy.
+* **Alerts** (`cov.CoverageAlert`, `cov.vw_AlertInbox`): coverage questions to the claims adjuster; a limit,
+  deductible, coverage or cause changed in the insured's favour to the underwriter with a copy to the claims manager;
+  split payments under authority and one vendor paid on many unrelated claims by the same adjuster to the claims
+  manager and SIU. The adjuster on a claim cannot close an alert about it (`cov.usp_CloseAlert`). SI² never denies a
+  claim: people decide.
+
+The forms, policies and claims loaded by `08_coverage.sql` are synthetic; the form wording is SI²'s own. In the Rule
+Studio, **Claim coverage** shows the alert inbox by role and each claim with the form wording behind every decision;
+**Policy forms** shows how each form was read and reads a PDF you upload.
