@@ -85,6 +85,15 @@ VALUE_WORDS = {
 }
 TEXT_TYPES = {"TEXT", "CODE", "STRING", "VARCHAR", "NVARCHAR", "CHAR"}
 NUMERIC_OPS = {">", ">=", "<", "<=", "BETWEEN"}
+_IDENTITY = re.compile(r"(_|^)(NAME|ID|NUMBER|NO|NBR|NUM|DESC|DESCRIPTION|TEXT|NOTE|NOTES|COMMENT|COMMENTS|ADDRESS|EMAIL|PHONE|CITY|STREET)$")
+_MEASURE = re.compile(r"VALUE|AMOUNT|AMT|LIMIT|PREMIUM|AGE|COUNT|DAYS|RATIO|RATE|PCT|PERCENT|YEAR|SCORE|FEET|PAYROLL|REVENUE|RESERVE|PAID|LOSS|DEDUCT")
+
+
+def is_text_only(code: str, element: dict) -> bool:
+    """A name, identifier, number or free text: never compared with an amount (even if the model types an amount as TEXT)."""
+    if element.get("picklist") or element.get("type") not in TEXT_TYPES:
+        return False
+    return bool(_IDENTITY.search(code)) or not _MEASURE.search(code)
 AUTHORITY_WORDS = re.compile(r"\b(can|may|allowed to|able to)\s+(pay|approve|bind|reserve|settle|refund)\b.{0,30}\b(up to|under|below|less than)\b|"
                              r"\b(payment|settlement|reserve|binding|bind) authority\b|\bauthority (of|is|up to)\b", re.I)
 NEGATION = re.compile(r"\b(no|without|not|lacks?|lacking|missing|never|non)\b[\w\s-]{0,12}$", re.I)
@@ -200,7 +209,7 @@ def _condition(element: str, clause: str, before: str, catalog, mention: str) ->
             if len(vals) == 1:
                 return (element, "<>" if neg else "=", vals[0], None)
             return (element, "NOT IN" if neg else "IN", ",".join(vals), None)
-    if e.get("type") in TEXT_TYPES and not e.get("picklist"):
+    if is_text_only(element, e):
         return None                                   # a name, number or free text is never compared with an amount
     ratio = element.endswith(("_RATIO", "_RATE")) or element in ("LOSS_RATIO", "RETENTION_RATE")
 
@@ -387,7 +396,7 @@ def with_claude(text: str, catalog, templates: list[dict], role: str | None, ask
         el, op = str(c[0]).upper(), str(c[1]).upper()
         if el not in catalog.elements or op not in {"=", "<>", ">", ">=", "<", "<=", "IN", "NOT IN", "BETWEEN", "IS NULL", "IS NOT NULL", "LIKE", "NOT LIKE"}:
             return None
-        if op in NUMERIC_OPS and catalog.elements[el].get("type") in TEXT_TYPES and not catalog.elements[el].get("picklist"):
+        if op in NUMERIC_OPS and is_text_only(el, catalog.elements[el]):
             return None
         opts = {o for o, _ in catalog.element_options(el)}
         if opts and c[2] is not None and op in ("=", "<>", "IN", "NOT IN"):

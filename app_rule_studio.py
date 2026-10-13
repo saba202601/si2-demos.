@@ -260,8 +260,7 @@ def page_ask():
     problems += [f"{repo.catalog.name(c[0])}: '{v}' is not one of its codes" for c in rule.conditions for v in str(c[2] or "").split(",")
                  if c[1] in ("=", "<>", "IN", "NOT IN") and repo.catalog.element_options(c[0]) and v.strip() not in {o for o, _ in repo.catalog.element_options(c[0])}]
     problems += [f"{repo.catalog.name(c[0])} is text, so it cannot be compared with a number ({c[1]} {c[2]}). Pick an amount, count or date element."
-                 for c in rule.conditions if c[1] in A.NUMERIC_OPS and repo.catalog.elements.get(c[0], {}).get("type") in A.TEXT_TYPES
-                 and not repo.catalog.elements.get(c[0], {}).get("picklist")]
+                 for c in rule.conditions if c[1] in A.NUMERIC_OPS and A.is_text_only(c[0], repo.catalog.elements.get(c[0], {}))]
     if not rule.conditions:
         problems.append("Add at least one condition.")
     if template["action"] in ("SURCHARGE_PCT", "CREDIT_PCT") and not E._num(action_value):
