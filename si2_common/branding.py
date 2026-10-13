@@ -94,6 +94,7 @@ TOURS = {
         "**✅ Approvals**: change the sidebar name and approve; the draft goes to production.",
         "**Run on submissions** now uses the approved rules."],
     "Rule Studio": [
+        "**My desk**: pick a role: everything waiting for that person (claim alerts, referrals, approvals), their rules and authority; ask *Can I pay 30,000 on a claim?*",
         "**Ask SI²**: pick a role and an example, e.g. *Decline homes in Georgia with a roof older than 20 years*, then *Draft the rule*.",
         "SI² shows the rule in plain English, notices it replaces the countrywide roof rule in Georgia, writes the tests and the impact.",
         "*Send for approval as Saba*; switch the sidebar to **Sabasi** and approve it under **Approvals**.",

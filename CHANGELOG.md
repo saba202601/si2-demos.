@@ -16,6 +16,10 @@ exactly which version a client saw, and redeploy it.
   generated tests; plain-English rule drafting (optional Claude, always checked against the canonical model);
   impact on a synthetic book; Saba proposes, Sabasi approves.
 
+* **My desk** (Rule Studio): one page per role with everything waiting for that person (claim alerts, referrals,
+  approvals, compliance stops, routed claims and billing), their rules, their authority, what changed, and Ask SI²
+  answered from their own rules and authority.
+
 * **Claim coverage check** (`sql/si2_canonical/08_coverage.sql`, `coverage.py`, `check_claims.py`; Rule Studio pages
   *Claim coverage* and *Policy forms*): reads the policy forms (PDF or text) into covered / excluded / given back /
   limits / deductibles; reads loss descriptions; decides coverage with the form wording as evidence; checks limits,

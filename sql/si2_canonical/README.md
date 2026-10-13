@@ -111,7 +111,7 @@ what is missing. Log: `rule_engine_log.txt`.
 * **Engine** (`rule_engine.py`): the same condition semantics as `rules.usp_TestRule`; explains every decision;
   generates test cases; finds conflicts; measures the impact of a new rule on a synthetic book (`synthetic_book.py`).
 
-**Rule Studio** (`app_rule_studio.py`; on the PC, the `si2_rule_studio` folder → `run_rule_studio.bat`): a person picks
+**Rule Studio** (`app_rule_studio.py`; opens on **My desk**: each role's work, rules and authority; on the PC, the `si2_rule_studio` folder → `run_rule_studio.bat`): a person picks
 their role and says what they want in plain English, e.g. *Decline homes in Georgia with a roof older than 20 years*.
 SI² picks the template, reads the conditions and where it applies, notices it replaces HO-E01 in Georgia, writes the
 tests and shows the impact on the synthetic book. Saba sends it for approval; Sabasi approves it; only then is it live.

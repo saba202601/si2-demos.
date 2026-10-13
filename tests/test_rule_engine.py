@@ -184,6 +184,7 @@ def test_rule_studio_end_to_end(monkeypatch):
     at = AppTest.from_file(str(ROOT / "app_rule_studio.py"), default_timeout=240)
     at.run()
     assert not at.exception
+    at.radio(key="page").set_value("Ask SI²").run()
     at.selectbox(key="ask_example").set_value("Decline homes in Georgia with a roof older than 20 years").run()
     at.button[0].click().run()
     assert not at.exception, at.exception
@@ -209,3 +210,21 @@ def test_approval_ladder_is_not_an_override():
     assert [(v, who, c) for v, who, c, _ in A.ladder(new, L.RULES)] == [(1_000_000, "Senior Underwriter", "HO-R03"), (2_000_000, "CUO", "HO-A01")]
     imp = E.impact(L.RULES, new, B.book(), DAY)
     assert imp["fires"] > 0                                                 # the book now has high-value homes
+
+
+def test_my_desk_for_each_role(monkeypatch):
+    from streamlit.testing.v1 import AppTest
+    monkeypatch.delenv("SI2_SQL_SERVER", raising=False)
+    monkeypatch.chdir(ROOT)
+    at = AppTest.from_file(str(ROOT / "app_rule_studio.py"), default_timeout=240)
+    at.run()
+    assert not at.exception and at.radio(key="page").value == "My desk"
+    counts = {}
+    for role in ("UNDERWRITER", "SR_UNDERWRITER", "CLAIMS_ADJUSTER", "CLAIMS_MANAGER", "SIU", "BILLING", "COMPLIANCE", "CEO"):
+        at.selectbox(key="desk_role").set_value(role).run()
+        assert not at.exception, (role, at.exception)
+        counts[role] = int(at.metric[0].value)
+    assert all(n > 0 for n in counts.values()), counts
+    at.selectbox(key="desk_role").set_value("CLAIMS_ADJUSTER").run()
+    at.text_input(key="desk_q_CLAIMS_ADJUSTER").set_value("Can I pay 30,000 on a claim?").run()
+    assert any("needs **Claims Manager**" in m.value for m in at.markdown)

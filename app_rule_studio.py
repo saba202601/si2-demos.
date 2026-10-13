@@ -116,7 +116,7 @@ with st.sidebar:
     st.markdown("**Signed in as**")
     user = st.selectbox("Person", ["Saba", "Sabasi"], key="user", label_visibility="collapsed",
                         help="Two-person rule: one person proposes, the other approves.")
-    page = st.radio("Go to", ["Ask SI²", "Rule library", "Try a case", "Decision tables", "Authority", "Approvals", "Rules by role", "Claim coverage", "Policy forms"], key="page")
+    page = st.radio("Go to", ["My desk", "Ask SI²", "Rule library", "Try a case", "Decision tables", "Authority", "Approvals", "Rules by role", "Claim coverage", "Policy forms"], key="page")
     st.divider()
     if repo.kind == "sql":
         st.success(f"SI2Canonical on {repo.server}")
@@ -503,6 +503,194 @@ def page_coverage():
     st.dataframe(pd.DataFrame(cf), hide_index=True, width="stretch") if cf else st.success("No conflicts.")
 
 
+# ------------------------------------------------------------------------------------------ my desk
+VALUE_ROLE = {"underwriter": "UNDERWRITER", "senior underwriter": "SR_UNDERWRITER", "cuo": "CUO", "ceo": "CEO", "cfo": "CFO",
+              "chief risk officer": "ERM", "board": "CEO", "reinsurance": "REINSURANCE", "claims manager": "CLAIMS_MANAGER", "claims vp": "CLAIMS_MANAGER",
+              "siu": "SIU", "litigation unit": "CLAIMS_MANAGER", "cat team": "CLAIMS_ADJUSTER", "fast track": "CLAIMS_ADJUSTER", "complex": "CLAIMS_ADJUSTER",
+              "standard": "CLAIMS_ADJUSTER", "collections": "BILLING", "notice of cancellation": "BILLING", "payment reminder": "BILLING",
+              "billing review": "BILLING"}
+KIND_LABEL = {"POLICY": "Submission", "CLAIM": "Claim", "BILLING": "Billing account", "RESULTS": "Results"}
+DESK_ROLE_DEFAULT = {"Saba": "UNDERWRITER", "Sabasi": "CLAIMS_MANAGER"}
+
+
+def role_of_value(v: str | None) -> str | None:
+    return VALUE_ROLE.get(str(v or "").strip().lower())
+
+
+def book_work() -> list[dict]:
+    """Every rule decision on the synthetic book that needs a person, and whose desk it lands on."""
+    key = (len(repo.rules), sum(1 for r in repo.rules if r.status == "ACTIVE"))
+    if st.session_state.get("desk_key") == key:
+        return st.session_state.desk_work
+    work = []
+    for item in book():
+        d = E.evaluate(repo.rules, item["case"], item["facts"], TODAY)
+        where = " · ".join(str(v) for v in item["case"].values())
+        for r, res in d.fired:
+            to, what = None, None
+            if r.action in ("REFER", "APPROVE_BY", "ROUTE", "ALERT"):
+                to = role_of_value(r.action_value) or (r.role if r.action == "ALERT" else None)
+                what = {"REFER": "Referral", "APPROVE_BY": "Approval needed", "ROUTE": "Routed to you", "ALERT": "Alert"}[r.action]
+            elif r.action == "REJECT" and r.phase == "COMPLIANCE":
+                to, what = "COMPLIANCE", "Compliance stop"
+            elif r.action in ("REJECT", "WARN") and r.phase == "DATA":
+                to, what = "DATA_STEWARD", "Data check"
+            elif r.action == "DECLINE" and r.role == "DISTRIBUTION":
+                to, what = "DISTRIBUTION", "Producer issue"
+            if to:
+                why = "; ".join(E.describe_condition(c, names()) + f" ({v})" for c, ok, v in res if ok)
+                work.append({"role": to, "what": what, "id": item["id"], "kind": KIND_LABEL.get(item["kind"], item["kind"]), "where": where,
+                             "rule": r.code, "reason": f"{r.name}: {why}", "premium": item.get("premium") or 0, "outcome": d.outcome})
+    st.session_state.desk_key, st.session_state.desk_work = key, work
+    return work
+
+
+def authority_answer(role: str, amount: float | None, text: str) -> str:
+    mine = [a for a in repo.authority if a["role"] == role and a["status"] == "ACTIVE"]
+    if not mine:
+        return f"{role_name(role)} has no money authority on file. Ask the CUO or claims manager to set one under Authority."
+    low = text.lower()
+    kind = ("CLAIM_PAYMENT" if re.search(r"pay|payment|check", low) else "RESERVE_CHANGE" if "reserve" in low else
+            "BIND_TIV" if re.search(r"bind|tiv|insured value|coverage a|write", low) else "REFUND" if "refund" in low else
+            "RATE_DEVIATION_PCT" if re.search(r"deviat|schedule|rate", low) else None)
+    rows = [a for a in mine if kind is None or a["authority"] == kind] or mine
+    lines = []
+    for a in rows:
+        ok = amount is None or amount <= a["limit"]
+        line = f"**{a['authority'].replace('_', ' ').title()}** ({'all lines' if a['lob'] == '*' else a['lob']}): up to {a['limit']:,.0f}"
+        if amount is not None:
+            if ok:
+                line += f" → {amount:,.0f} is within your authority."
+            else:
+                up = sorted([b for b in repo.authority if b["authority"] == a["authority"] and b["lob"] in (a["lob"], "*") and b["status"] == "ACTIVE"
+                             and b["limit"] >= amount], key=lambda b: b["limit"])
+                line += f" → {amount:,.0f} is above it; " + (f"it needs **{role_name(up[0]['role'])}** (up to {up[0]['limit']:,.0f})." if up
+                                                             else "no role on file has that much: it goes to the CEO.")
+        lines.append(line)
+    return "\n".join(f"- {x}" for x in lines)
+
+
+def desk_answer(role: str, question: str, todo: list[dict]) -> str:
+    """Answers from the role's own rules, authority and work, without AI (Claude, when connected, gets the same facts)."""
+    q = question.strip()
+    m = A.NUMBER.search(q)
+    amount = A._num(m[1], m[2]) if m else None
+    if re.search(r"approve|authority|can i (pay|bind|reserve|write|refund)|limit|how much", q, re.I):
+        return authority_answer(role, amount, q)
+    if re.search(r"waiting|to do|todo|my work|first|urgent|today|queue", q, re.I):
+        if not todo:
+            return "Nothing is waiting for you."
+        top = todo[:5]
+        return f"{len(todo)} items. Start with:\n" + "\n".join(f"- **{t['what']}** {t['id']}: {t['reason']}" for t in top)
+    scope = A.parse_scope(q)
+    els = {m["element"] for m in A.find_mentions(q, repo.catalog)}
+    mine = [r for r in repo.rules if r.status == "ACTIVE" and (r.role == role or role_of_value(r.action_value) == role)]
+    hits = []
+    for r in mine:
+        if els and not els & {c[0] for c in r.conditions}:
+            continue
+        if any(r.scope.get(d) and not set(v) & set(r.scope[d]) for d, v in scope.items()):
+            continue
+        hits.append(r)
+    if hits and (els or scope):
+        return f"{len(hits)} of your rules apply:\n" + "\n".join(f"- **{r.code}** {plain(r)}" for r in hits[:12])
+    return ("I can answer from your rules, your authority and your work. Try: *What is waiting for me?* · *Can I pay 30,000 on a claim?* · "
+            "*Which of my rules apply to Florida homeowners?* · *What do I refer on roof age?*")
+
+
+def page_desk():
+    roles = {r["code"]: r["name"] for r in repo.roles}
+    default = st.session_state.get("desk_role") or DESK_ROLE_DEFAULT.get(user, "UNDERWRITER")
+    c1, c2 = st.columns([1, 2])
+    role = c1.selectbox("My role", list(roles), index=list(roles).index(default) if default in roles else 0, format_func=roles.get, key="desk_role")
+    c2.markdown(f"### {ROLE_ICON.get(role, '👤')} Good day, {user}")
+    c2.caption(next((r["description"] for r in repo.roles if r["code"] == role), ""))
+    # ---- to do
+    lib, pols, claims, _ = claim_data()
+    closed = st.session_state.get("cov_closed", set())
+    cov = [a for a in st.session_state.cov_alerts if role in (a["to"], a["cc"]) and (a["claim"], a["type"], a["message"]) not in closed]
+    todo = [{"what": ("Claim alert" if a["to"] == role else "Copy: claim alert"), "id": a["claim"], "kind": "Claim",
+             "where": a["policy"], "reason": f"{a['title']}. {a['message']}", "rule": a["type"], "severity": a["severity"] if a["to"] == role else "INFO",
+             "premium": 0} for a in cov]
+    work = [dict(w, severity="MEDIUM") for w in book_work() if w["role"] == role]
+    todo += work
+    approvals = [r for r in repo.pending() if r["requested_by"] != user]
+    todo = sorted(todo, key=lambda t: ({"HIGH": 0, "MEDIUM": 1, "INFO": 2}.get(t["severity"], 3), -float(t.get("premium") or 0)))
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("To do", len(todo))
+    m2.metric("High priority", sum(1 for t in todo if t["severity"] == "HIGH"))
+    m3.metric("Waiting for my approval", len(approvals))
+    mine = [r for r in repo.rules if r.status == "ACTIVE" and r.role == role]
+    m4.metric("Rules I own", len(mine))
+    left, right = st.columns([3, 2])
+    with left:
+        st.markdown("**To do**, most urgent first")
+        if approvals:
+            st.warning(f"⏳ {len(approvals)} change(s) proposed by someone else wait for your approval: "
+                       + "; ".join(f"#{r['id']} {r['summary'][:80]}" for r in approvals[:3]) + " — open **Approvals**.")
+        if todo:
+            icon = {"HIGH": "🔴", "MEDIUM": "🟡", "INFO": "⚪"}
+            by = {}
+            for t in todo:
+                by[t["what"]] = by.get(t["what"], 0) + 1
+            kinds = sorted(by, key=lambda k: -by[k])
+            show = st.segmented_control("Show", ["All"] + kinds, default="All", key=f"desk_show_{role}",
+                                        format_func=lambda k: f"{k} ({len(todo) if k == 'All' else by[k]})", label_visibility="collapsed") or "All"
+            rows = [t for t in todo if show == "All" or t["what"] == show]
+            st.dataframe(pd.DataFrame([{"": icon.get(t["severity"], ""), "What": t["what"], "Item": t["id"], "Type": t["kind"], "Where": t["where"],
+                                        "Premium": f"{t['premium']:,.0f}" if t.get("premium") else "", "Why": t["reason"]} for t in rows]),
+                         hide_index=True, width="stretch", height=360)
+            st.caption("Claim alerts come from the policy forms and limits; referrals and approvals from the live rules run on the synthetic book. "
+                       "Biggest premium first within each priority.")
+        else:
+            st.success("Nothing is waiting for you.")
+    with right:
+        st.markdown("**Ask SI²** about your work")
+        q = st.text_input("Question", key=f"desk_q_{role}", label_visibility="collapsed",
+                          placeholder="e.g. Can I pay 30,000 on a claim? · What is waiting for me?")
+        if q.strip():
+            ans = None
+            if ai.available():
+                facts = (f"Role: {role_name(role)}. Authority: " + "; ".join(f"{a['authority']} {a['lob']} {a['limit']:,.0f}" for a in repo.authority
+                                                                            if a["role"] == role and a["status"] == "ACTIVE")
+                         + ". Rules owned: " + "; ".join(f"{r.code} {plain(r)}" for r in mine[:40])
+                         + f". Work waiting: {len(todo)} items, e.g. " + "; ".join(f"{t['what']} {t['id']}: {t['reason']}" for t in todo[:10]))
+                try:
+                    ans = ai.ask(f"{facts}\n\nQuestion from this {role_name(role)}: {q}\nAnswer only from these facts, briefly; say so if they do not answer it.",
+                                 max_tokens=500)
+                except RuntimeError:
+                    ans = None
+            st.markdown(ans or desk_answer(role, q, todo))
+        st.markdown("**My authority**")
+        auth = [a for a in repo.authority if a["role"] == role and a["status"] == "ACTIVE"]
+        if auth:
+            st.dataframe(pd.DataFrame([{"Authority": a["authority"].replace("_", " ").title(), "Line": a["lob"], "Up to": f"{a['limit']:,.0f}"} for a in auth]),
+                         hide_index=True, width="stretch")
+        else:
+            st.caption("No money authority on file for this role.")
+    st.markdown("**My rules**")
+    if mine:
+        by_phase = {}
+        for r in mine:
+            by_phase[r.phase] = by_phase.get(r.phase, 0) + 1
+        st.caption(" · ".join(f"{p.title()}: {n}" for p, n in sorted(by_phase.items(), key=lambda kv: E.PHASES.index(kv[0]) if kv[0] in E.PHASES else 99)))
+        with st.expander(f"The {len(mine)} rules I own"):
+            st.dataframe(rule_rows(mine)[["Code", "Rule", "Phase", "In plain English", "Line", "State"]], hide_index=True, width="stretch")
+    else:
+        st.caption("This role does not own rules yet: start one under Ask SI².")
+    st.markdown("**What changed**")
+    changes = [r for r in repo.history() if r["status"] != "PENDING" and (
+        (r["object_type"] == "RULE" and (r["payload"].get("owner_role") == role or role_of_value(r["payload"].get("action_value")) == role
+                                         or (repo.rule(r["code"]) and repo.rule(r["code"]).role == role)))
+        or (r["object_type"] == "AUTHORITY" and r["payload"].get("role") == role))]
+    if changes:
+        st.dataframe(pd.DataFrame([{"When": r["requested_at"], "Change": f"{r['object_type'].title()} {r['change_type'].lower()}", "Code": r["code"],
+                                    "By": r["requested_by"], "Approved by": r["decided_by"], "Result": r["result"]} for r in changes[:10]]),
+                     hide_index=True, width="stretch")
+    else:
+        st.caption("No approved changes to your rules or authority yet.")
+
+
 # ------------------------------------------------------------------------------------------ claim coverage
 ROLE_ICON = {"CLAIMS_ADJUSTER": "🧑‍💼", "UNDERWRITER": "📝", "CLAIMS_MANAGER": "👔", "SIU": "🔎"}
 STATUS_ICON = {"COVERED": "✅", "NOT COVERED": "⛔", "REVIEW": "🟡"}
@@ -679,6 +867,6 @@ def show_sections(sections: list[dict]) -> None:
                                for s in sections]), hide_index=True, width="stretch")
 
 
-{"Ask SI²": page_ask, "Rule library": page_library, "Try a case": page_try, "Decision tables": page_tables, "Authority": page_authority,
+{"My desk": page_desk, "Ask SI²": page_ask, "Rule library": page_library, "Try a case": page_try, "Decision tables": page_tables, "Authority": page_authority,
  "Approvals": page_approvals, "Rules by role": page_coverage, "Claim coverage": page_claims, "Policy forms": page_forms}[page]()
 branding.footer()
