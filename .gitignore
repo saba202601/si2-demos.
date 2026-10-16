@@ -11,4 +11,3 @@ backups/
 sql/si2_canonical/acord_forms/
 sql/si2_canonical/forms_report_*.csv
 sql/si2_canonical/forms_log.txt
-*.pdf
