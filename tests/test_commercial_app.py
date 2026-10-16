@@ -51,3 +51,19 @@ def test_collected_without_wrong_matches_or_duplicates():
 def test_09_sql_is_current():
     assert (ROOT / "sql" / "si2_canonical" / "09_commercial_app.sql").read_text(encoding="utf-8") == M.build_sql(), \
         "09_commercial_app.sql is stale: run python sql/si2_canonical/commercial_app_model.py"
+
+
+def test_reused_elements_only_have_their_gaps_filled():
+    master = {"FIRST_NAME": {"subject": None, "pii": False, "picklist": None, "dtype": "TEXT"},
+              "NATURE_OF_BUSINESS": {"subject": "UNDERWRITING", "pii": False, "picklist": None, "dtype": "TEXT"},
+              "GLOBAL_PHONE_TYPE": {"subject": None, "pii": False, "picklist": None, "dtype": "TEXT"},
+              "FEIN": {"subject": "PARTY", "pii": True, "picklist": None, "dtype": "TEXT"},
+              "LEGAL_ENTITY_TYPE": {"subject": "UNDERWRITING", "pii": False, "picklist": "LEGAL_ENTITY_TYPE", "dtype": "CODE"},
+              "__picklists__": {"NATURE_OF_BUSINESS", "PHONE_TYPE", "LEGAL_ENTITY_TYPE"}}
+    matches = {"FIRST_NAME": "FIRST_NAME", "NATURE_OF_BUSINESS": "NATURE_OF_BUSINESS", "PHONE_TYPE": "GLOBAL_PHONE_TYPE", "FEIN": "FEIN",
+               "LEGAL_ENTITY_TYPE": "LEGAL_ENTITY_TYPE"}
+    ups = {u["code"]: u["payload"] for u in K.enrichment(M.ELEMENTS, master, matches)}
+    assert ups["FIRST_NAME"] == {"code": "FIRST_NAME", "subject_area": "PARTY", "is_pii": 1}
+    assert ups["NATURE_OF_BUSINESS"] == {"code": "NATURE_OF_BUSINESS", "picklist": "NATURE_OF_BUSINESS", "data_type": "CODE"}   # subject kept
+    assert ups["GLOBAL_PHONE_TYPE"] == {"code": "GLOBAL_PHONE_TYPE", "subject_area": "PARTY"}     # other name: no pick list forced on it
+    assert "FEIN" not in ups and "LEGAL_ENTITY_TYPE" not in ups                                    # nothing missing: nothing proposed

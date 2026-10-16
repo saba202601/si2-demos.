@@ -991,6 +991,71 @@ def connect(server, database):
                           autocommit=True)
 
 
+# ------------------------------------------------------------------------------------------ commercial application model
+def enrichment(model: list, master: dict, matches: dict) -> list[dict]:
+    """ELEMENT UPDATE payloads that only fill gaps in master elements the model reused (never overwrite):
+    a missing subject area, the personal-data flag, and the pick list when the element has the same code and none yet.
+
+    model: [(code, name, subject, type, desc, picklist, pii, labels)]; master: code -> {subject, pii, picklist, dtype}; matches: model code -> master code.
+    """
+    out = []
+    for code, _name, subject, _dtype, _desc, picklist, pii, _labels in model:
+        mc = matches.get(code)
+        m = master.get(mc) if mc else None
+        if not m:
+            continue
+        p = {}
+        if not m.get("subject") and subject:
+            p["subject_area"] = subject
+        if pii and not m.get("pii"):
+            p["is_pii"] = 1
+        if picklist and not m.get("picklist") and mc == code and picklist in master.get("__picklists__", set()) and m.get("dtype") in ("TEXT", "CODE", None):
+            p["picklist"], p["data_type"] = picklist, "CODE"
+        if p:
+            out.append({"code": mc, "payload": {"code": mc, **p}, "summary": f"Commercial application: fill {', '.join(sorted(p))} of {mc}"})
+    return out
+
+
+def commercial_app_finish(con, approve_as: str | None) -> None:
+    """Record which master element each model element is, and propose filling the gaps of reused elements."""
+    import commercial_app_model as CAM
+    cur = con.cursor()
+    ix = Index(load_master(con))
+    labels = {c: [a for a, _ in e["aliases"]] for c, e in ((e["code"], e) for e in CAM.catalog()["elements"].values())}
+    matches = {}
+    for code, name, *_ in CAM.ELEMENTS:
+        m = ix.find_element(code, name, [(x, "x") for x in labels.get(code, [])])
+        if m:
+            matches[code] = m
+    cur.execute("SELECT COL_LENGTH('canon.EntityAttribute', 'MasterElementCode')")
+    if cur.fetchone()[0]:
+        for code, mc in matches.items():
+            cur.execute("UPDATE canon.EntityAttribute SET MasterElementCode = ? WHERE ElementCode = ? AND ISNULL(MasterElementCode, '') <> ?", mc, code, mc)
+    cur.execute("SELECT e.ElementCode, e.SubjectAreaCode, e.IsPII, p.PickListCode, e.DataType FROM canon.DataElement e "
+                "LEFT JOIN canon.PickList p ON p.PickListId = e.PickListId WHERE e.ScopeId = 1 AND e.Status <> 'EXPIRED'")
+    master = {r[0]: {"subject": r[1], "pii": bool(r[2]), "picklist": r[3], "dtype": r[4]} for r in cur.fetchall()}
+    cur.execute("SELECT PickListCode FROM canon.PickList WHERE ScopeId = 1 AND Status <> 'EXPIRED'")
+    master["__picklists__"] = {r[0] for r in cur.fetchall()}
+    cur.execute("SELECT ObjectCode FROM gov.ChangeRequest WHERE Status = 'PENDING' AND ObjectType = 'ELEMENT' AND ChangeType = 'UPDATE'")
+    pending = {r[0] for r in cur.fetchall()}
+    ups = [u for u in enrichment(CAM.ELEMENTS, master, matches) if u["code"] not in pending]
+    ids = []
+    for u in ups:
+        cur.execute("SET NOCOUNT ON; DECLARE @id int; EXEC gov.usp_RequestChange 'ELEMENT', 'UPDATE', ?, ?, ?, ?, 'INTAKE', NULL, @id OUTPUT; SELECT @id;",
+                    u["code"], json.dumps(u["payload"]), COLLECTOR, u["summary"])
+        ids.append(cur.fetchone()[0])
+    done = 0
+    if approve_as:
+        for rid in ids:
+            cur.execute("SET NOCOUNT ON; DECLARE @s varchar(10), @r nvarchar(2000); EXEC gov.usp_Decide ?, ?, 1, N'Fill gaps from the commercial application model', 1, "
+                        "@s OUTPUT, @r OUTPUT; SELECT @s;", rid, approve_as)
+            done += cur.fetchone()[0] == "APPROVED"
+    print(f"Commercial application model: {len(matches)} of {len(CAM.ELEMENTS)} elements found in the master; "
+          f"{len(ups)} reused element(s) to complete (subject area, personal data, pick list)" + (f", {done} approved as {approve_as}" if approve_as else ""))
+    for u in ups[:25]:
+        print("   " + u["summary"].split(": ", 1)[1])
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--server", default=os.environ.get("SI2_MSSQL_SERVER", "SABAHOME\\SQLEXPRESS02"))
@@ -1082,6 +1147,8 @@ def main() -> int:
     print(f"Report: {report}")
     if a.dry_run or not proposals:
         print("Dry run: nothing written." if a.dry_run else "Nothing missing: the master already has everything.")
+        if a.commercial_app and not a.dry_run:
+            commercial_app_finish(con, a.approve_as)
         return 0
 
     cur = con.cursor()
@@ -1123,6 +1190,8 @@ def main() -> int:
             print(f"  scanned {db}: {r[2]} columns, {r[3]} matched, {r[4]} new  ->  EXEC intake.usp_ProposeMissing {r[0]};")
             while cur.nextset():
                 pass
+    if a.commercial_app:
+        commercial_app_finish(con, a.approve_as)
     c2 = con.cursor()
     c2.execute("SELECT * FROM canon.vw_Summary")
     row = c2.fetchone()

@@ -39,6 +39,9 @@ CREATE TABLE canon.EntityAttribute (
     CONSTRAINT PK_EntityAttribute PRIMARY KEY (EntityCode, ElementCode)
 );
 GO
+IF COL_LENGTH(N'canon.EntityAttribute', N'MasterElementCode') IS NULL
+    ALTER TABLE canon.EntityAttribute ADD MasterElementCode varchar(80) NULL;   -- the master element it was matched to (set by the collector)
+GO
 CREATE OR ALTER VIEW canon.vw_EntityModel
 AS
 SELECT en.EntityCode AS Entity, en.Name AS EntityName, en.ParentEntity, a.Seq, a.ElementCode AS ModelCode,
@@ -49,11 +52,11 @@ FROM canon.Entity en
 JOIN canon.EntityAttribute a ON a.EntityCode = en.EntityCode
 OUTER APPLY (SELECT TOP (1) e.* FROM canon.DataElement e
              WHERE e.ScopeId = 1 AND e.Status <> 'EXPIRED'
-               AND (e.ElementCode = a.ElementCode
+               AND (e.ElementCode = a.ElementCode OR e.ElementCode = a.MasterElementCode
                     OR EXISTS (SELECT 1 FROM canon.Synonym s WHERE s.ObjectType = 'ELEMENT' AND s.ObjectId = e.ElementId AND s.Status <> 'EXPIRED'
                                AND s.SynonymText IN (a.ElementCode, a.ElementName))
                     OR e.Name = a.ElementName)
-             ORDER BY CASE WHEN e.ElementCode = a.ElementCode THEN 0 ELSE 1 END) el
+             ORDER BY CASE WHEN e.ElementCode = a.MasterElementCode THEN 0 WHEN e.ElementCode = a.ElementCode THEN 1 ELSE 2 END) el
 LEFT JOIN canon.PickList p ON p.PickListId = el.PickListId
 WHERE en.Status = 'ACTIVE';
 GO
