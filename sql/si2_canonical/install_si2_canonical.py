@@ -69,7 +69,7 @@ def install(server: str, db: str, demo: bool, demo_db: str = "SI2_SourceDemo", q
     con.cursor().execute(f"IF DB_ID(N'{db}') IS NULL CREATE DATABASE [{db}];")
     exists = query(con, f"SELECT OBJECT_ID(N'[{db}].canon.DataElement') AS x")[0][0]["x"]
     steps = ([] if exists else ["01_schema.sql"]) + ["02_procedures.sql", "03_seed.sql", "06_rule_engine.sql",
-                                                       "07_rule_library.sql", "08_coverage.sql"] + (["04_demo_source.sql"] if demo else [])
+                                                       "07_rule_library.sql", "08_coverage.sql", "09_commercial_app.sql"] + (["04_demo_source.sql"] if demo else [])
     if exists:
         say("  schema already there: keeping it (procedures refreshed, missing seed rows added)")
     for f in steps:
@@ -84,6 +84,28 @@ def install(server: str, db: str, demo: bool, demo_db: str = "SI2_SourceDemo", q
 
 
 # ------------------------------------------------------------------------------------------- self-test
+def commercial_app_checks(server, db, check, one) -> None:
+    """Commercial application model: proposed through the collector, approved by a second person, every entity element in the master."""
+    import subprocess
+    sys.path.insert(0, str(HERE))
+    import commercial_app_model as CAM
+    cmd = [sys.executable, str(HERE / "collect_si2_databases.py"), "--server", server, "--database", db, "--commercial-app", "--approve-as", "Tester B"]
+    first = subprocess.run(cmd, capture_output=True, text=True, cwd=str(HERE))
+    again = subprocess.run(cmd, capture_output=True, text=True, cwd=str(HERE))
+    check("commercial application model collected and approved", first.returncode == 0 and "proposal(s)" in first.stdout,
+          (first.stdout.strip().splitlines() or [first.stderr.strip()[-200:]])[-1][:160])
+    check("collecting it again proposes nothing", "Nothing missing" in again.stdout, (again.stdout.strip().splitlines() or [""])[-1][:120])
+    m = one("SELECT COUNT(*) AS n, SUM(CASE WHEN InMaster = 'NOT YET' THEN 1 ELSE 0 END) AS missing FROM canon.vw_EntityModel")
+    check("Party model: every entity element is in the master", m["n"] == sum(len(e[4]) for e in CAM.ENTITIES) and m["missing"] == 0,
+          f"{m['n']} entity elements, {m['missing']} missing")
+    r = one("SELECT (SELECT COUNT(*) FROM canon.vw_PickListOption WHERE PickList = 'PARTY_ROLE' AND OptionCode IN ('FIRST_NAMED_INSURED', 'MORTGAGEE', "
+            "'LOSS_PAYEE', 'CERTIFICATE_HOLDER')) AS roles, (SELECT COUNT(*) FROM canon.vw_PickListOption WHERE PickList = 'UW_QUESTION') AS q, "
+            "(SELECT SubjectArea FROM canon.vw_DataElement WHERE ElementCode = 'EACH_OCCURRENCE_LIMIT') AS sa, "
+            "(SELECT COUNT(*) FROM gov.ChangeRequest WHERE Status = 'FAILED') AS failed")
+    check("party roles, underwriting questions and the liability subject area", r["roles"] == 4 and r["q"] >= 50 and r["sa"] == "LIABILITY" and r["failed"] == 0,
+          f"{r['roles']} roles, {r['q']} questions, subject {r['sa']}, {r['failed']} failed")
+
+
 def coverage_checks(server, db, check, one) -> None:
     """Claim coverage: forms read, claims checked from SQL Server give the same findings as in Python, alerts routed, closing rules."""
     sys.path.insert(0, str(HERE))
@@ -265,6 +287,7 @@ def selftest(server: str, keep: bool) -> int:
     check("expire, never delete, history kept", hist == 2 and one("SELECT Status FROM canon.vw_PickListOption WHERE PickList='ROOF_SHAPE' AND OptionCode='FLAT'")["Status"] == "EXPIRED")
     rule_engine_checks(server, db, con, check, one)
     coverage_checks(server, db, check, one)
+    commercial_app_checks(server, db, check, one)
     check("no requests left failed", one("SELECT COUNT(*) n FROM gov.ChangeRequest WHERE Status='FAILED'")["n"] == 0)
     con.close()
     if not keep:

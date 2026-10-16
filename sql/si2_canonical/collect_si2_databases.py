@@ -805,7 +805,7 @@ def plan(cats: list[dict], ix: Index) -> list[dict]:
             elif not p["options"]:
                 continue
             else:
-                base = p["name"] or p["code"]
+                base = p["code"] if p.get("keep_code") else (p["name"] or p["code"])
                 code = short_code(snake(PREFIXES.sub("", base.split(".")[-1] if "." in base else base)), 60)
                 while code in ix.pl_code:
                     code = short_code(code + "_" + snake(src)[:10], 60)
@@ -873,11 +873,11 @@ def plan(cats: list[dict], ix: Index) -> list[dict]:
                     seen.add(norm(a))
                     syns.append({"text": clean(a), "type": "SOURCE", "source": (s or src)[:60]})
                     ix.syn.add(("ELEMENT", code, norm(a), "*"))
-            plc = pl_map.get(e.get("picklist_key"))
+            plc = pl_map.get(e.get("picklist_key")) or (e.get("picklist_code") if e.get("picklist_code") in ix.pl_code else None)
             propose("ELEMENT", "ADD", code, f"{src}: new data element {code} ({e['name']})",
                     {"code": code, "name": (e["name"] or code)[:200], "description": (e["desc"] or f"Collected from {src}; SME to describe.")[:2000],
                      "data_type": e["dtype"] if plc or e["dtype"] != "CODE" else "TEXT", "picklist": plc, "is_bureau": bool(e.get("bureau")), "is_pii": bool(e.get("pii")),
-                     "synonyms": syns}, src)
+                     "subject_area": e.get("subject"), "synonyms": syns}, src)
             ix._own("ELEMENT", code, code, e["name"])
         # rules
         for x in cat["rules"]:
@@ -1003,6 +1003,7 @@ def main() -> int:
     ap.add_argument("--definitions", default=None, help="CSV of held-back items with their business definitions")
     ap.add_argument("--approve-seed", action="store_true", help="first approve the seed's pending changes (as --approve-as)")
     ap.add_argument("--scan-all", action="store_true", help="also scan every other user database column by column")
+    ap.add_argument("--commercial-app", action="store_true", help="add the commercial application vocabulary (Party, premises, GL, property)")
     a = ap.parse_args()
 
     con = connect(a.server, a.database)
@@ -1029,6 +1030,12 @@ def main() -> int:
         names = []
         print(f"Definitions file {a.definitions}: " + ", ".join(f"{c['source']} {len(c['elements'])} elements, "
                                                               f"{sum(len(p['options']) for p in c['picklists'].values())} options" for c in cats))
+    if a.commercial_app:
+        import commercial_app_model as CAM
+        cats.append(CAM.catalog())
+        names = []
+        print(f"Commercial application model: {len(CAM.ELEMENTS)} elements, {len(CAM.PICKLISTS)} pick lists, "
+              f"{sum(len(p[3]) for p in CAM.PICKLISTS)} options, {len(CAM.ENTITIES)} entities")
     print(f"Sources on {src_server}:")
     for db in names:
         r = Reader(scon, db, (db + suffix)[:60])

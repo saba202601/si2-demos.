@@ -16,6 +16,11 @@ exactly which version a client saw, and redeploy it.
   generated tests; plain-English rule drafting (optional Claude, always checked against the canonical model);
   impact on a synthetic book; Saba proposes, Sabasi approves.
 
+* **Commercial application model, Party first** (`commercial_app_model.py`, `09_commercial_app.sql`,
+  `run_commercial_app.bat`): party, roles, addresses, contacts, relationships and additional interests; producer,
+  premises, prior insurance, loss history, 56 underwriting questions; general liability and property sections;
+  21 entities over 208 elements and 22 pick lists, collected without duplicates and approved by a second person.
+
 * **SI² Studio** (`si2_studio.py`, `run_si2_studio.bat`): every engine in one app on your own PC, one menu:
   Rule Studio and My desk (on SI2Canonical), Command Center, Roles, Canonical, Migration, ISO and NCCI bureau
   reporting, Business Rule Engine, Rating, Claims Triage and Fraud. Each engine keeps its own working data.

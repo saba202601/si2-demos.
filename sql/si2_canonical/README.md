@@ -142,3 +142,25 @@ are read too. Log: `claim_check_log.txt`.
 The forms, policies and claims loaded by `08_coverage.sql` are synthetic; the form wording is SI²'s own. In the Rule
 Studio, **Claim coverage** shows the alert inbox by role and each claim with the form wording behind every decision;
 **Policy forms** shows how each form was read and reads a PDF you upload.
+
+## Commercial application model (Party first)
+
+Double-click **`run_commercial_app.bat`**: it self-tests, adds the entity layer (`09_commercial_app.sql`) and collects
+the commercial application vocabulary through the collector (`collect_si2_databases.py --commercial-app`, approved as
+Saba). Elements the master already has are reused and only gain the form labels as synonyms. Log:
+`commercial_app_log.txt`; the model as it is in the master: `party_model_*.csv` (`show_entity_model.py`).
+
+* **Party** (`commercial_app_model.py`): a party once, with its roles (first and other named insureds, contacts,
+  producer, carrier, prior carrier, parent and subsidiary), addresses, contacts (phones and emails by type),
+  relationships (parent, subsidiary, trust) and additional interests (additional insured, mortgagee, loss payee,
+  lender's loss payable, lienholder, certificate holder ... with rank, evidence, certificate, loan number, lien amount
+  and the location, building, vehicle or item they apply to).
+* **Application**: producer, premises, nature of business, prior insurance, loss history and 56 underwriting questions
+  as one governed list (`UW_QUESTION`) with answer, explanation and event dates.
+* **General liability**: occurrence or claims made, every limit, deductibles, premiums, retro date, schedule of
+  hazards (class, premium basis, exposure, rates), products, contractors.
+* **Property**: blankets; subject of insurance, amount, coinsurance, valuation, causes-of-loss form, inflation guard,
+  deductible; spoilage, sinkhole and mine subsidence elections; the building (construction, protection class,
+  updates, heat, exposures) and its protection (alarms, guards, sprinklers).
+* **Entities** (`canon.Entity`, `canon.EntityAttribute`, `canon.vw_EntityModel`): how the elements group, found by
+  code or synonym. Names and definitions are SI²'s own; the form labels are kept only as synonyms (where used).
