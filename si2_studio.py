@@ -2,7 +2,8 @@
 
     streamlit run si2_studio.py
 
-The Rule Studio (My desk, rules, authority, approvals, claim coverage, policy forms) works on SI2Canonical when
+The Rule Studio (My desk, rules, authority, approvals, claim coverage, policy forms) and the Canonical Master (elements, pick lists,
+aliases, insurance forms, Party model) work on SI2Canonical when
 SI2_SQL_SERVER is set; the other engines run on their synthetic demo data. One menu, one sign-in, nothing online.
 """
 import streamlit as st
@@ -13,6 +14,7 @@ st.session_state["_si2_studio"] = True          # the apps show this menu instea
 PAGES = {
     "Your work": [
         st.Page("app_rule_studio.py", title="Rule Studio · My desk", icon="🧭", default=True, url_path="studio"),
+        st.Page("app_canonical_master.py", title="Canonical Master", icon="📚", url_path="canonical-master"),
     ],
     "Start here": [
         st.Page("app_hub.py", title="Command Center", icon="💰", url_path="command-center"),
