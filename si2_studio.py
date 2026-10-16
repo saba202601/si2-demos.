@@ -15,6 +15,7 @@ PAGES = {
     "Your work": [
         st.Page("app_rule_studio.py", title="Rule Studio · My desk", icon="🧭", default=True, url_path="studio"),
         st.Page("app_canonical_master.py", title="Canonical Master", icon="📚", url_path="canonical-master"),
+        st.Page("app_bridge.py", title="Data Bridge", icon="🌉", url_path="data-bridge"),
     ],
     "Start here": [
         st.Page("app_hub.py", title="Command Center", icon="💰", url_path="command-center"),

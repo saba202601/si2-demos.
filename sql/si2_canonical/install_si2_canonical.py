@@ -106,6 +106,24 @@ def commercial_app_checks(server, db, check, one) -> None:
           f"{r['roles']} roles, {r['q']} questions, subject {r['sa']}, {r['failed']} failed")
 
 
+def bridge_checks(server, db, check, one) -> None:
+    """Data Bridge: system mappings proposed and approved by a second person, then legacy -> canonical -> destinations from them."""
+    import subprocess
+    cmd = [sys.executable, str(HERE / "run_bridge.py"), "--server", server, "--database", db, "--register", "--approve-as", "Tester B",
+           "--rows", "60", "--out", str(HERE / "bridge_selftest_out")]
+    first = subprocess.run(cmd, capture_output=True, text=True, cwd=str(HERE))
+    again = subprocess.run(cmd, capture_output=True, text=True, cwd=str(HERE))
+    out = first.stdout
+    check("bridge: system mappings approved by a second person", "approved by Tester B" in out and "not applied" not in out,
+          next((ln.strip() for ln in out.splitlines() if "approved by" in ln or "Mappings:" in ln), first.stderr.strip()[-200:])[:160])
+    check("bridge: legacy records reach both destinations from SI2Canonical", first.returncode == 0 and "Bridge OK" in out,
+          next((ln.strip() for ln in out.splitlines() if ln.strip().startswith("passed")), first.stderr.strip()[-200:])[:160])
+    check("bridge: registering again proposes nothing", " 0 new proposed" in again.stdout,
+          next((ln.strip() for ln in again.stdout.splitlines() if "Mappings:" in ln), again.stderr.strip()[-200:])[:160])
+    n = one("SELECT COUNT(*) AS n FROM canon.ElementUsage WHERE UsedIn IN ('LEGACY_PAS', 'POLICYCLOUD', 'ISO_STAT')")["n"]
+    check("bridge: every system field recorded where used", n >= 40, f"{n} where-used rows")
+
+
 def coverage_checks(server, db, check, one) -> None:
     """Claim coverage: forms read, claims checked from SQL Server give the same findings as in Python, alerts routed, closing rules."""
     sys.path.insert(0, str(HERE))
@@ -288,6 +306,7 @@ def selftest(server: str, keep: bool) -> int:
     rule_engine_checks(server, db, con, check, one)
     coverage_checks(server, db, check, one)
     commercial_app_checks(server, db, check, one)
+    bridge_checks(server, db, check, one)
     check("no requests left failed", one("SELECT COUNT(*) n FROM gov.ChangeRequest WHERE Status='FAILED'")["n"] == 0)
     con.close()
     if not keep:
