@@ -16,6 +16,10 @@ exactly which version a client saw, and redeploy it.
   generated tests; plain-English rule drafting (optional Claude, always checked against the canonical model);
   impact on a synthetic book; Saba proposes, Sabasi approves.
 
+* **SI² Studio** (`si2_studio.py`, `run_si2_studio.bat`): every engine in one app on your own PC, one menu:
+  Rule Studio and My desk (on SI2Canonical), Command Center, Roles, Canonical, Migration, ISO and NCCI bureau
+  reporting, Business Rule Engine, Rating, Claims Triage and Fraud. Each engine keeps its own working data.
+
 * **My desk** (Rule Studio): one page per role with everything waiting for that person (claim alerts, referrals,
   approvals, compliance stops, routed claims and billing), their rules, their authority, what changed, and Ask SI²
   answered from their own rules and authority.

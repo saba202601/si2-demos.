@@ -118,6 +118,13 @@ names describe the formats SI² works with, and all trademarks belong to their o
 
 Tests: `python -m pytest tests iso_bureau/tests -q` (set `SI2_TEST_PG_URL` to include the PostgreSQL test).
 
+## SI² Studio on your own PC
+
+Every engine in one app: double-click **`run_si2_studio.bat`** (or `streamlit run si2_studio.py`). The menu on the left
+opens the Rule Studio and My desk (working on SI2Canonical when `SI2_SQL_SERVER` is set), the Command Center, Roles,
+Canonical, Migration, ISO and NCCI bureau reporting, the Business Rule Engine, Rating, Claims Triage and Fraud. Nothing
+is online; the engines other than the Rule Studio run on their synthetic demo data.
+
 ## Bureau Reporting Workbench (`bureau/`)
 
 | File | What it does |

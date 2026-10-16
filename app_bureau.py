@@ -40,12 +40,12 @@ KEYS = ["smap", "fmaps", "vmaps", "overrides", "excluded", "subs", "audit", "car
 
 
 def init():
-    if "ready" in st.session_state:
+    if "ready_bureau" in st.session_state:
         return
     if persist.restore(APP, KEYS):
         st.session_state.src = source.build()
         rebuild_canonical()
-        st.session_state.ready = True
+        st.session_state.ready_bureau = True
         return
     src, smap, fmaps = _initial()
     ss = st.session_state
@@ -55,7 +55,7 @@ def init():
     rebuild_canonical()
     ss.vmaps = {s: gen.auto_value_map(ss.canon, ss.fmaps[s]) for s in catalog.SPEC_INFO}
     log("System", "Workbench initialised", f"{len(catalog.load()):,} spec fields loaded; demo source connected")
-    ss.ready = True
+    ss.ready_bureau = True
 
 
 def rebuild_canonical():
@@ -107,7 +107,7 @@ ss = st.session_state
 
 with st.sidebar:
     st.markdown("**Workflow**")
-    step = st.radio("Step", STEPS, label_visibility="collapsed", key="step")
+    step = st.radio("Step", STEPS, label_visibility="collapsed", key="step_bureau")
     st.divider()
     identity.name_input("SME name", "sme_name")
     persist.sidebar(APP)

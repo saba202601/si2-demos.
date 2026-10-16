@@ -116,7 +116,7 @@ with st.sidebar:
     st.markdown("**Signed in as**")
     user = st.selectbox("Person", ["Saba", "Sabasi"], key="user", label_visibility="collapsed",
                         help="Two-person rule: one person proposes, the other approves.")
-    page = st.radio("Go to", ["My desk", "Ask SI²", "Rule library", "Try a case", "Decision tables", "Authority", "Approvals", "Rules by role", "Claim coverage", "Policy forms"], key="page")
+    page = st.radio("Go to", ["My desk", "Ask SI²", "Rule library", "Try a case", "Decision tables", "Authority", "Approvals", "Rules by role", "Claim coverage", "Policy forms"], key="studio_page")
     st.divider()
     if repo.kind == "sql":
         st.success(f"SI2Canonical on {repo.server}")

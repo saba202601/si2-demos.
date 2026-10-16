@@ -125,7 +125,8 @@ def _html(text: str) -> str:
 
 def page(title: str, subtitle: str) -> None:
     """Set up the page and draw the SI² header. Call first in every app."""
-    st.set_page_config(page_title=f"{title} | SI²", page_icon="🛡️", layout="wide")
+    if not st.session_state.get("_si2_studio"):      # inside the SI² Studio the page is already set up
+        st.set_page_config(page_title=f"{title} | SI²", page_icon="🛡️", layout="wide")
     st.markdown(_html(CSS), unsafe_allow_html=True)
     # st.html renders the header as HTML directly, with no Markdown step that could turn it into a code block.
     st.html(_html(f"""<div class="si2-head"><img src="{LOGO_URI}" width="44" height="50" alt="SI² logo">
@@ -146,6 +147,8 @@ def note_synthetic() -> None:
 
 def demo_links() -> None:
     """The SI² demo hub in the sidebar, current app first in bold."""
+    if st.session_state.get("_si2_studio"):          # the Studio menu already lists every engine
+        return
     cur = st.session_state.get("_si2_title", "")
     with st.sidebar:
         st.divider()

@@ -184,7 +184,7 @@ def test_rule_studio_end_to_end(monkeypatch):
     at = AppTest.from_file(str(ROOT / "app_rule_studio.py"), default_timeout=240)
     at.run()
     assert not at.exception
-    at.radio(key="page").set_value("Ask SI²").run()
+    at.radio(key="studio_page").set_value("Ask SI²").run()
     at.selectbox(key="ask_example").set_value("Decline homes in Georgia with a roof older than 20 years").run()
     at.button[0].click().run()
     assert not at.exception, at.exception
@@ -193,7 +193,7 @@ def test_rule_studio_end_to_end(monkeypatch):
     send = next(b for b in at.button if b.label.startswith("Send for approval"))
     send.click().run()
     assert any("Request 1 sent" in s.value for s in at.success)
-    at.radio(key="page").set_value("Approvals").run()
+    at.radio(key="studio_page").set_value("Approvals").run()
     assert next(b for b in at.button if b.label == "Approve").disabled     # Saba cannot approve her own request
     at.selectbox(key="user").set_value("Sabasi").run()
     next(b for b in at.button if b.label == "Approve").click().run()
@@ -218,7 +218,7 @@ def test_my_desk_for_each_role(monkeypatch):
     monkeypatch.chdir(ROOT)
     at = AppTest.from_file(str(ROOT / "app_rule_studio.py"), default_timeout=240)
     at.run()
-    assert not at.exception and at.radio(key="page").value == "My desk"
+    assert not at.exception and at.radio(key="studio_page").value == "My desk"
     counts = {}
     for role in ("UNDERWRITER", "SR_UNDERWRITER", "CLAIMS_ADJUSTER", "CLAIMS_MANAGER", "SIU", "BILLING", "COMPLIANCE", "CEO"):
         at.selectbox(key="desk_role").set_value(role).run()

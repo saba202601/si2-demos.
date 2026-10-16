@@ -88,7 +88,7 @@ IL_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def init():
-    if "ready" in st.session_state:
+    if "ready_mig" in st.session_state:
         return
     if persist.restore(APP, KEYS) and "src" in st.session_state:
         for ent in st.session_state.src["entities"]:
@@ -99,11 +99,11 @@ def init():
             st.session_state.setdefault(k, v)
         st.session_state.loaded, st.session_state.tests_signed = None, {}
         recompute()
-        st.session_state.ready = True
+        st.session_state.ready_mig = True
         return
     st.session_state.audit = []
     set_source(_demo(), "SI² demo legacy system INSURE/400")
-    st.session_state.ready = True
+    st.session_state.ready_mig = True
 
 
 def context_for(entity: str) -> str:
@@ -214,7 +214,7 @@ ss = st.session_state
 
 with st.sidebar:
     st.markdown("**Workflow**")
-    step = st.radio("Step", STEPS, label_visibility="collapsed", key="step")
+    step = st.radio("Step", STEPS, label_visibility="collapsed", key="step_mig")
     st.divider()
     identity.name_input("SME name", "sme_name")
     st.selectbox("Role", ["SME", "Data steward"], key="role",

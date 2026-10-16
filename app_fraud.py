@@ -44,14 +44,14 @@ def run_engine():
 
 def init():
     ss = st.session_state
-    if "ready" in ss:
+    if "ready_fraud" in ss:
         return
     if persist.restore(APP, KEYS) and "params" in ss:
         ss.d = _book()
         ss.setdefault("decisions", {})
         ss.setdefault("audit", [])
         run_engine()
-        ss.ready = True
+        ss.ready_fraud = True
         return
     ss.audit, ss.decisions = [], {}
     ss.d = _book()
@@ -60,7 +60,7 @@ def init():
     ss.enabled = set(ss.cat[ss.cat.engine_rule == "Yes"].fraud_id)
     log("SI²", "Synthetic book loaded", f"{len(ss.d['policies'])} policies, {len(ss.d['claims'])} claims")
     run_engine()
-    ss.ready = True
+    ss.ready_fraud = True
 
 
 def decision_of(row):
@@ -122,7 +122,7 @@ A = with_decisions(ss.alerts)
 
 with st.sidebar:
     st.markdown("**Workflow**")
-    step = st.radio("Step", STEPS, label_visibility="collapsed", key="step")
+    step = st.radio("Step", STEPS, label_visibility="collapsed", key="step_fraud")
     st.divider()
     identity.name_input("SME name", "sme_name", "Your name for decisions")
     persist.sidebar(APP)
@@ -325,7 +325,7 @@ elif step == STEPS[5]:
                "so one severity-5 alert scores 75 and two severity-3 alerts score 70.")
     st.dataframe(s, hide_index=True, width="stretch",
                  column_config={"score": st.column_config.ProgressColumn("risk score", min_value=0, max_value=100, format="%d")})
-    pick = st.selectbox("Open case", list(s.claim_id), key="siu_pick") if len(s) else None
+    pick = st.selectbox("Open case", list(s.claim_id), key="siu_pick_fraud") if len(s) else None
     if pick:
         d = ss.d
         c = d["claims"][d["claims"].claim_id == pick].iloc[0]

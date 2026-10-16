@@ -26,7 +26,20 @@ def test_app_renders(app):
     at = AppTest.from_file(str(ROOT / f"{app}.py"), default_timeout=240)
     at.run()
     assert not at.exception, at.exception[0].message
-    nav = [r for r in at.radio if r.key in ("step", "page")]
+    nav = [r for r in at.radio if r.key in ("step", "step_bureau", "step_fraud", "step_mig", "page", "studio_page")]
     for value in (nav[0].options if nav else []):
         at.radio(key=nav[0].key).set_value(value).run()     # fresh element: pages drop their own widgets
         assert not at.exception, f"{app} · {value}: {at.exception[0].message}"
+
+
+def test_si2_studio_runs_every_engine_in_one_app():
+    """One SI² Studio: every engine opens from its menu, and moving between engines keeps each one's own state."""
+    from streamlit.testing.v1 import AppTest
+    at = AppTest.from_file(str(ROOT / "si2_studio.py"), default_timeout=300)
+    at.run()
+    assert not at.exception, at.exception[0].message
+    order = ["app_hub.py", "app_roles.py", "app_canonical.py", "app_migration.py", "app_iso_bureau.py", "app_bureau.py", "app_rules.py",
+             "app_rating.py", "app_claims.py", "app_fraud.py", "app_rule_studio.py"]
+    for page in order + list(reversed(order)):                # there and back: no engine may trip over another's state
+        at.switch_page(page).run()
+        assert not at.exception, f"{page}: {at.exception[0].message}"
