@@ -1056,6 +1056,47 @@ def commercial_app_finish(con, approve_as: str | None) -> None:
         print("   " + u["summary"].split(": ", 1)[1])
 
 
+def forms_finish(con, forms: dict, usage: list, cat: dict, stamp: str, write: bool = True) -> Path:
+    """Where-used rows (form, entity, field -> element) and a per-form field report."""
+    ix = Index(load_master(con))
+    cur = con.cursor()
+    found, added = {}, 0
+    for fid, entity, field, code in usage:
+        mc = found.get(code)
+        if mc is None:
+            e = cat["elements"].get(f"DE:{code}", {})
+            mc = found[code] = ix.find_element(code, e.get("name", code.replace("_", " ")), e.get("aliases", [])) or ""
+        if not mc or not write:
+            continue
+        cur.execute("SET NOCOUNT ON; INSERT canon.ElementUsage (ElementId, UsedIn, ObjectName, FieldName, Notes, CreatedBy) "
+                    "SELECT e.ElementId, ?, ?, ?, N'Field on an insurance form', ? FROM canon.DataElement e WHERE e.ElementCode = ? AND e.ScopeId = 1 "
+                    "AND NOT EXISTS (SELECT 1 FROM canon.ElementUsage u WHERE u.ElementId = e.ElementId AND u.UsedIn = ? "
+                    "AND ISNULL(u.ObjectName, '') = ISNULL(?, '') AND u.FieldName = ?); SELECT @@ROWCOUNT;",
+                    fid[:60], (entity or None) and entity[:200], field[:200], COLLECTOR, mc, fid[:60], (entity or None) and entity[:200], field[:200])
+        added += cur.fetchone()[0]
+    by_field = {(fid, field): code for fid, _, field, code in usage}
+    report = HERE / f"forms_report_{stamp}.csv"
+    summary = []
+    with open(report, "w", newline="", encoding="utf-8-sig") as fh:
+        w = csv.writer(fh)
+        w.writerow(["Form", "Field", "Kind", "Entity", "Attribute", "Option", "Named from", "Element", "In master", "Pick list"])
+        for fid, fields in forms.items():
+            n = ok = 0
+            for f in fields:
+                code = by_field.get((fid, f.base), "")
+                mc = found.get(code, "") if code else ""
+                n += 1
+                ok += bool(mc)
+                w.writerow([fid, f.name, f.kind, f.entity, f.attribute, f.option, f.source, code, mc,
+                            ix.el_pl.get(mc, "") if mc else ""])
+            summary.append((fid, n, ok))
+    print(f"Forms: {added} where-used row(s) added to canon.ElementUsage")
+    for fid, n, ok in summary:
+        print(f"  {fid:<40} {n:>5} fields, {ok:>5} linked to the master" + ("" if ok == n else f", {n - ok} with no label on the form (see report)"))
+    print(f"Forms report: {report}")
+    return report
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--server", default=os.environ.get("SI2_MSSQL_SERVER", "SABAHOME\\SQLEXPRESS02"))
@@ -1069,6 +1110,7 @@ def main() -> int:
     ap.add_argument("--approve-seed", action="store_true", help="first approve the seed's pending changes (as --approve-as)")
     ap.add_argument("--scan-all", action="store_true", help="also scan every other user database column by column")
     ap.add_argument("--commercial-app", action="store_true", help="add the commercial application vocabulary (Party, premises, GL, property)")
+    ap.add_argument("--forms", default=None, help="folder of fillable PDF forms: every field, check-box group and list becomes master vocabulary")
     a = ap.parse_args()
 
     con = connect(a.server, a.database)
@@ -1101,6 +1143,18 @@ def main() -> int:
         names = []
         print(f"Commercial application model: {len(CAM.ELEMENTS)} elements, {len(CAM.PICKLISTS)} pick lists, "
               f"{sum(len(p[3]) for p in CAM.PICKLISTS)} options, {len(CAM.ENTITIES)} entities")
+    forms = usage = fcat = None
+    if a.forms:
+        import form_fields as FF
+        forms = FF.read_folder(Path(a.forms))
+        if not forms:
+            print(f"No PDF forms found in {a.forms}")
+            return 1
+        fcat, usage = FF.catalog(forms)
+        cats.append(fcat)
+        names = []
+        print(f"Forms in {a.forms}: {len(forms)} forms, {sum(len(v) for v in forms.values())} fields -> {len(fcat['elements'])} elements, "
+              f"{len(fcat['picklists'])} pick lists, {sum(len(p['options']) for p in fcat['picklists'].values())} options")
     print(f"Sources on {src_server}:")
     for db in names:
         r = Reader(scon, db, (db + suffix)[:60])
@@ -1149,6 +1203,8 @@ def main() -> int:
         print("Dry run: nothing written." if a.dry_run else "Nothing missing: the master already has everything.")
         if a.commercial_app and not a.dry_run:
             commercial_app_finish(con, a.approve_as)
+        if forms:
+            forms_finish(con, forms, usage, fcat, stamp, write=not a.dry_run)
         return 0
 
     cur = con.cursor()
@@ -1192,6 +1248,11 @@ def main() -> int:
                 pass
     if a.commercial_app:
         commercial_app_finish(con, a.approve_as)
+    if forms:
+        if a.approve_as:
+            forms_finish(con, forms, usage, fcat, stamp)
+        else:
+            print("Forms: where-used rows are added after the proposals are approved (run again with --approve-as).")
     c2 = con.cursor()
     c2.execute("SELECT * FROM canon.vw_Summary")
     row = c2.fetchone()

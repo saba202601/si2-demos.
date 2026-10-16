@@ -79,7 +79,15 @@ PICKLISTS = [
         ("VENDORS_COVERAGE_REQUIRED", "Vendors coverage required"), ("SELLS_TO_OTHER_NAMED_INSUREDS", "A named insured sells to other named insureds"),
         # claims-made
         ("PRIOR_EXCLUDED_OR_SELF_INSURED", "A product, work, accident or location was excluded, uninsured or self-insured before"),
-        ("TAIL_PURCHASED", "Tail coverage bought under a previous policy")]),
+        ("TAIL_PURCHASED", "Tail coverage bought under a previous policy"),
+        # crime controls
+        ("CRIME_AUDIT_INDEPENDENT", "Audited by an independent CPA or public accountant"), ("CRIME_AUDIT_ALL_LOCATIONS", "All locations are audited"),
+        ("CRIME_AUDIT_STANDARDS", "Audit follows generally accepted auditing standards"), ("CRIME_AUDIT_TO_OWNERS", "Audit report goes directly to the owners or board"),
+        ("CRIME_AUDIT_DISCREPANCIES", "The auditor commented on discrepancies or loose practices"), ("CRIME_INTERNAL_AUDIT", "Internal audit by an internal audit department"),
+        ("CRIME_AUDIT_INCLUDES_INVENTORY", "The audit includes inventory"), ("CRIME_BANK_RECONCILED_INDEPENDENTLY", "Bank accounts reconciled by someone who cannot deposit or withdraw"),
+        ("CRIME_CHECK_COUNTERSIGNATURE", "Checks need a countersignature"), ("CRIME_SECURITIES_JOINT_CONTROL", "Securities under joint control of two employees"),
+        ("CRIME_MANDATORY_VACATION", "Officers and money handlers take five consecutive days of vacation"),
+        ("CRIME_LICENSED_INVESTMENT_FIRM", "A licensed securities firm invests the plan's funds"), ("CRIME_DOUBLE_CYLINDER_LOCKS", "Premises doors have double-cylinder locks")]),
     ("CGL_COVERAGE_FORM", "CGL Coverage Form", "Trigger of the general liability policy.", [("OCCURRENCE", "Occurrence"), ("CLAIMS_MADE", "Claims made")]),
     ("AGGREGATE_APPLIES_PER", "Aggregate Applies Per", "What the general aggregate limit applies to.", [
         ("POLICY", "Policy"), ("LOCATION", "Location"), ("PROJECT", "Project"), ("OTHER", "Other")]),
@@ -102,13 +110,45 @@ PICKLISTS = [
     ("ALARM_SIGNAL", "Alarm Signal", "Where an alarm reports.", [("CENTRAL_STATION", "Central station"), ("CENTRAL_STATION_KEYS", "Central station with keys"),
                                                                ("LOCAL_GONG", "Local gong"), ("POLICE_CONNECT", "Police connected")]),
     ("COVERAGE_ELECTION", "Coverage Election", "Whether an offered coverage was accepted.", [("ACCEPT", "Accepted"), ("REJECT", "Rejected")]),
+    ("CRIME_COVERAGE_BASIS", "Crime Coverage Basis", "Whether crime coverage pays losses discovered in the period or sustained in it.", [
+        ("DISCOVERY", "Discovery"), ("LOSS_SUSTAINED", "Loss sustained")]),
+    ("CRIME_COVERAGE_FORM", "Crime Coverage Form", "The crime coverage applied for.", [
+        ("A", "Employee dishonesty"), ("A_ERISA", "Employee dishonesty - ERISA"), ("B", "Forgery or alteration"),
+        ("C", "Theft, disappearance and destruction"), ("D", "Robbery and safe burglary"), ("E", "Premises burglary"), ("F", "Computer fraud"),
+        ("G", "Extortion"), ("H", "Premises theft and robbery outside the premises"), ("Q", "Robbery and safe burglary - money and securities")]),
+    ("CRIME_SCHEDULE_BASIS", "Crime Schedule Basis", "Whether a crime limit is blanket or scheduled.", [("BLANKET", "Blanket"), ("SCHEDULE", "Schedule")]),
+    ("CRIME_PREMISES_SECTION", "Crime Premises Section", "Whether a crime limit applies inside or outside the premises.", [("INSIDE", "Inside the premises"), ("OUTSIDE", "Outside the premises")]),
+    ("CRIME_EMPLOYEE_CLASS", "Crime Employee Class", "Position of employees who handle or have custody of money, securities or other property.", [
+        (c.upper().replace(" ", "_").replace("'", "").replace("/", "_").replace("-", "_").replace(",", ""), c) for c in (
+            "Accountants and assistants", "Adjusters", "Administrators and assistants", "Appraisers", "Attorneys", "Auditors and assistants", "Bookkeepers",
+            "Bus drivers", "Buyers and assistants", "Canvassers", "Cashiers and assistants", "Chairpersons", "Chefs who order food", "Collectors",
+            "Computer programmers", "Comptrollers and assistants", "Credit clerks and managers", "Custodians", "Delivery persons", "Demonstrators",
+            "Dietitians who order food", "Drivers and drivers helpers", "Food inspectors", "Head pharmacists", "Instructors handling money",
+            "Janitors", "Locker room attendants", "Maitre d and assistants", "Managers and assistants", "Medical directors", "Messengers outside",
+            "Payroll distributors", "Purchasing agents and assistants", "Receiving clerks", "Refinery gaugers", "Salespeople", "Security personnel",
+            "Service station attendants", "Shipping clerks", "Stock clerks", "Storekeepers", "Storeroom personnel", "Superintendents and assistants",
+            "Supervisors and assistants", "Taxi drivers", "Teachers handling money", "Timekeepers and assistants", "Truck drivers", "Warehouse personnel",
+            "Wine cellar personnel", "Wine stewards", "Other officers and employees")]),
+    ("AUDITOR_TYPE", "Auditor Type", "Who audits the books.", [("CPA", "Certified public accountant"), ("PUBLIC_ACCOUNTANT", "Public accountant"),
+                                                             ("STAFF", "Staff"), ("INTERNAL_AUDIT", "Internal audit department"), ("OTHER", "Other")]),
+    ("AUDIT_REPORT_RECIPIENT", "Audit Report Recipient", "Who the audit report goes to.", [("BOARD", "Board of directors"), ("OWNER", "Owner"),
+                                                                                         ("PARTNERS", "Partners"), ("OTHER", "Other")]),
+    ("CRIME_EXPOSURE_CATEGORY", "Crime Exposure Category", "Where money and securities are exposed.", [("INSIDE", "Inside the premises"),
+                                                                                                    ("MESSENGER", "With a messenger")]),
+    ("SAFE_LABEL", "Safe Label", "Rating label of a safe or vault.", [("UL", "Underwriters Laboratories"), ("SMNA", "Safe Manufacturers National Association")]),
+    ("SAFE_DOOR_TYPE", "Safe Door Type", "Shape of a safe door.", [("ROUND", "Round"), ("SQUARE", "Square")]),
+    ("ALARM_PROTECTED_AREA", "Alarm Protected Area", "What an alarm protects.", [("HOLDUP", "Hold-up"), ("PREMISES", "Premises"), ("SAFE", "Safe")]),
+    ("ALARM_EXTENT_LEVEL", "Alarm Extent Level", "How completely an alarm covers what it protects.", [("PARTIAL", "Partial"), ("COMPLETE", "Complete"),
+                                                                                                    ("LEVEL_1", "Level 1"), ("LEVEL_2", "Level 2"), ("LEVEL_3", "Level 3")]),
+    ("WATCHPERSON_SIGNAL", "Watchperson Signal", "How a watchperson reports.", [("CENTRAL_STATION", "Reports to a central station"),
+                                                                              ("CLOCK_HOURLY", "Clocks hourly"), ("NO_SIGNAL", "Does not signal")]),
     ("SPOILAGE_OPTION", "Spoilage Option", "Causes covered by spoilage coverage.", [
         ("BREAKDOWN_CONTAMINATION", "Breakdown or contamination"), ("POWER_OUTAGE", "Power outage"), ("SELLING_PRICE", "Selling price valuation")]),
 ]
 
 # ------------------------------------------------------------------------------------------ data elements
 # (code, name, subject, type, description, pick list, pii, form labels)
-P, L, U, C, R, PR, PO, CL, LI = "PARTY", "LOCATION", "UNDERWRITING", "COVERAGE", "RATING", "PROPERTY", "PRODUCER", "CLAIM", "LIABILITY"
+P, L, U, C, R, PR, PO, CL, LI, CR = "PARTY", "LOCATION", "UNDERWRITING", "COVERAGE", "RATING", "PROPERTY", "PRODUCER", "CLAIM", "LIABILITY", "CRIME"
 ELEMENTS = [
     # ---- party
     ("PARTY_ID", "Party ID", P, "TEXT", "Identifier of a person or organization, the same on every policy, submission and claim.", None, False, []),
@@ -365,6 +405,62 @@ ELEMENTS = [
     ("SPRINKLER_PCT", "Sprinklered Percent", PR, "PERCENT", "Share of the building protected by sprinklers.", None, False, ["% Sprnk"]),
     ("FIRE_ALARM_MANUFACTURER", "Fire Alarm Manufacturer", PR, "TEXT", "Maker of the fire alarm.", None, False, ["Fire Alarm Manufacturer"]),
     ("FIRE_ALARM_SIGNAL", "Fire Alarm Signal", PR, "CODE", "Where the fire alarm reports.", "ALARM_SIGNAL", False, ["Central Station", "Local Gong"]),
+    # ---- crime (commercial crime section)
+    ("CRIME_COVERAGE_BASIS", "Crime Coverage Basis", CR, "CODE", "Discovery or loss sustained.", "CRIME_COVERAGE_BASIS", False, ["Basis for Coverage"]),
+    ("CRIME_COVERAGE_FORM", "Crime Coverage Form", CR, "CODE", "The crime coverage a limit is for.", "CRIME_COVERAGE_FORM", False, ["Form Ltr"]),
+    ("CRIME_SCHEDULE_BASIS", "Crime Blanket or Schedule", CR, "CODE", "Whether the crime limit is blanket or scheduled.", "CRIME_SCHEDULE_BASIS", False, []),
+    ("CRIME_PREMISES_SECTION", "Crime Premises Section", CR, "CODE", "Inside or outside the premises.", "CRIME_PREMISES_SECTION", False, []),
+    ("CRIME_LIMIT", "Crime Limit", CR, "AMOUNT", "Limit for a crime coverage.", None, False, []),
+    ("CRIME_DEDUCTIBLE", "Crime Deductible", CR, "AMOUNT", "Deductible for a crime coverage.", None, False, []),
+    ("EXTORTION_PARTICIPATION_PCT", "Extortion Insured Participation", CR, "PERCENT", "Share of an extortion loss the insured keeps.", None, False, ["Ins Loss Participation"]),
+    ("ERISA_PLAN_NAME", "ERISA Plan Name", CR, "TEXT", "Name of the employee benefit plan covered for employee dishonesty.", None, False, ["Name of Plan"]),
+    ("ERISA_PLAN_ADDRESS", "ERISA Plan Address", CR, "TEXT", "Principal address of the plan.", None, False, ["Principal Address"]),
+    ("ERISA_TOTAL_ASSET_VALUE", "ERISA Total Asset Value", CR, "AMOUNT", "Total value of the plan's assets.", None, False, ["Total Asset Value"]),
+    ("ERISA_HANDLER_COUNT", "Plan Asset Handlers", CR, "INTEGER", "Trustees, employees and others who handle plan assets.", None, False, []),
+    ("ERISA_PARTICIPANT_COUNT", "Plan Participants", CR, "INTEGER", "Number of plan participants.", None, False, ["Number of Plan Participants"]),
+    ("CRIME_EMPLOYEE_CLASS", "Crime Employee Class", CR, "CODE", "Position of employees who handle money, securities or property.", "CRIME_EMPLOYEE_CLASS", False, []),
+    ("CRIME_EMPLOYEE_CLASS_COUNT", "Employees in Class", CR, "INTEGER", "Number of employees in the position.", None, False, []),
+    ("OFFICER_COUNT", "Officers", CR, "INTEGER", "Number of officers.", None, False, ["Number of Officers"]),
+    ("OTHER_EMPLOYEE_COUNT", "Other Employees", CR, "INTEGER", "Total number of other employees.", None, False, ["Total Number of Other Employees"]),
+    ("AGENT_DISTRIBUTOR_COUNT", "Agents and Distributors", CR, "INTEGER", "Manufacturers, processors, wholesalers or distributors acting for the insured.", None, False, []),
+    ("CRIME_LOCATION_COUNT", "Locations other than Home and Head Offices", CR, "INTEGER", "Number of retail or other locations.", None, False, []),
+    ("AUDITOR_TYPE", "Auditor Type", CR, "CODE", "Who audits the books.", "AUDITOR_TYPE", False, ["Is there an audit by"]),
+    ("BOOKS_AUDIT_FREQUENCY", "Books Audit Frequency", CR, "TEXT", "How often the books are audited (not the premium audit).", None, False, ["Audit Frequency"]),
+    ("AUDIT_REPORT_RECIPIENT", "Audit Report Recipient", CR, "CODE", "Who the audit report is rendered to.", "AUDIT_REPORT_RECIPIENT", False, ["Audit Report is Rendered To"]),
+    ("AUDITOR_NAME_ADDRESS", "Auditor", CR, "TEXT", "Person or firm performing the audit.", None, False, ["Name and Address of Person or Firm Performing Audit"]),
+    ("LAST_AUDIT_DATE_CASH", "Last Audit - Cash and Accounts", CR, "DATE", "Date the last audit of cash and accounts was completed.", None, False, ["Cash & Accounts"]),
+    ("LAST_AUDIT_DATE_INVENTORY", "Last Audit - Inventory", CR, "DATE", "Date the last inventory audit was completed.", None, False, ["Inventory"]),
+    ("CRIME_EXPOSURE_CATEGORY", "Crime Exposure Category", CR, "CODE", "Inside the premises or with a messenger.", "CRIME_EXPOSURE_CATEGORY", False, []),
+    ("MONEY_EXPOSURE", "Money", CR, "AMOUNT", "Most money exposed.", None, False, []),
+    ("CHECKS_FOR_DEPOSIT_EXPOSURE", "Checks for Deposit", CR, "AMOUNT", "Most checks held for deposit.", None, False, ["Checks for Deposit"]),
+    ("CHECKS_ACCOUNTS_PAYABLE_EXPOSURE", "Checks for Accounts Payable", CR, "AMOUNT", "Most checks held for accounts payable.", None, False, ["Checks for Accounts Payable"]),
+    ("PAYROLL_CHECKS_EXPOSURE", "Payroll Checks", CR, "AMOUNT", "Most payroll checks held.", None, False, ["Payroll Checks"]),
+    ("MONEY_OVERNIGHT_EXPOSURE", "Money Overnight", CR, "AMOUNT", "Most money kept overnight.", None, False, ["Money Overnight"]),
+    ("SECURITIES_EXPOSURE", "Securities", CR, "AMOUNT", "Most securities held (in bank or safe deposit).", None, False, []),
+    ("CRIME_PROPERTY_DESCRIPTION", "Crime Property", CR, "TEXT", "Property, merchandise or stock covered for theft.", None, False, ["Description of Property, Merchandise, Stock"]),
+    ("CRIME_PROPERTY_MAX_VALUE", "Crime Property Maximum Value", CR, "AMOUNT", "Most value of that property at one time.", None, False, ["Maximum Value"]),
+    ("BUSINESS_HOURS", "Business Hours", CR, "TEXT", "Hours the business is open.", None, False, ["Business Hours"]),
+    ("EMPLOYEES_ON_DUTY_AVG", "Employees on Duty", CR, "INTEGER", "Average number of employees on duty.", None, False, ["Avg # Employees on Duty"]),
+    ("CHECKS_STAMPED_DEPOSIT_ONLY_IND", "Checks Stamped for Deposit Only", CR, "CODE", "Checks are stamped for deposit only.", "YES_NO", False, ["Checks Stamped for Deposit Only"]),
+    ("DEPOSIT_FREQUENCY", "Deposit Frequency", CR, "TEXT", "How often money is deposited.", None, False, ["Frequency of Deposits"]),
+    ("NIGHT_DEPOSITORY_IND", "Night Depository Used", CR, "CODE", "A night depository is used.", "YES_NO", False, ["Night Depository Used"]),
+    ("SAFE_MANUFACTURER", "Safe Manufacturer", CR, "TEXT", "Maker of the safe or vault.", None, False, []),
+    ("SAFE_LABEL", "Safe Label", CR, "CODE", "UL or SMNA rating label.", "SAFE_LABEL", False, []),
+    ("SAFE_CLASS", "Safe Class", CR, "TEXT", "Class of the safe or vault.", None, False, []),
+    ("SAFE_DOOR_TYPE", "Safe Door Type", CR, "CODE", "Round or square door.", "SAFE_DOOR_TYPE", False, ["Door Type"]),
+    ("SAFE_COMBINATION_LOCKS", "Combination Locks", CR, "TEXT", "Combination locks on the outer door, inner door and chest.", None, False, ["Combination Locks"]),
+    ("SAFE_DOOR_THICKNESS", "Safe Door Thickness", CR, "TEXT", "Thickness of the door, without the bolt work.", None, False, []),
+    ("SAFE_WALL_THICKNESS", "Safe Wall Thickness", CR, "TEXT", "Thickness of the wall.", None, False, []),
+    ("MESSENGER_NUMBER", "Messenger Number", CR, "INTEGER", "Number of the messenger.", None, False, []),
+    ("GUARDS_PER_MESSENGER", "Guards per Messenger", CR, "INTEGER", "Guards with each messenger.", None, False, ["# of Guards per Messenger"]),
+    ("PRIVATE_CONVEYANCE_IND", "Private Conveyance Used", CR, "CODE", "The messenger uses a private conveyance.", "YES_NO", False, ["Private Conveyance Used"]),
+    ("SAFETY_SATCHEL_IND", "Safety Satchel Used", CR, "CODE", "The messenger uses a safety satchel.", "YES_NO", False, ["Safety Satchel Used"]),
+    ("ALARM_PROTECTED_AREA", "Alarm Protected Area", CR, "CODE", "Hold-up, premises or safe alarm.", "ALARM_PROTECTED_AREA", False, []),
+    ("ALARM_EXTENT_LEVEL", "Alarm Extent Level", CR, "CODE", "Partial or complete; premises level 1 to 3.", "ALARM_EXTENT_LEVEL", False, ["Extent of Protection"]),
+    ("WATCHPERSON_COUNT", "Watchpersons", CR, "INTEGER", "Number of watchpersons.", None, False, ["# Watch Persons"]),
+    ("WATCHPERSON_SIGNAL", "Watchperson Signal", CR, "CODE", "How watchpersons report.", "WATCHPERSON_SIGNAL", False, []),
+    ("ACCESSIBLE_OPENINGS_PROTECTION", "Accessible Openings Protection", CR, "TEXT", "Protection of accessible openings.", None, False, ["Accessible Openings & Protection"]),
+    ("OTHER_PROTECTION_DESCRIPTION", "Other Protection", CR, "TEXT", "Fences, floodlights and other protection.", None, False, ["Other Protection"]),
 ]
 
 # ------------------------------------------------------------------------------------------ entities (how the elements group)
@@ -431,6 +527,25 @@ ENTITIES = [
       "PLUMBING_UPDATE_YEAR", "ROOF_YEAR", "HEATING_UPDATE_YEAR", "OTHER_UPDATE_DESCRIPTION", "BUILDING_CODE_GRADE", "TAX_CODE", "ROOF_TYPE", "WIND_CLASS",
       "OTHER_OCCUPANCIES", "PRIMARY_HEAT_SOURCE", "SECONDARY_HEAT_SOURCE", "BOILER_INSURED_ELSEWHERE_IND", "SOLID_FUEL_HEATER_DESCRIPTION",
       "EXPOSURE_RIGHT", "EXPOSURE_LEFT", "EXPOSURE_FRONT", "EXPOSURE_REAR"]),
+    ("CRIME_COVERAGE", "Crime Coverage", "Crime coverages applied for, with limits and deductibles.", "APPLICATION",
+     ["CRIME_COVERAGE_BASIS", "CRIME_COVERAGE_FORM", "CRIME_SCHEDULE_BASIS", "CRIME_PREMISES_SECTION", "CRIME_LIMIT", "CRIME_DEDUCTIBLE", "EXTORTION_PARTICIPATION_PCT"]),
+    ("CRIME_ERISA_PLAN", "ERISA Plan", "Employee benefit plan covered for employee dishonesty.", "CRIME_COVERAGE",
+     ["ERISA_PLAN_NAME", "ERISA_PLAN_ADDRESS", "ERISA_TOTAL_ASSET_VALUE", "ERISA_HANDLER_COUNT", "ERISA_PARTICIPANT_COUNT"]),
+    ("CRIME_EMPLOYEES", "Crime Employee Classification", "Employees who handle or have custody of money, securities or property.", "CRIME_COVERAGE",
+     ["CRIME_EMPLOYEE_CLASS", "CRIME_EMPLOYEE_CLASS_COUNT", "OFFICER_COUNT", "OTHER_EMPLOYEE_COUNT", "AGENT_DISTRIBUTOR_COUNT", "CRIME_LOCATION_COUNT"]),
+    ("CRIME_CONTROLS", "Crime Controls", "Audit and internal controls (yes / no answers are UW_ANSWER rows).", "CRIME_COVERAGE",
+     ["AUDITOR_TYPE", "BOOKS_AUDIT_FREQUENCY", "AUDIT_REPORT_RECIPIENT", "AUDITOR_NAME_ADDRESS", "LAST_AUDIT_DATE_CASH", "LAST_AUDIT_DATE_INVENTORY"]),
+    ("CRIME_EXPOSURES", "Money and Securities Exposures", "Most money, checks and securities exposed inside or with a messenger.", "CRIME_COVERAGE",
+     ["LOCATION_NUMBER", "CRIME_EXPOSURE_CATEGORY", "MESSENGER_NUMBER", "MONEY_EXPOSURE", "CHECKS_FOR_DEPOSIT_EXPOSURE", "CHECKS_ACCOUNTS_PAYABLE_EXPOSURE",
+      "PAYROLL_CHECKS_EXPOSURE", "MONEY_OVERNIGHT_EXPOSURE", "SECURITIES_EXPOSURE", "CRIME_PROPERTY_DESCRIPTION", "CRIME_PROPERTY_MAX_VALUE",
+      "BUSINESS_HOURS", "EMPLOYEES_ON_DUTY_AVG", "CHECKS_STAMPED_DEPOSIT_ONLY_IND", "DEPOSIT_FREQUENCY", "NIGHT_DEPOSITORY_IND"]),
+    ("SAFE_VAULT", "Safe or Vault", "A safe or vault at a crime location.", "CRIME_COVERAGE",
+     ["SAFE_MANUFACTURER", "SAFE_LABEL", "SAFE_CLASS", "SAFE_DOOR_TYPE", "SAFE_COMBINATION_LOCKS", "SAFE_DOOR_THICKNESS", "SAFE_WALL_THICKNESS"]),
+    ("MESSENGER", "Messenger Protection", "Messengers carrying money or securities.", "CRIME_COVERAGE",
+     ["MESSENGER_NUMBER", "GUARDS_PER_MESSENGER", "PRIVATE_CONVEYANCE_IND", "SAFETY_SATCHEL_IND"]),
+    ("CRIME_PROTECTION", "Premises and Safe Protection", "Alarms, guards and watchpersons for crime.", "CRIME_COVERAGE",
+     ["ALARM_PROTECTED_AREA", "BURGLAR_ALARM_SIGNAL", "ALARM_GRADE", "ALARM_EXTENT_LEVEL", "ALARM_INSTALLER", "ALARM_CERTIFICATE_NUMBER",
+      "ALARM_CERTIFICATE_EXPIRATION", "GUARD_COUNT", "WATCHPERSON_COUNT", "WATCHPERSON_SIGNAL", "ACCESSIBLE_OPENINGS_PROTECTION", "OTHER_PROTECTION_DESCRIPTION"]),
     ("BUILDING_PROTECTION", "Building Protection", "Alarms, guards, sprinklers and fire protection of a building.", "BUILDING",
      ["ALARM_TYPE", "BURGLAR_ALARM_SIGNAL", "ALARM_CERTIFICATE_NUMBER", "ALARM_CERTIFICATE_EXPIRATION", "ALARM_INSTALLER", "ALARM_EXTENT", "ALARM_GRADE",
       "GUARD_COUNT", "GUARD_CLOCK_HOURLY_IND", "FIRE_PROTECTION_DESCRIPTION", "SPRINKLER_TYPE", "SPRINKLER_PCT", "FIRE_ALARM_MANUFACTURER", "FIRE_ALARM_SIGNAL"]),
@@ -442,7 +557,9 @@ for _code, *_rest in ELEMENTS:
     FORM_OF[_code] = "ACORD 125"
 for _ent, _forms in (("CGL_COVERAGE", "ACORD 126"), ("CGL_HAZARD", "ACORD 126"), ("PRODUCT", "ACORD 126"), ("CONTRACTOR_OPERATIONS", "ACORD 126"),
                      ("PROPERTY_COVERAGE", "ACORD 140"), ("BLANKET", "ACORD 140"), ("PROPERTY_OPTIONS", "ACORD 140"), ("BUILDING", "ACORD 140"),
-                     ("BUILDING_PROTECTION", "ACORD 140")):
+                     ("BUILDING_PROTECTION", "ACORD 140"), ("CRIME_COVERAGE", "ACORD 141"), ("CRIME_ERISA_PLAN", "ACORD 141"), ("CRIME_EMPLOYEES", "ACORD 141"),
+                     ("CRIME_CONTROLS", "ACORD 141"), ("CRIME_EXPOSURES", "ACORD 141"), ("SAFE_VAULT", "ACORD 141"), ("MESSENGER", "ACORD 141"),
+                     ("CRIME_PROTECTION", "ACORD 141")):
     for _el in next(e for e in ENTITIES if e[0] == _ent)[4]:
         if _el not in ("LOCATION_NUMBER", "BUILDING_NUMBER", "FULL_TIME_EMPLOYEES", "PART_TIME_EMPLOYEES", "SQUARE_FEET"):
             FORM_OF[_el] = _forms
@@ -519,6 +636,10 @@ GO
 INSERT canon.SubjectArea (SubjectAreaCode, Name, Description, SortOrder, CreatedBy)
 SELECT N'LIABILITY', N'General Liability', N'Liability coverages, limits, hazards, products and contractors.', 75, N'SI2 commercial app'
 WHERE NOT EXISTS (SELECT 1 FROM canon.SubjectArea WHERE SubjectAreaCode = N'LIABILITY');
+GO
+INSERT canon.SubjectArea (SubjectAreaCode, Name, Description, SortOrder, CreatedBy)
+SELECT N'CRIME', N'Crime', N'Crime coverages, employee classes, controls, money and securities exposures, safes and messengers.', 76, N'SI2 commercial app'
+WHERE NOT EXISTS (SELECT 1 FROM canon.SubjectArea WHERE SubjectAreaCode = N'CRIME');
 GO
 IF OBJECT_ID(N'canon.Entity') IS NULL
 CREATE TABLE canon.Entity (
