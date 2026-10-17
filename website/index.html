@@ -393,7 +393,7 @@ table.compare{width:100%;border-collapse:collapse;margin-top:28px;font-size:15px
           <div class="field"><label for="role">Your role <span class="hint">(optional)</span></label><select id="role" name="role"><option value="">Select your role</option></select></div>
         </div>
         <div class="row2">
-          <div class="field"><label for="email">Work email</label><input type="email" id="email" name="email" autocomplete="email" required></div>
+          <div class="field"><label for="email">Work email <span class="hint">(company address)</span></label><input type="email" id="email" name="email" autocomplete="email" placeholder="name@yourcompany.com" required></div>
           <div class="field"><label for="states">States written <span class="hint">(optional)</span></label><input type="text" id="states" name="states" placeholder="e.g. FL, GA, TX"></div>
         </div>
         <fieldset class="field">
@@ -457,6 +457,11 @@ table.compare{width:100%;border-collapse:collapse;margin-top:28px;font-size:15px
    DEMOS[].url: the Streamlit Cloud address of each demo. */
 const FORM_ENDPOINT = 'https://formsubmit.co/ajax/hello@si2insure.com';
 const STUDIO_URL = '';
+/* Personal email providers: the form asks for a company address instead. */
+const FREE_EMAIL = new Set(['gmail.com','googlemail.com','yahoo.com','yahoo.co.uk','yahoo.co.in','ymail.com','rocketmail.com','outlook.com','hotmail.com',
+  'live.com','msn.com','icloud.com','me.com','mac.com','aol.com','proton.me','protonmail.com','gmx.com','gmx.net','mail.com','zoho.com','yandex.com',
+  'yandex.ru','mail.ru','qq.com','163.com','126.com','rediffmail.com','comcast.net','att.net','verizon.net','sbcglobal.net','bellsouth.net','cox.net',
+  'earthlink.net','optonline.net','charter.net','frontier.com','juno.com','tutanota.com','hey.com','fastmail.com','inbox.com']);
 const NEED_LABELS = { roles:'Role desks for my teams', bridge:'Work beside legacy / data bridge', canonical:'Canonical data model', bureau:'Bureau reporting',
   rules:'Business rules', rating:'Rating', claims:'Claims', coverage:'Claim coverage and leakage', migration:'Legacy-to-cloud migration', fraud:'Fraud' };
 
@@ -647,7 +652,9 @@ form.addEventListener('submit', async (e)=>{
   if (!form.company.value.trim()) missing.push('company name');
   if (!form.company_type.value) missing.push('company type');
   if (!form.contact.value.trim()) missing.push('your name');
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email.value.trim())) missing.push('a valid work email');
+  const emailVal = form.email.value.trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(emailVal)) missing.push('a valid work email');
+  else if (FREE_EMAIL.has(emailVal.split('@')[1])) missing.push('your work email (personal addresses such as Gmail, Yahoo or Outlook are not accepted)');
   if (!form.consent.checked) missing.push('your agreement to be contacted');
   if (missing.length){
     errorEl.textContent = 'Please add ' + missing.join(', ') + '.';
