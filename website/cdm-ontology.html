@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="How SI² generates the commercial lines canonical data model and the ontology at the same time from one governed store, and why the context key (country, state, company, line, product, object, module, dates) matters. Downloads for Commercial Property, Workers' Compensation, General Liability and Commercial Auto.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 136%22%3E%3Cpath d=%22M60 6 L110 24 V64 C110 97 88 119 60 130 C32 119 10 97 10 64 V24 Z%22 fill=%22%230B1B2B%22/%3E%3Ctext x=%2255%22 y=%2288%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-weight=%22800%22 font-size=%2246%22 fill=%22%23fff%22%3ESI%3C/text%3E%3C/svg%3E">
+<title>SI² CDM and Ontology</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --navy:#0B1B2B; --bg:#F5F7FA; --surface:#FFFFFF; --fg:#0B1B2B; --muted:#4A5868; --line:#D8DFE7;
+  --accent:#2B4CF2; --accent-ink:#FFFFFF; --accent-soft:#E7ECFE; --shield:#0B1B2B; --shield-text:#FFFFFF;
+  --ok:#0E7C6B; --warn:#A35A00; --na:#7A8794;
+  --font-display:'Sora','Segoe UI',system-ui,sans-serif; --font-body:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#08131F; --surface:#0F2133; --fg:#EEF2F7; --muted:#A3B1C0; --line:#22384E;
+    --accent:#7FA0FF; --accent-ink:#08131F; --accent-soft:#16294A; --shield:#FFFFFF; --shield-text:#0B1B2B;
+    --ok:#4FD1B5; --warn:#F2B35B; --na:#7F8FA0; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#08131F; --surface:#0F2133; --fg:#EEF2F7; --muted:#A3B1C0; --line:#22384E;
+  --accent:#7FA0FF; --accent-ink:#08131F; --accent-soft:#16294A; --shield:#FFFFFF; --shield-text:#0B1B2B;
+  --ok:#4FD1B5; --warn:#F2B35B; --na:#7F8FA0; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:16px;line-height:1.6}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:24px}
+h1,h2,h3,h4{font-family:var(--font-display);text-wrap:balance;margin:0;line-height:1.15}
+p{margin:0}
+a{color:var(--accent)}
+code,.mono{font-family:var(--font-mono);font-size:.9em}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:4px}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+header.site{border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:0;z-index:5}
+header.site .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--fg)}
+.brand b{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:-.01em}
+.brand sup{color:var(--accent);font-size:13px}
+nav.links{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+nav.links a{color:var(--muted);text-decoration:none;font-size:15px}
+nav.links a:hover,nav.links a[aria-current]{color:var(--fg)}
+nav.links a[aria-current]{font-weight:600}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:8px;border:1px solid transparent;font:600 15px var(--font-body);cursor:pointer;text-decoration:none}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;border-color:var(--line);color:var(--fg)}
+.btn.ghost:hover{border-color:var(--accent)}
+nav.links .btn{color:var(--accent-ink)}
+.hero .wrap{padding-block:64px 48px;display:flex;flex-direction:column;gap:18px}
+.hero h1{font-size:clamp(32px,4.8vw,52px);font-weight:800;letter-spacing:-.02em;max-width:22ch}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .lede{font-size:19px;color:var(--muted);max-width:66ch}
+.hero .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+section.block{padding-block:56px;border-top:1px solid var(--line)}
+.block-head{display:flex;flex-direction:column;gap:10px;max-width:66ch;margin-bottom:28px}
+.block-head h2{font-size:clamp(24px,3.2vw,34px);font-weight:700}
+.block-head p{color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.stat{background:var(--surface);padding:20px 22px}
+.stat b{display:block;font-family:var(--font-display);font-size:28px;font-weight:800;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:14px}
+
+/* one store, two projections */
+.store{display:grid;grid-template-columns:minmax(0,1fr) 56px minmax(0,1.1fr) 56px minmax(0,1fr);align-items:stretch;gap:0}
+.store .box{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:10px}
+.store .box.center{border:2px solid var(--accent);background:var(--accent-soft)}
+.store h3{font-size:18px}
+.store ul{margin:0;padding-left:18px;color:var(--muted);font-size:15px;display:flex;flex-direction:column;gap:4px}
+.store .arrow{display:flex;align-items:center;justify-content:center;color:var(--accent)}
+.store .outs{display:flex;flex-direction:column;gap:12px}
+.store .outs .box{flex:1}
+.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;list-style:none;padding:0;margin:28px 0 0}
+.flow li{background:var(--surface);padding:20px;display:flex;flex-direction:column;gap:6px}
+.flow .n{font-family:var(--font-mono);font-size:13px;color:var(--accent)}
+.flow h3{font-size:16px}
+.flow p{color:var(--muted);font-size:14px}
+
+/* keys */
+table.t{width:100%;border-collapse:collapse;font-size:15px;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.t th,.t td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+.t thead th{font:600 12px var(--font-body);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;background:var(--bg)}
+.t tr:last-child td{border-bottom:0}
+.t td.k{font-family:var(--font-mono);font-size:14px;color:var(--accent);white-space:nowrap}
+.scroll{overflow-x:auto;border-radius:12px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:28px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px}
+.card h3{font-size:17px}
+.card .tag{font-family:var(--font-mono);font-size:12px;color:var(--accent)}
+.card ul{margin:0;padding-left:18px;font-size:14.5px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+.card ul b{color:var(--fg);font-weight:600}
+.rule{margin-top:28px;border-left:3px solid var(--accent);background:var(--surface);padding:16px 20px;border-radius:0 12px 12px 0;display:flex;flex-direction:column;gap:6px}
+.rule p{color:var(--muted);font-size:15px}
+
+/* resolver */
+.resolver{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:18px}
+.ctl{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.ctl label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--muted);min-width:0}
+select{width:100%;min-height:44px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);font:15px var(--font-body)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:2px 10px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.pill.req{color:var(--ok)} .pill.opt{color:var(--muted)} .pill.na{color:var(--na);border-style:dashed}
+tr.na td{color:var(--na)}
+tr.changed td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+.summary{font-size:15px}
+.summary b{font-variant-numeric:tabular-nums}
+
+/* lob tabs */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tabs button{min-height:42px;padding:0 16px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--fg);font:500 15px var(--font-body);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+:root[data-theme="dark"] .tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}}
+.lob{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.lob .card.full{grid-column:1 / -1}
+.lob ol{margin:0;padding-left:20px;font-size:14.5px;display:flex;flex-direction:column;gap:6px}
+.lob ol code{color:var(--muted)}
+.t.small{font-size:13.5px}
+.t.small th,.t.small td{padding:8px 10px;white-space:nowrap}
+#restable td:last-child{white-space:normal;min-width:240px}
+
+/* downloads */
+.dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.dl a.file{display:flex;gap:16px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;text-decoration:none;color:var(--fg)}
+.dl a.file:hover{border-color:var(--accent)}
+.dl .ext{flex:none;font-family:var(--font-mono);font-size:12px;font-weight:500;width:56px;height:56px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--accent-soft);color:var(--accent)}
+.dl h3{font-size:16px;margin-bottom:4px}
+.dl p{color:var(--muted);font-size:14px}
+.dl .size{font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-top:6px}
+.dl a.file.all{grid-column:1 / -1;border:2px solid var(--accent)}
+.gov{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.gov .card.mand{border-left:4px solid var(--warn)}
+.gov .card.rel{border-left:4px solid var(--ok)}
+footer{border-top:1px solid var(--line);padding-block:32px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.fine{font-size:13px;color:var(--muted);margin-top:8px}
+@media (max-width:900px){
+  .store{grid-template-columns:minmax(0,1fr)}
+  .store .arrow{height:36px;transform:rotate(90deg)}
+  .flow,.ctl{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:640px){
+  .wrap{padding-inline:16px}
+  nav.links a:not(.btn):not([aria-current]){display:none}
+  .stats,.flow,.ctl,.cards,.lob,.dl,.gov{grid-template-columns:minmax(0,1fr)}
+  .t{font-size:14px}
+  .t th,.t td{padding:9px 10px}
+  .hide-sm{display:none}
+}
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="SI² home">
+      <svg width="30" height="34" viewBox="0 0 120 136" aria-hidden="true">
+        <path d="M60 6 L110 24 V64 C110 97 88 119 60 130 C32 119 10 97 10 64 V24 Z" fill="var(--shield)"></path>
+        <text x="55" y="88" text-anchor="middle" font-family="Sora, Arial, sans-serif" font-weight="800" font-size="46" fill="var(--shield-text)">SI</text>
+      </svg>
+      <b>SI<sup>2</sup></b>
+    </a>
+    <nav class="links" aria-label="Main">
+      <a href="index.html#roles">For every role</a>
+      <a href="index.html#solutions">Solutions</a>
+      <a href="cdm-ontology.html" aria-current="page">CDM &amp; Ontology</a>
+      <a href="index.html#demos">Demos</a>
+      <a class="btn primary" href="#downloads">Download</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Commercial lines · CDM and ontology</span>
+    <h1>One governed store. <em>The CDM and the ontology</em> at the same time.</h1>
+    <p class="lede">Every field an insurer uses varies by country, state, company, line, product, object and module. SI² records each data element once, scopes it with a context key, has a subject-matter expert approve it, and generates the canonical data model and the ontology from that same store, so the two can never drift apart.</p>
+    <div class="cta">
+      <a class="btn primary" href="#downloads">Download the CDM and ontology</a>
+      <a class="btn ghost" href="#keys">See how the keys work</a>
+    </div>
+  </div>
+</section>
+
+<section class="block" aria-label="What is in the model">
+  <div class="wrap">
+    <div class="stats" id="stats"></div>
+    <p class="fine">Commercial Property, Workers' Compensation, General Liability and Commercial Auto, with a few synthetic policies, claims and cessions for each line. Codes, rates and data are illustrative.</p>
+  </div>
+</section>
+
+<section class="block" id="how">
+  <div class="wrap">
+    <div class="block-head">
+      <span class="eyebrow">How it is generated</span>
+      <h2>One store, two projections</h2>
+      <p>The CDM and the ontology are not built by two teams. They are two outputs of one table set: objects, elements, scopes, pick lists, rules and rating steps. Change a row once and both outputs change together.</p>
+    </div>
+    <div class="store">
+      <div class="box">
+        <span class="eyebrow">Collect</span>
+        <h3>Every source, every name</h3>
+        <ul>
+          <li>Standards: ACORD forms, IBM data models, ISO and NCCI statistical plans</li>
+          <li>Policy systems: Guidewire, Duck Creek, legacy COBOL / DB2, home-built</li>
+          <li>Agency management system exports, billing, claims, reinsurance, finance</li>
+        </ul>
+      </div>
+      <div class="arrow" aria-hidden="true"><svg width="40" height="20" viewBox="0 0 40 20"><path d="M2 10h32M26 3l8 7-8 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="box center">
+        <span class="eyebrow">The governed store</span>
+        <h3>One row per meaning</h3>
+        <ul>
+          <li><b>Objects</b> and relations (Policy, Location, Building, Vehicle, Driver, Class …)</li>
+          <li><b>Elements</b> with definition, type and the synonyms each system uses</li>
+          <li><b>Applicability</b> by context key: required, optional or not applicable, defaults, labels</li>
+          <li><b>Pick lists</b> and options, each option scoped where it applies</li>
+          <li><b>Rules</b> and <b>rating steps</b> that reference elements by code</li>
+          <li>SME approval, effective dates and history on every row</li>
+        </ul>
+      </div>
+      <div class="arrow" aria-hidden="true"><svg width="40" height="20" viewBox="0 0 40 20"><path d="M2 10h32M26 3l8 7-8 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="outs">
+        <div class="box">
+          <span class="eyebrow">Projection 1</span>
+          <h3>Canonical data model</h3>
+          <ul><li>Entity tables and SQL Server DDL</li><li>Workbook and CSV for analysts</li><li>Resolve function for any context</li></ul>
+        </div>
+        <div class="box">
+          <span class="eyebrow">Projection 2</span>
+          <h3>Ontology</h3>
+          <ul><li>OWL classes and properties</li><li>SKOS pick lists and synonyms</li><li>Turtle and JSON-LD for graphs and AI</li></ul>
+        </div>
+      </div>
+    </div>
+    <ol class="flow">
+      <li><span class="n">01</span><h3>Design the template</h3><p>Agree the objects, the context key and the columns every element must have.</p></li>
+      <li><span class="n">02</span><h3>Collect elements</h3><p>Load field lists from standards and every company system, including legacy.</p></li>
+      <li><span class="n">03</span><h3>SI² proposes</h3><p>Matches synonyms to one element, suggests scopes, pick lists and rules.</p></li>
+      <li><span class="n">04</span><h3>SME approves by key</h3><p>An expert approves each element in each country, state, company and line. A second person signs off.</p></li>
+      <li><span class="n">05</span><h3>Publish both</h3><p>The CDM and the ontology are generated together and versioned as one release.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="block" id="keys">
+  <div class="wrap">
+    <div class="block-head">
+      <span class="eyebrow">The context key</span>
+      <h2>Why the keys matter</h2>
+      <p>A field is not simply "required". It is required <em>for</em> a country, a state, a writing company, a line, a product edition, an object and a module, from a date. The context key records exactly that. A star (<code>*</code>) means "all", and the most specific matching row wins.</p>
+    </div>
+    <div class="scroll"><table class="t" id="keytable">
+      <thead><tr><th>Key</th><th>Meaning</th><th class="hide-sm">Examples</th><th>Why it matters</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+
+    <div class="cards">
+      <div class="card">
+        <span class="tag">country</span><h3>By country</h3>
+        <ul>
+          <li><b>United States:</b> states, ZIP codes, FEIN, private workers' comp in most states.</li>
+          <li><b>Canada:</b> provinces, postal codes, business number instead of FEIN; workers' comp is provided by provincial boards, so the WC class is not applicable.</li>
+          <li><b>Great Britain:</b> no states, postcodes, and employers' liability is compulsory.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag">state</span><h3>By state: property and auto</h3>
+        <ul>
+          <li><b>Florida, Texas:</b> named-storm or windstorm percentage deductible required; Florida also needs the flood zone.</li>
+          <li><b>California:</b> earthquake percentage deductible.</li>
+          <li><b>Florida, New York, Michigan, New Jersey:</b> no-fault personal injury protection on commercial auto.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag">state</span><h3>By state: workers' comp and liability</h3>
+        <ul>
+          <li><b>Ohio, Washington, North Dakota, Wyoming:</b> monopolistic state funds, so no private class payroll (stop-gap employers' liability only).</li>
+          <li><b>California, New York, New Jersey, Pennsylvania:</b> independent bureaus instead of NCCI.</li>
+          <li><b>New York:</b> contractors must answer the Labor Law 240/241 exposure question.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag">company</span><h3>By writing company</h3>
+        <ul>
+          <li><b>Admitted paper:</b> filed rates and forms; no surplus lines tax.</li>
+          <li><b>Excess and surplus paper:</b> surplus lines tax always, stamping fee in states with a stamping office (for example Texas, New York, California).</li>
+          <li>Each company in a group can carry its own pick-list options and rules.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag">lob · product</span><h3>By line and product edition</h3>
+        <ul>
+          <li><b>General liability claims-made</b> product needs a retroactive date; occurrence forms do not.</li>
+          <li><b>Commercial property</b> uses construction class, protection class and roof year; the other lines do not.</li>
+          <li>Old policies keep the product edition they were written on.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag">object · module · dates</span><h3>By object, module and date</h3>
+        <ul>
+          <li><b>Object:</b> an element belongs to one object (Building, Vehicle, Driver, Class) wherever it is used.</li>
+          <li><b>Module:</b> claims needs the injured worker's average weekly wage; finance needs the annual statement line; claims does not need the FEIN.</li>
+          <li><b>Dates:</b> nothing is deleted; a change ends one row and starts the next.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rule">
+      <h3>Most specific wins</h3>
+      <p>For a Florida commercial property policy, the row <code>state=FL, lob=CP</code> beats the row <code>lob=CP</code>, which beats the base definition. Specificity counts the keys that are not <code>*</code>. The same rule runs in SQL (<code>cdm.fn_ResolveElement</code>), in the ontology (each applicability is an individual carrying its key) and in the resolver below.</p>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="resolver">
+  <div class="wrap">
+    <div class="block-head">
+      <span class="eyebrow">Try it</span>
+      <h2>Resolve the model for a context</h2>
+      <p>Pick a context. Every element is resolved against the store: required, optional or not applicable, with its default, the label for that context and the scope that decided it. Rows marked with a blue edge differ from the base definition.</p>
+    </div>
+    <div class="resolver">
+      <div class="ctl">
+        <label>Country<select id="c-country"><option value="US">United States</option><option value="CA">Canada</option><option value="GB">Great Britain</option></select></label>
+        <label>State / province<select id="c-state"></select></label>
+        <label>Company<select id="c-company"><option value="SI2-ADM">SI² admitted</option><option value="SI2-ES">SI² excess &amp; surplus</option></select></label>
+        <label>Line of business<select id="c-lob"><option value="CP">Commercial Property</option><option value="WC">Workers' Compensation</option><option value="GL">General Liability</option><option value="CA">Commercial Auto</option></select></label>
+        <label>Module<select id="c-module"><option>Policy</option><option>Billing</option><option>Claims</option><option>Reinsurance</option><option>Finance</option><option>Reporting</option></select></label>
+      </div>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--muted);max-width:420px">Product edition<select id="c-product"></select></label>
+      <div class="legend"><span><span class="pill req">Required</span></span><span><span class="pill opt">Optional</span></span><span><span class="pill na">Not applicable</span></span><span id="summary" class="summary" aria-live="polite"></span></div>
+      <div class="scroll"><table class="t small" id="restable">
+        <thead><tr><th>Element</th><th>Label in this context</th><th>Object</th><th>Status</th><th>Default</th><th>Decided by</th><th class="hide-sm">Reason</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="lines">
+  <div class="wrap">
+    <div class="block-head">
+      <span class="eyebrow">Lines of business</span>
+      <h2>Commercial Property, Workers' Comp, General Liability, Commercial Auto</h2>
+      <p>For each line: the objects it uses, its distinctive elements, the rules and the rating steps, and a few synthetic records generated from the model. The rules ran on the synthetic data; their findings are listed.</p>
+    </div>
+    <div class="tabs" role="tablist" id="lobtabs"></div>
+    <div id="lobpanel" role="tabpanel"></div>
+  </div>
+</section>
+
+<section class="block" id="downloads">
+  <div class="wrap">
+    <div class="block-head">
+      <span class="eyebrow">Downloads</span>
+      <h2>Download the CDM and the ontology</h2>
+      <p>Generated in one run from the same store (version 2026.10). Load the SQL script into SQL Server, open the workbook in Excel, or load the Turtle file into any graph tool such as Protégé, GraphDB or Neo4j.</p>
+    </div>
+    <div class="dl" id="dl"></div>
+  </div>
+</section>
+
+<section class="block" id="governance">
+  <div class="wrap">
+    <div class="block-head">
+      <span class="eyebrow">Keeping it current</span>
+      <h2>When a source system changes</h2>
+      <p>SI² watches every connected source. A new field in Guidewire, a new class code from a bureau, a new ACORD form version or a changed legacy copybook becomes a proposed change to the store, and both outputs follow.</p>
+    </div>
+    <div class="gov">
+      <div class="card mand">
+        <span class="tag">Mandatory alert</span><h3>Act now</h3>
+        <ul>
+          <li>Regulatory or bureau changes with an effective date: a new state rule, class code or statistical plan edition.</li>
+          <li>A change that breaks a mapping in production.</li>
+          <li>The owner is alerted and the change is tracked to closure by its due date.</li>
+        </ul>
+      </div>
+      <div class="card rel">
+        <span class="tag">Release approval</span><h3>Bundle and approve</h3>
+        <ul>
+          <li>New optional fields, new synonyms, label changes, new pick-list options.</li>
+          <li>Grouped into a release; an SME approves and a second person signs off.</li>
+          <li>The CDM and the ontology are published together with the release number.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 SI² · si2insure.com</span>
+    <span><a href="index.html">Back to the home page</a></span>
+  </div>
+  <div class="wrap"><p class="fine">All data on this page and in the downloads is synthetic. Codes, rates, factors and rules are illustrative and simplified; verify against the manuals and filings your company licenses. SI² is independent and is not affiliated with, endorsed or sponsored by ISO / Verisk, NCCI, the state rating bureaus, ACORD, IBM, Guidewire, Duck Creek or any software vendor; their names describe formats SI² works with.</p></div>
+</footer>
+
+<script>
+const D = {"stats": [[4, "commercial lines"], [16, "objects"], [86, "data elements"], [47, "scoped applicability rows"], ["24 / 111", "pick lists / options"], [15, "business rules"], [17, "rating steps"], [3160, "ontology triples"]], "keys": [["country", "Country of the risk or contract", "US, CA (Canada), GB", "Laws, currency, address format and which lines exist (no private workers' comp in Canada; employers' liability compulsory in Great Britain)."], ["state", "State, province or territory", "FL, TX, CA, NY, NJ, PA, OH, WA, ON ...", "Filed rates, forms, mandatory coverages, bureaus. Most variation lives here."], ["company", "Writing company / paper", "SI2-ADM (admitted), SI2-ES (excess & surplus)", "Admitted paper follows filed rates and forms; E&S adds surplus lines tax and stamping fees and is not rate-filed in most states."], ["line", "Personal or commercial line", "Commercial", "Separates personal from commercial vocabularies."], ["lob", "Line of business", "CP, WC, GL, CA", "Which coverages, objects and rating apply."], ["product", "Product and form edition", "CP-Std 2025, GL-Contractors 2025 ...", "Products change by edition; old policies keep the edition they were written on."], ["object", "Risk object the element describes", "Location, Building, Vehicle, Driver, Class, Coverage, Party", "An element belongs to one object, wherever it is used."], ["module", "Where the element is used", "Policy, Billing, Claims, Reinsurance, Finance, Reporting", "Same meaning in every module; applicability and requiredness can differ."], ["effective_from / effective_to", "Effective dates", "2025-01-01 .. 9999-12-31", "Nothing is deleted: a change ends one row and starts another."]], "elements": [{"element_code": "POLICY_NUMBER", "name": "Policy number", "object": "Policy", "lobs": "*", "modules": "Policy,Billing,Claims,Reinsurance,Finance,Reporting", "base_required": "Y", "code": "POLICY_NUMBER"}, {"element_code": "POLICY_EFFECTIVE_DATE", "name": "Policy effective date", "object": "Policy", "lobs": "*", "modules": "Policy,Billing,Claims,Reporting", "base_required": "Y", "code": "POLICY_EFFECTIVE_DATE"}, {"element_code": "POLICY_EXPIRATION_DATE", "name": "Policy expiration date", "object": "Policy", "lobs": "*", "modules": "Policy,Billing,Claims,Reporting", "base_required": "Y", "code": "POLICY_EXPIRATION_DATE"}, {"element_code": "LINE_OF_BUSINESS", "name": "Line of business", "object": "Policy", "lobs": "*", "modules": "Policy,Billing,Claims,Reinsurance,Finance,Reporting", "base_required": "Y", "code": "LINE_OF_BUSINESS"}, {"element_code": "WRITING_COMPANY", "name": "Writing company", "object": "Policy", "lobs": "*", "modules": "Policy,Billing,Finance,Reporting", "base_required": "Y", "code": "WRITING_COMPANY"}, {"element_code": "PRODUCT_CODE", "name": "Product and edition", "object": "Policy", "lobs": "*", "modules": "Policy,Reporting", "base_required": "Y", "code": "PRODUCT_CODE"}, {"element_code": "TRANSACTION_TYPE", "name": "Transaction type", "object": "PolicyTransaction", "lobs": "*", "modules": "Policy,Billing,Reporting", "base_required": "Y", "code": "TRANSACTION_TYPE"}, {"element_code": "TRANSACTION_EFFECTIVE_DATE", "name": "Transaction effective date", "object": "PolicyTransaction", "lobs": "*", "modules": "Policy,Billing,Reporting", "base_required": "Y", "code": "TRANSACTION_EFFECTIVE_DATE"}, {"element_code": "NAMED_INSURED_NAME", "name": "Named insured name", "object": "Party", "lobs": "*", "modules": "Policy,Billing,Claims", "base_required": "Y", "code": "NAMED_INSURED_NAME"}, {"element_code": "FEIN", "name": "Federal employer ID number", "object": "Party", "lobs": "*", "modules": "Policy,Billing,Reporting", "base_required": "N", "code": "FEIN"}, {"element_code": "LEGAL_ENTITY_TYPE", "name": "Legal entity type", "object": "Party", "lobs": "*", "modules": "Policy", "base_required": "Y", "code": "LEGAL_ENTITY_TYPE"}, {"element_code": "NAICS_CODE", "name": "NAICS code", "object": "Party", "lobs": "*", "modules": "Policy,Reporting", "base_required": "N", "code": "NAICS_CODE"}, {"element_code": "PRODUCER_CODE", "name": "Producer code", "object": "Producer", "lobs": "*", "modules": "Policy,Billing,Finance", "base_required": "Y", "code": "PRODUCER_CODE"}, {"element_code": "COMMISSION_RATE", "name": "Commission rate", "object": "Producer", "lobs": "*", "modules": "Billing,Finance", "base_required": "N", "code": "COMMISSION_RATE"}, {"element_code": "SURPLUS_LINES_TAX", "name": "Surplus lines tax", "object": "Premium", "lobs": "*", "modules": "Policy,Billing,Finance", "base_required": "N", "code": "SURPLUS_LINES_TAX"}, {"element_code": "STAMPING_FEE", "name": "Stamping office fee", "object": "Premium", "lobs": "*", "modules": "Policy,Billing,Finance", "base_required": "N", "code": "STAMPING_FEE"}, {"element_code": "WRITTEN_PREMIUM", "name": "Written premium", "object": "Premium", "lobs": "*", "modules": "Policy,Billing,Reinsurance,Finance,Reporting", "base_required": "Y", "code": "WRITTEN_PREMIUM"}, {"element_code": "PAYMENT_PLAN", "name": "Payment plan", "object": "BillingAccount", "lobs": "*", "modules": "Billing", "base_required": "Y", "code": "PAYMENT_PLAN"}, {"element_code": "LOCATION_ADDRESS", "name": "Location address", "object": "Location", "lobs": "*", "modules": "Policy,Claims", "base_required": "Y", "code": "LOCATION_ADDRESS"}, {"element_code": "STATE", "name": "State / province", "object": "Location", "lobs": "*", "modules": "Policy,Billing,Claims,Reporting", "base_required": "Y", "code": "STATE"}, {"element_code": "POSTAL_CODE", "name": "Postal code", "object": "Location", "lobs": "*", "modules": "Policy,Claims,Reporting", "base_required": "Y", "code": "POSTAL_CODE"}, {"element_code": "TERRITORY", "name": "Rating territory", "object": "Location", "lobs": "CP,GL,CA", "modules": "Policy,Reporting", "base_required": "N", "code": "TERRITORY"}, {"element_code": "CONSTRUCTION_CLASS", "name": "Construction class", "object": "Building", "lobs": "CP", "modules": "Policy,Reporting", "base_required": "Y", "code": "CONSTRUCTION_CLASS"}, {"element_code": "YEAR_BUILT", "name": "Year built", "object": "Building", "lobs": "CP", "modules": "Policy", "base_required": "Y", "code": "YEAR_BUILT"}, {"element_code": "ROOF_YEAR", "name": "Roof year", "object": "Building", "lobs": "CP", "modules": "Policy,Claims", "base_required": "N", "code": "ROOF_YEAR"}, {"element_code": "SQUARE_FEET", "name": "Square feet", "object": "Building", "lobs": "CP,GL", "modules": "Policy", "base_required": "Y", "code": "SQUARE_FEET"}, {"element_code": "STORIES", "name": "Number of stories", "object": "Building", "lobs": "CP", "modules": "Policy", "base_required": "N", "code": "STORIES"}, {"element_code": "PROTECTION_CLASS", "name": "Public protection class", "object": "Building", "lobs": "CP", "modules": "Policy,Reporting", "base_required": "Y", "code": "PROTECTION_CLASS"}, {"element_code": "SPRINKLER", "name": "Sprinkler protection", "object": "Building", "lobs": "CP", "modules": "Policy", "base_required": "N", "code": "SPRINKLER"}, {"element_code": "BUILDING_LIMIT", "name": "Building limit", "object": "Coverage", "lobs": "CP", "modules": "Policy,Claims,Reinsurance", "base_required": "Y", "code": "BUILDING_LIMIT"}, {"element_code": "BPP_LIMIT", "name": "Business personal property limit", "object": "Coverage", "lobs": "CP", "modules": "Policy,Claims,Reinsurance", "base_required": "N", "code": "BPP_LIMIT"}, {"element_code": "BUSINESS_INCOME_LIMIT", "name": "Business income limit", "object": "Coverage", "lobs": "CP", "modules": "Policy,Claims", "base_required": "N", "code": "BUSINESS_INCOME_LIMIT"}, {"element_code": "CAUSES_OF_LOSS_FORM", "name": "Causes of loss form", "object": "Coverage", "lobs": "CP", "modules": "Policy,Claims", "base_required": "Y", "code": "CAUSES_OF_LOSS_FORM"}, {"element_code": "VALUATION", "name": "Valuation", "object": "Coverage", "lobs": "CP", "modules": "Policy,Claims", "base_required": "Y", "code": "VALUATION"}, {"element_code": "COINSURANCE", "name": "Coinsurance", "object": "Coverage", "lobs": "CP", "modules": "Policy,Claims", "base_required": "Y", "code": "COINSURANCE"}, {"element_code": "DEDUCTIBLE_TYPE", "name": "Deductible type", "object": "Coverage", "lobs": "CP", "modules": "Policy,Claims", "base_required": "Y", "code": "DEDUCTIBLE_TYPE"}, {"element_code": "DEDUCTIBLE_AMOUNT", "name": "Deductible amount", "object": "Coverage", "lobs": "CP,CA,GL", "modules": "Policy,Claims", "base_required": "N", "code": "DEDUCTIBLE_AMOUNT"}, {"element_code": "WIND_DEDUCTIBLE_PCT", "name": "Named storm / windstorm deductible %", "object": "Coverage", "lobs": "CP", "modules": "Policy,Claims", "base_required": "N", "code": "WIND_DEDUCTIBLE_PCT"}, {"element_code": "EQ_DEDUCTIBLE_PCT", "name": "Earthquake deductible %", "object": "Coverage", "lobs": "CP", "modules": "Policy,Claims", "base_required": "N", "code": "EQ_DEDUCTIBLE_PCT"}, {"element_code": "FLOOD_ZONE", "name": "Flood zone", "object": "Location", "lobs": "CP", "modules": "Policy,Reinsurance", "base_required": "N", "code": "FLOOD_ZONE"}, {"element_code": "WC_CLASS_CODE", "name": "WC classification code", "object": "Classification", "lobs": "WC", "modules": "Policy,Reporting", "base_required": "Y", "code": "WC_CLASS_CODE"}, {"element_code": "ESTIMATED_PAYROLL", "name": "Estimated annual payroll", "object": "Classification", "lobs": "WC,GL", "modules": "Policy,Billing,Reporting", "base_required": "Y", "code": "ESTIMATED_PAYROLL"}, {"element_code": "AUDITED_PAYROLL", "name": "Audited payroll", "object": "Classification", "lobs": "WC,GL", "modules": "Policy,Billing,Reporting", "base_required": "N", "code": "AUDITED_PAYROLL"}, {"element_code": "EXPERIENCE_MOD", "name": "Experience modification", "object": "StateCoverage", "lobs": "WC", "modules": "Policy,Reporting", "base_required": "N", "code": "EXPERIENCE_MOD"}, {"element_code": "WC_PART3_TYPE", "name": "State coverage type", "object": "StateCoverage", "lobs": "WC", "modules": "Policy", "base_required": "Y", "code": "WC_PART3_TYPE"}, {"element_code": "WC_BUREAU", "name": "WC rating / data bureau", "object": "StateCoverage", "lobs": "WC", "modules": "Policy,Reporting", "base_required": "N", "code": "WC_BUREAU"}, {"element_code": "EL_LIMIT_EACH_ACCIDENT", "name": "Employers liability - each accident", "object": "Coverage", "lobs": "WC", "modules": "Policy,Claims", "base_required": "Y", "code": "EL_LIMIT_EACH_ACCIDENT"}, {"element_code": "EL_LIMIT_DISEASE_POLICY", "name": "Employers liability - disease policy limit", "object": "Coverage", "lobs": "WC", "modules": "Policy,Claims", "base_required": "Y", "code": "EL_LIMIT_DISEASE_POLICY"}, {"element_code": "EL_LIMIT_DISEASE_EMPLOYEE", "name": "Employers liability - disease each employee", "object": "Coverage", "lobs": "WC", "modules": "Policy,Claims", "base_required": "Y", "code": "EL_LIMIT_DISEASE_EMPLOYEE"}, {"element_code": "FULL_TIME_EMPLOYEES", "name": "Number of full-time employees", "object": "Classification", "lobs": "WC", "modules": "Policy", "base_required": "N", "code": "FULL_TIME_EMPLOYEES"}, {"element_code": "GL_CLASS_CODE", "name": "GL classification", "object": "Classification", "lobs": "GL", "modules": "Policy,Reporting", "base_required": "Y", "code": "GL_CLASS_CODE"}, {"element_code": "GL_PREMIUM_BASIS", "name": "Premium basis", "object": "Classification", "lobs": "GL", "modules": "Policy,Billing,Reporting", "base_required": "Y", "code": "GL_PREMIUM_BASIS"}, {"element_code": "GL_EXPOSURE", "name": "Exposure amount", "object": "Classification", "lobs": "GL", "modules": "Policy,Billing,Reporting", "base_required": "Y", "code": "GL_EXPOSURE"}, {"element_code": "GL_COVERAGE_FORM", "name": "Coverage form", "object": "Coverage", "lobs": "GL", "modules": "Policy,Claims,Reporting", "base_required": "Y", "code": "GL_COVERAGE_FORM"}, {"element_code": "RETROACTIVE_DATE", "name": "Retroactive date", "object": "Coverage", "lobs": "GL", "modules": "Policy,Claims", "base_required": "N", "code": "RETROACTIVE_DATE"}, {"element_code": "EACH_OCCURRENCE_LIMIT", "name": "Each occurrence limit", "object": "Coverage", "lobs": "GL", "modules": "Policy,Claims,Reinsurance", "base_required": "Y", "code": "EACH_OCCURRENCE_LIMIT"}, {"element_code": "GENERAL_AGGREGATE_LIMIT", "name": "General aggregate limit", "object": "Coverage", "lobs": "GL", "modules": "Policy,Claims,Reinsurance", "base_required": "Y", "code": "GENERAL_AGGREGATE_LIMIT"}, {"element_code": "PRODUCTS_AGGREGATE_LIMIT", "name": "Products-completed operations aggregate", "object": "Coverage", "lobs": "GL", "modules": "Policy,Claims", "base_required": "Y", "code": "PRODUCTS_AGGREGATE_LIMIT"}, {"element_code": "PERSONAL_ADV_INJURY_LIMIT", "name": "Personal and advertising injury limit", "object": "Coverage", "lobs": "GL", "modules": "Policy,Claims", "base_required": "N", "code": "PERSONAL_ADV_INJURY_LIMIT"}, {"element_code": "SUBCONTRACTOR_COST", "name": "Subcontracted work cost", "object": "Classification", "lobs": "GL", "modules": "Policy,Billing", "base_required": "N", "code": "SUBCONTRACTOR_COST"}, {"element_code": "NY_LABOR_LAW_EXPOSURE", "name": "New York Labor Law exposure", "object": "Classification", "lobs": "GL", "modules": "Policy,Claims", "base_required": "N", "code": "NY_LABOR_LAW_EXPOSURE"}, {"element_code": "VIN", "name": "Vehicle identification number", "object": "Vehicle", "lobs": "CA", "modules": "Policy,Claims", "base_required": "Y", "code": "VIN"}, {"element_code": "VEHICLE_YEAR", "name": "Model year", "object": "Vehicle", "lobs": "CA", "modules": "Policy", "base_required": "Y", "code": "VEHICLE_YEAR"}, {"element_code": "VEHICLE_TYPE", "name": "Vehicle type", "object": "Vehicle", "lobs": "CA", "modules": "Policy,Reporting", "base_required": "Y", "code": "VEHICLE_TYPE"}, {"element_code": "GVW", "name": "Gross vehicle weight", "object": "Vehicle", "lobs": "CA", "modules": "Policy", "base_required": "N", "code": "GVW"}, {"element_code": "RADIUS_CLASS", "name": "Radius of operation", "object": "Vehicle", "lobs": "CA", "modules": "Policy,Reporting", "base_required": "Y", "code": "RADIUS_CLASS"}, {"element_code": "VEHICLE_USE", "name": "Vehicle use", "object": "Vehicle", "lobs": "CA", "modules": "Policy,Reporting", "base_required": "Y", "code": "VEHICLE_USE"}, {"element_code": "GARAGING_ZIP", "name": "Garaging ZIP", "object": "Vehicle", "lobs": "CA", "modules": "Policy,Reporting", "base_required": "Y", "code": "GARAGING_ZIP"}, {"element_code": "COST_NEW", "name": "Cost new", "object": "Vehicle", "lobs": "CA", "modules": "Policy", "base_required": "N", "code": "COST_NEW"}, {"element_code": "AUTO_SYMBOL", "name": "Covered auto symbol", "object": "Coverage", "lobs": "CA", "modules": "Policy,Claims", "base_required": "Y", "code": "AUTO_SYMBOL"}, {"element_code": "CA_LIABILITY_LIMIT", "name": "Auto liability combined single limit", "object": "Coverage", "lobs": "CA", "modules": "Policy,Claims,Reinsurance", "base_required": "Y", "code": "CA_LIABILITY_LIMIT"}, {"element_code": "PIP_LIMIT", "name": "Personal injury protection limit", "object": "Coverage", "lobs": "CA", "modules": "Policy,Claims", "base_required": "N", "code": "PIP_LIMIT"}, {"element_code": "UM_LIMIT", "name": "Uninsured motorists limit", "object": "Coverage", "lobs": "CA", "modules": "Policy,Claims", "base_required": "N", "code": "UM_LIMIT"}, {"element_code": "DRIVER_LICENSE_STATE", "name": "Driver license state", "object": "Driver", "lobs": "CA", "modules": "Policy", "base_required": "Y", "code": "DRIVER_LICENSE_STATE"}, {"element_code": "DRIVER_MVR_POINTS", "name": "MVR points", "object": "Driver", "lobs": "CA", "modules": "Policy", "base_required": "N", "code": "DRIVER_MVR_POINTS"}, {"element_code": "CDL_IND", "name": "Commercial driver's license", "object": "Driver", "lobs": "CA", "modules": "Policy", "base_required": "N", "code": "CDL_IND"}, {"element_code": "CLAIM_NUMBER", "name": "Claim number", "object": "Claim", "lobs": "*", "modules": "Claims,Reinsurance,Finance,Reporting", "base_required": "Y", "code": "CLAIM_NUMBER"}, {"element_code": "LOSS_DATE", "name": "Date of loss", "object": "Claim", "lobs": "*", "modules": "Claims,Reinsurance,Reporting", "base_required": "Y", "code": "LOSS_DATE"}, {"element_code": "CAUSE_OF_LOSS", "name": "Cause of loss", "object": "Claim", "lobs": "*", "modules": "Claims,Reinsurance,Reporting", "base_required": "Y", "code": "CAUSE_OF_LOSS"}, {"element_code": "CLAIM_STATUS", "name": "Claim status", "object": "Claim", "lobs": "*", "modules": "Claims,Reporting", "base_required": "Y", "code": "CLAIM_STATUS"}, {"element_code": "PAID_LOSS", "name": "Paid loss", "object": "ClaimFinancial", "lobs": "*", "modules": "Claims,Reinsurance,Finance,Reporting", "base_required": "Y", "code": "PAID_LOSS"}, {"element_code": "CASE_RESERVE", "name": "Case reserve", "object": "ClaimFinancial", "lobs": "*", "modules": "Claims,Reinsurance,Finance,Reporting", "base_required": "Y", "code": "CASE_RESERVE"}, {"element_code": "INJURED_WORKER_AWW", "name": "Average weekly wage", "object": "Claim", "lobs": "WC", "modules": "Claims,Reporting", "base_required": "N", "code": "INJURED_WORKER_AWW"}, {"element_code": "TREATY_ID", "name": "Treaty", "object": "Cession", "lobs": "*", "modules": "Reinsurance,Finance", "base_required": "N", "code": "TREATY_ID"}, {"element_code": "CEDED_PREMIUM", "name": "Ceded premium", "object": "Cession", "lobs": "*", "modules": "Reinsurance,Finance", "base_required": "N", "code": "CEDED_PREMIUM"}, {"element_code": "ANNUAL_STATEMENT_LINE", "name": "Annual statement line", "object": "Premium", "lobs": "*", "modules": "Finance,Reporting", "base_required": "N", "code": "ANNUAL_STATEMENT_LINE"}], "applic": [{"e": "SURPLUS_LINES_TAX", "s": {"company": "SI2-ES"}, "r": "Y", "d": null, "l": null, "why": "Excess & surplus lines policies pay surplus lines tax."}, {"e": "SURPLUS_LINES_TAX", "s": {"company": "SI2-ADM"}, "r": "NA", "d": null, "l": null, "why": "Admitted paper does not pay surplus lines tax."}, {"e": "STAMPING_FEE", "s": {"company": "SI2-ADM"}, "r": "NA", "d": null, "l": null, "why": "Admitted paper has no stamping fee."}, {"e": "STAMPING_FEE", "s": {"company": "SI2-ES"}, "r": "N", "d": null, "l": null, "why": "Only some states run a stamping office."}, {"e": "STAMPING_FEE", "s": {"company": "SI2-ES", "state": "TX"}, "r": "Y", "d": null, "l": null, "why": "Texas surplus lines stamping office fee."}, {"e": "STAMPING_FEE", "s": {"company": "SI2-ES", "state": "NY"}, "r": "Y", "d": null, "l": null, "why": "New York surplus lines stamping fee."}, {"e": "STAMPING_FEE", "s": {"company": "SI2-ES", "state": "CA"}, "r": "Y", "d": null, "l": null, "why": "California surplus lines stamping fee."}, {"e": "POSTAL_CODE", "s": {"country": "CA"}, "r": "Y", "d": null, "l": "Postal code", "why": "Canadian address format."}, {"e": "POSTAL_CODE", "s": {"country": "GB"}, "r": "Y", "d": null, "l": "Postcode", "why": "UK address format."}, {"e": "STATE", "s": {"country": "CA"}, "r": "Y", "d": null, "l": "Province", "why": "Canada uses provinces."}, {"e": "STATE", "s": {"country": "GB"}, "r": "N", "d": null, "l": "County", "why": "Great Britain has no states."}, {"e": "WC_CLASS_CODE", "s": {"country": "CA", "lob": "WC"}, "r": "NA", "d": null, "l": null, "why": "Workers' compensation in Canada is provided by provincial boards, not private insurers."}, {"e": "FEIN", "s": {"country": "CA"}, "r": "NA", "d": null, "l": "Business number", "why": "Canada uses a CRA business number instead of FEIN."}, {"e": "EL_LIMIT_EACH_ACCIDENT", "s": {"country": "GB", "lob": "WC"}, "r": "Y", "d": "5000000", "l": "Employers' liability limit", "why": "Employers' liability is compulsory in Great Britain."}, {"e": "WIND_DEDUCTIBLE_PCT", "s": {"state": "FL", "lob": "CP"}, "r": "Y", "d": "2", "l": "Hurricane deductible %", "why": "Florida coastal property carries a hurricane percentage deductible."}, {"e": "WIND_DEDUCTIBLE_PCT", "s": {"state": "TX", "lob": "CP"}, "r": "Y", "d": "2", "l": "Windstorm and hail deductible %", "why": "Texas coastal and hail exposure."}, {"e": "WIND_DEDUCTIBLE_PCT", "s": {"lob": "CP"}, "r": "N", "d": null, "l": null, "why": "Optional elsewhere."}, {"e": "EQ_DEDUCTIBLE_PCT", "s": {"state": "CA", "lob": "CP"}, "r": "Y", "d": "10", "l": null, "why": "Earthquake coverage in California carries a percentage deductible."}, {"e": "EQ_DEDUCTIBLE_PCT", "s": {"lob": "CP"}, "r": "N", "d": null, "l": null, "why": "Optional elsewhere."}, {"e": "FLOOD_ZONE", "s": {"state": "FL", "lob": "CP"}, "r": "Y", "d": null, "l": null, "why": "Required for Florida property underwriting and catastrophe modeling."}, {"e": "ROOF_YEAR", "s": {"lob": "CP"}, "r": "Y", "d": null, "l": null, "why": "Roof age drives eligibility and wind / hail rating."}, {"e": "WC_CLASS_CODE", "s": {"state": "OH", "lob": "WC"}, "r": "NA", "d": null, "l": null, "why": "Ohio is a monopolistic state fund state: no private workers' comp (stop-gap employers liability only)."}, {"e": "WC_CLASS_CODE", "s": {"state": "WA", "lob": "WC"}, "r": "NA", "d": null, "l": null, "why": "Washington is a monopolistic state fund state."}, {"e": "WC_CLASS_CODE", "s": {"state": "ND", "lob": "WC"}, "r": "NA", "d": null, "l": null, "why": "North Dakota is a monopolistic state fund state."}, {"e": "WC_CLASS_CODE", "s": {"state": "WY", "lob": "WC"}, "r": "NA", "d": null, "l": null, "why": "Wyoming is a monopolistic state fund state."}, {"e": "WC_BUREAU", "s": {"state": "CA", "lob": "WC"}, "r": "Y", "d": "WCIRB", "l": null, "why": "California classes and statistical reporting follow the WCIRB."}, {"e": "WC_BUREAU", "s": {"state": "NY", "lob": "WC"}, "r": "Y", "d": "NYCIRB", "l": null, "why": "New York follows the NYCIRB."}, {"e": "WC_BUREAU", "s": {"state": "NJ", "lob": "WC"}, "r": "Y", "d": "NJCRIB", "l": null, "why": "New Jersey follows the NJCRIB."}, {"e": "WC_BUREAU", "s": {"state": "PA", "lob": "WC"}, "r": "Y", "d": "PCRB", "l": null, "why": "Pennsylvania follows the PCRB."}, {"e": "WC_BUREAU", "s": {"state": "OH", "lob": "WC"}, "r": "Y", "d": "STATE_FUND", "l": null, "why": "Ohio Bureau of Workers' Compensation (monopolistic)."}, {"e": "WC_BUREAU", "s": {"state": "WA", "lob": "WC"}, "r": "Y", "d": "STATE_FUND", "l": null, "why": "Washington Department of Labor & Industries (monopolistic)."}, {"e": "WC_BUREAU", "s": {"lob": "WC"}, "r": "Y", "d": "NCCI", "l": null, "why": "NCCI states."}, {"e": "EXPERIENCE_MOD", "s": {"lob": "WC"}, "r": "Y", "d": "1.00", "l": null, "why": "Experience rating applies when the risk qualifies."}, {"e": "NY_LABOR_LAW_EXPOSURE", "s": {"state": "NY", "lob": "GL"}, "r": "Y", "d": null, "l": null, "why": "Contractors in New York must answer the Labor Law 240/241 exposure question."}, {"e": "NY_LABOR_LAW_EXPOSURE", "s": {"lob": "GL"}, "r": "NA", "d": null, "l": null, "why": "Not applicable outside New York."}, {"e": "RETROACTIVE_DATE", "s": {"lob": "GL", "product": "GL-ClaimsMade 2025"}, "r": "Y", "d": null, "l": null, "why": "Required on claims-made forms."}, {"e": "RETROACTIVE_DATE", "s": {"lob": "GL"}, "r": "NA", "d": null, "l": null, "why": "Not used on occurrence forms."}, {"e": "PIP_LIMIT", "s": {"state": "FL", "lob": "CA"}, "r": "Y", "d": "10000", "l": null, "why": "Florida no-fault personal injury protection."}, {"e": "PIP_LIMIT", "s": {"state": "NY", "lob": "CA"}, "r": "Y", "d": "50000", "l": null, "why": "New York no-fault (basic economic loss)."}, {"e": "PIP_LIMIT", "s": {"state": "MI", "lob": "CA"}, "r": "Y", "d": null, "l": null, "why": "Michigan no-fault."}, {"e": "PIP_LIMIT", "s": {"state": "NJ", "lob": "CA"}, "r": "Y", "d": null, "l": null, "why": "New Jersey no-fault."}, {"e": "PIP_LIMIT", "s": {"lob": "CA"}, "r": "NA", "d": null, "l": null, "why": "Not a no-fault state."}, {"e": "UM_LIMIT", "s": {"lob": "CA"}, "r": "Y", "d": null, "l": null, "why": "Uninsured motorists is offered in every state; rejection must be documented where allowed."}, {"e": "CDL_IND", "s": {"lob": "CA", "object": "Driver"}, "r": "Y", "d": null, "l": null, "why": "Needed for heavy and extra-heavy trucks."}, {"e": "FEIN", "s": {"module": "Claims"}, "r": "NA", "d": null, "l": null, "why": "Claims does not need the FEIN (data minimization)."}, {"e": "INJURED_WORKER_AWW", "s": {"lob": "WC", "module": "Claims"}, "r": "Y", "d": null, "l": null, "why": "Indemnity benefits are computed from the average weekly wage."}, {"e": "ANNUAL_STATEMENT_LINE", "s": {"module": "Finance"}, "r": "Y", "d": null, "l": null, "why": "Every premium and loss must carry its annual statement line."}], "lobs": {"CP": {"objects": ["Policy", "Party", "Location", "Building", "Coverage", "Premium", "Claim", "Cession"], "elements": [["TERRITORY", "Rating territory", null], ["CONSTRUCTION_CLASS", "Construction class", "CONSTRUCTION"], ["YEAR_BUILT", "Year built", null], ["ROOF_YEAR", "Roof year", null], ["SQUARE_FEET", "Square feet", null], ["STORIES", "Number of stories", null], ["PROTECTION_CLASS", "Public protection class", "PROTECTION_CLASS"], ["SPRINKLER", "Sprinkler protection", "SPRINKLER"], ["BUILDING_LIMIT", "Building limit", null], ["BPP_LIMIT", "Business personal property limit", null], ["BUSINESS_INCOME_LIMIT", "Business income limit", null], ["CAUSES_OF_LOSS_FORM", "Causes of loss form", "CAUSES_OF_LOSS"], ["VALUATION", "Valuation", "VALUATION"], ["COINSURANCE", "Coinsurance", "COINSURANCE"]], "rating": [["Building base premium", "BUILDING_LIMIT / 100 x base rate[CONSTRUCTION_CLASS, PROTECTION_CLASS]"], ["Contents base premium", "BPP_LIMIT / 100 x contents rate[CONSTRUCTION_CLASS, PROTECTION_CLASS]"], ["Causes of loss", "x factor[CAUSES_OF_LOSS_FORM]"], ["Sprinkler credit", "x factor[SPRINKLER]"], ["Deductible credit", "x factor[DEDUCTIBLE_TYPE, DEDUCTIBLE_AMOUNT or WIND_DEDUCTIBLE_PCT]"], ["Territory (state key)", "x factor[STATE, TERRITORY]"]], "rules": [["UW-CP-001", "Roof age limit", "ROOF_YEAR < policy year - 20", "Refer to underwriter"], ["UW-CP-002", "Roof age limit - Florida", "ROOF_YEAR < policy year - 15", "Decline unless roof inspection"], ["UW-CP-003", "Frame high-rise", "CONSTRUCTION_CLASS = 1 AND STORIES > 4", "Decline"], ["UW-CP-004", "Coastal flood zone", "FLOOD_ZONE in (V, VE)", "Refer to catastrophe desk"]], "sample": [{"policy_number": "CPA2026001", "named_insured_name": "Harbor Point Holdings", "country": "US", "state": "FL", "writing_company": "SI2-ADM", "building_id": "BLD0001", "construction_class": "1", "roof_year": 2011, "sprinkler": "FULL", "building_limit": 8100000, "deductible_type": "WIND_PCT", "wind_deductible_pct": 2, "eq_deductible_pct": "", "written_premium": 50654.24, "surplus_lines_tax": ""}, {"policy_number": "CPE2026002", "named_insured_name": "Lone Star Fabrication", "country": "US", "state": "TX", "writing_company": "SI2-ES", "building_id": "BLD0002", "construction_class": "2", "roof_year": 2011, "sprinkler": "NONE", "building_limit": 6600000, "deductible_type": "WIND_PCT", "wind_deductible_pct": 2, "eq_deductible_pct": "", "written_premium": 97466.88, "surplus_lines_tax": 4727.139999999999}, {"policy_number": "CPE2026002", "named_insured_name": "Lone Star Fabrication", "country": "US", "state": "TX", "writing_company": "SI2-ES", "building_id": "BLD0003", "construction_class": "1", "roof_year": 2019, "sprinkler": "FULL", "building_limit": 14700000, "deductible_type": "WIND_PCT", "wind_deductible_pct": 2, "eq_deductible_pct": "", "written_premium": 97466.88, "surplus_lines_tax": 4727.139999999999}, {"policy_number": "CPA2026003", "named_insured_name": "Pacific Crest Foods", "country": "US", "state": "CA", "writing_company": "SI2-ADM", "building_id": "BLD0004", "construction_class": "6", "roof_year": 2012, "sprinkler": "FULL", "building_limit": 5000000, "deductible_type": "EQ_PCT", "wind_deductible_pct": "", "eq_deductible_pct": 10, "written_premium": 28647.36, "surplus_lines_tax": ""}, {"policy_number": "CPA2026004", "named_insured_name": "Empire Ridge Builders", "country": "US", "state": "NY", "writing_company": "SI2-ADM", "building_id": "BLD0005", "construction_class": "6", "roof_year": 2004, "sprinkler": "PART", "building_limit": 3600000, "deductible_type": "FLAT", "wind_deductible_pct": "", "eq_deductible_pct": "", "written_premium": 55977.6, "surplus_lines_tax": ""}, {"policy_number": "CPA2026004", "named_insured_name": "Empire Ridge Builders", "country": "US", "state": "NY", "writing_company": "SI2-ADM", "building_id": "BLD0006", "construction_class": "4", "roof_year": 2014, "sprinkler": "NONE", "building_limit": 6300000, "deductible_type": "FLAT", "wind_deductible_pct": "", "eq_deductible_pct": "", "written_premium": 55977.6, "surplus_lines_tax": ""}, {"policy_number": "CPA2026005", "named_insured_name": "Keystone Plumbing", "country": "CA", "state": "ON", "writing_company": "SI2-ADM", "building_id": "BLD0007", "construction_class": "4", "roof_year": 2006, "sprinkler": "NONE", "building_limit": 11100000, "deductible_type": "FLAT", "wind_deductible_pct": "", "eq_deductible_pct": "", "written_premium": 102076.8, "surplus_lines_tax": ""}, {"policy_number": "CPA2026005", "named_insured_name": "Keystone Plumbing", "country": "CA", "state": "ON", "writing_company": "SI2-ADM", "building_id": "BLD0008", "construction_class": "2", "roof_year": 2023, "sprinkler": "FULL", "building_limit": 8700000, "deductible_type": "FLAT", "wind_deductible_pct": "", "eq_deductible_pct": "", "written_premium": 102076.8, "surplus_lines_tax": ""}], "hits": [["UW-CP-003", "CPA2026001", "Frame building over 4 stories"], ["UW-CP-004", "CPA2026001", "Flood zone VE"], ["UW-CP-001", "CPA2026004", "Roof year 2004 older than 20 years"], ["UW-ES-001", "CPE2026002", "Surplus lines tax 1,756.71 added"], ["UW-ES-001", "CPE2026002", "Surplus lines tax 2,970.43 added"]]}, "WC": {"objects": ["Policy", "Party", "StateCoverage", "Classification", "Coverage", "Premium", "Claim", "BillingAccount"], "elements": [["WC_CLASS_CODE", "WC classification code", "WC_CLASS"], ["ESTIMATED_PAYROLL", "Estimated annual payroll", null], ["AUDITED_PAYROLL", "Audited payroll", null], ["EXPERIENCE_MOD", "Experience modification", null], ["WC_PART3_TYPE", "State coverage type", "WC_PART3"], ["WC_BUREAU", "WC rating / data bureau", "WC_BUREAU"], ["EL_LIMIT_EACH_ACCIDENT", "Employers liability - each accident", null], ["EL_LIMIT_DISEASE_POLICY", "Employers liability - disease policy limit", null], ["EL_LIMIT_DISEASE_EMPLOYEE", "Employers liability - disease each employee", null], ["FULL_TIME_EMPLOYEES", "Number of full-time employees", null], ["INJURED_WORKER_AWW", "Average weekly wage", null]], "rating": [["Manual premium", "sum over classes: ESTIMATED_PAYROLL / 100 x rate[STATE, WC_CLASS_CODE]"], ["Experience rating", "x EXPERIENCE_MOD"], ["Schedule rating", "x (1 + schedule credit/debit, capped by state)"], ["Premium discount and expense constant", "- premium discount[STATE, premium size] + expense constant[STATE]"]], "rules": [["UW-WC-001", "Monopolistic state", "STATE in (OH, WA, ND, WY) AND WC_PART3_TYPE = 3A", "Block: write stop-gap EL only"], ["UW-WC-002", "High experience mod", "EXPERIENCE_MOD > 1.50", "Refer to underwriter"], ["UW-WC-003", "Bureau by state", "WC_BUREAU must equal the state default (CA WCIRB, NY NYCIRB, NJ NJCRIB, PA PCRB, else NCCI)", "Correct before issue"], ["CL-WC-001", "AWW required for indemnity", "indemnity payment AND INJURED_WORKER_AWW is null", "Block payment"]], "sample": [{"policy_number": "WCA2026006", "named_insured_name": "Garden State Logistics", "country": "US", "state": "TX", "wc_bureau": "NCCI", "wc_class_code": "9015", "estimated_payroll": 1600000, "experience_mod": 1.5, "written_premium": 82660}, {"policy_number": "WCA2026006", "named_insured_name": "Garden State Logistics", "country": "US", "state": "TX", "wc_bureau": "NCCI", "wc_class_code": "8810", "estimated_payroll": 1900000, "experience_mod": 1.5, "written_premium": 82660}, {"policy_number": "WCA2026007", "named_insured_name": "Lakeshore Retail Group", "country": "US", "state": "CA", "wc_bureau": "WCIRB", "wc_class_code": "5645", "estimated_payroll": 650000, "experience_mod": 0.94, "written_premium": 53740}, {"policy_number": "WCA2026007", "named_insured_name": "Lakeshore Retail Group", "country": "US", "state": "CA", "wc_bureau": "WCIRB", "wc_class_code": "8742", "estimated_payroll": 500000, "experience_mod": 0.94, "written_premium": 53740}, {"policy_number": "WCA2026008", "named_insured_name": "Peachtree Couriers", "country": "US", "state": "NY", "wc_bureau": "NYCIRB", "wc_class_code": "9015", "estimated_payroll": 350000, "experience_mod": 1.58, "written_premium": 38585.6}, {"policy_number": "WCA2026008", "named_insured_name": "Peachtree Couriers", "country": "US", "state": "NY", "wc_bureau": "NYCIRB", "wc_class_code": "8810", "estimated_payroll": 800000, "experience_mod": 1.58, "written_premium": 38585.6}, {"policy_number": "WCA2026009", "named_insured_name": "Buckeye Supply Co", "country": "US", "state": "PA", "wc_bureau": "PCRB", "wc_class_code": "8742", "estimated_payroll": 1650000, "experience_mod": 0.88, "written_premium": 51706}, {"policy_number": "WCA2026009", "named_insured_name": "Buckeye Supply Co", "country": "US", "state": "PA", "wc_bureau": "PCRB", "wc_class_code": "9015", "estimated_payroll": 1650000, "experience_mod": 0.88, "written_premium": 51706}], "hits": [["UW-WC-002", "WCA2026008", "Experience mod 1.58"]]}, "GL": {"objects": ["Policy", "Party", "Location", "Classification", "Coverage", "Premium", "Claim"], "elements": [["TERRITORY", "Rating territory", null], ["SQUARE_FEET", "Square feet", null], ["DEDUCTIBLE_AMOUNT", "Deductible amount", null], ["ESTIMATED_PAYROLL", "Estimated annual payroll", null], ["AUDITED_PAYROLL", "Audited payroll", null], ["GL_CLASS_CODE", "GL classification", "GL_CLASS"], ["GL_PREMIUM_BASIS", "Premium basis", "GL_PREMIUM_BASIS"], ["GL_EXPOSURE", "Exposure amount", null], ["GL_COVERAGE_FORM", "Coverage form", "GL_FORM"], ["RETROACTIVE_DATE", "Retroactive date", null], ["EACH_OCCURRENCE_LIMIT", "Each occurrence limit", null], ["GENERAL_AGGREGATE_LIMIT", "General aggregate limit", null], ["PRODUCTS_AGGREGATE_LIMIT", "Products-completed operations aggregate", null], ["PERSONAL_ADV_INJURY_LIMIT", "Personal and advertising injury limit", null]], "rating": [["Premises / operations", "sum over classes: GL_EXPOSURE / basis divisor x rate[STATE, TERRITORY, GL_CLASS_CODE]"], ["Increased limits", "x ILF[EACH_OCCURRENCE_LIMIT, GENERAL_AGGREGATE_LIMIT]"], ["Claims-made step", "x step factor[years since RETROACTIVE_DATE] (claims-made only)"]], "rules": [["UW-GL-001", "NY Labor Law contractors", "GL_CLASS_CODE starts CONTR AND NY_LABOR_LAW_EXPOSURE = true", "Refer; require action-over exclusion review"], ["UW-GL-002", "Subcontractor ratio", "SUBCONTRACTOR_COST / GL_EXPOSURE > 0.5", "Charge for uninsured subcontractors unless certificates on file"]], "sample": [{"policy_number": "GLA2026011", "named_insured_name": "Maple Leaf Warehousing", "country": "US", "state": "NY", "writing_company": "SI2-ADM", "product_code": "GL-Contractors 2025", "gl_class_code": "CONTR-CARP", "gl_premium_basis": "PAYROLL", "gl_exposure": 5300000, "gl_coverage_form": "OCC", "retroactive_date": "", "ny_labor_law_exposure": "Yes", "written_premium": 217300, "surplus_lines_tax": ""}, {"policy_number": "GLA2026012", "named_insured_name": "Sunrise Bistro Group", "country": "US", "state": "FL", "writing_company": "SI2-ADM", "product_code": "GL-Std 2025", "gl_class_code": "RESTAURANT", "gl_premium_basis": "SALES", "gl_exposure": 500000, "gl_coverage_form": "OCC", "retroactive_date": "", "ny_labor_law_exposure": "", "written_premium": 975, "surplus_lines_tax": ""}, {"policy_number": "GLE2026013", "named_insured_name": "Bayou Carpentry", "country": "US", "state": "TX", "writing_company": "SI2-ES", "product_code": "GL-ClaimsMade 2025", "gl_class_code": "CONTR-PLUMB", "gl_premium_basis": "PAYROLL", "gl_exposure": 1000000, "gl_coverage_form": "CM", "retroactive_date": "2021-07-01", "ny_labor_law_exposure": "", "written_premium": 14200, "surplus_lines_tax": 688.7}, {"policy_number": "GLA2026014", "named_insured_name": "Coastal Freight Lines", "country": "US", "state": "IL", "writing_company": "SI2-ADM", "product_code": "GL-Std 2025", "gl_class_code": "RETAIL", "gl_premium_basis": "SALES", "gl_exposure": 5200000, "gl_coverage_form": "OCC", "retroactive_date": "", "ny_labor_law_exposure": "", "written_premium": 4680, "surplus_lines_tax": ""}, {"policy_number": "GLA2026015", "named_insured_name": "Metro Office Partners", "country": "US", "state": "GA", "writing_company": "SI2-ADM", "product_code": "GL-Std 2025", "gl_class_code": "MFG-LIGHT", "gl_premium_basis": "SALES", "gl_exposure": 500000, "gl_coverage_form": "OCC", "retroactive_date": "", "ny_labor_law_exposure": "", "written_premium": 700, "surplus_lines_tax": ""}], "hits": [["UW-GL-001", "GLA2026011", "NY contractor with Labor Law 240/241 exposure"], ["UW-ES-001", "GLE2026013", "Surplus lines tax 688.70 added"]]}, "CA": {"objects": ["Policy", "Party", "Vehicle", "Driver", "Coverage", "Premium", "Claim", "Cession"], "elements": [["TERRITORY", "Rating territory", null], ["DEDUCTIBLE_AMOUNT", "Deductible amount", null], ["VIN", "Vehicle identification number", null], ["VEHICLE_YEAR", "Model year", null], ["VEHICLE_TYPE", "Vehicle type", "VEHICLE_TYPE"], ["GVW", "Gross vehicle weight", null], ["RADIUS_CLASS", "Radius of operation", "RADIUS"], ["VEHICLE_USE", "Vehicle use", "VEHICLE_USE"], ["GARAGING_ZIP", "Garaging ZIP", null], ["COST_NEW", "Cost new", null], ["AUTO_SYMBOL", "Covered auto symbol", "AUTO_SYMBOL"], ["CA_LIABILITY_LIMIT", "Auto liability combined single limit", null], ["PIP_LIMIT", "Personal injury protection limit", null], ["UM_LIMIT", "Uninsured motorists limit", null]], "rating": [["Liability base", "base rate[STATE, TERRITORY] x factor[VEHICLE_TYPE, VEHICLE_USE, RADIUS_CLASS]"], ["Increased limits", "x ILF[CA_LIABILITY_LIMIT]"], ["Physical damage", "COST_NEW x rate[VEHICLE_TYPE, age] x deductible factor"], ["State coverages", "+ PIP[STATE] + UM[STATE, UM_LIMIT]"]], "rules": [["UW-CA-001", "Long-haul heavy trucks", "VEHICLE_TYPE in (HT, XHT, TRAC) AND RADIUS_CLASS = LONG", "Refer to transportation unit"], ["UW-CA-002", "Driver MVR", "DRIVER_MVR_POINTS >= 6", "Exclude driver or decline"], ["UW-CA-003", "CDL required", "VEHICLE_TYPE in (HT, XHT, TRAC) AND CDL_IND = false", "Error: driver needs a CDL"]], "sample": [{"policy_number": "CAA2026016", "named_insured_name": "Riverbend Manufacturing", "country": "US", "state": "FL", "writing_company": "SI2-ADM", "vehicle_id": "VEH0001", "vehicle_type": "LT", "gvw": 9500, "radius_class": "LOCAL", "driver_mvr_points": 0, "cdl_ind": "No", "pip_limit": 10000, "um_limit": 1000000}, {"policy_number": "CAA2026016", "named_insured_name": "Riverbend Manufacturing", "country": "US", "state": "FL", "writing_company": "SI2-ADM", "vehicle_id": "VEH0002", "vehicle_type": "LT", "gvw": 9500, "radius_class": "INTERMEDIATE", "driver_mvr_points": 2, "cdl_ind": "No", "pip_limit": 10000, "um_limit": 1000000}, {"policy_number": "CAA2026017", "named_insured_name": "Gulf Breeze Delivery", "country": "US", "state": "NY", "writing_company": "SI2-ADM", "vehicle_id": "VEH0003", "vehicle_type": "PPT", "gvw": 5000, "radius_class": "LOCAL", "driver_mvr_points": 0, "cdl_ind": "No", "pip_limit": 50000, "um_limit": 1000000}, {"policy_number": "CAA2026017", "named_insured_name": "Gulf Breeze Delivery", "country": "US", "state": "NY", "writing_company": "SI2-ADM", "vehicle_id": "VEH0004", "vehicle_type": "PPT", "gvw": 5000, "radius_class": "INTERMEDIATE", "driver_mvr_points": 3, "cdl_ind": "No", "pip_limit": 50000, "um_limit": 1000000}, {"policy_number": "CAE2026018", "named_insured_name": "Hudson Valley Transit", "country": "US", "state": "TX", "writing_company": "SI2-ES", "vehicle_id": "VEH0005", "vehicle_type": "HT", "gvw": 33000, "radius_class": "LONG", "driver_mvr_points": 3, "cdl_ind": "No", "pip_limit": "", "um_limit": 30000}, {"policy_number": "CAE2026018", "named_insured_name": "Hudson Valley Transit", "country": "US", "state": "TX", "writing_company": "SI2-ES", "vehicle_id": "VEH0006", "vehicle_type": "HT", "gvw": 33000, "radius_class": "LONG", "driver_mvr_points": 3, "cdl_ind": "No", "pip_limit": "", "um_limit": 30000}, {"policy_number": "CAA2026019", "named_insured_name": "Prairie Haulers", "country": "US", "state": "GA", "writing_company": "SI2-ADM", "vehicle_id": "VEH0007", "vehicle_type": "MT", "gvw": 16000, "radius_class": "LOCAL", "driver_mvr_points": 6, "cdl_ind": "No", "pip_limit": "", "um_limit": 1000000}, {"policy_number": "CAA2026019", "named_insured_name": "Prairie Haulers", "country": "US", "state": "GA", "writing_company": "SI2-ADM", "vehicle_id": "VEH0008", "vehicle_type": "MT", "gvw": 16000, "radius_class": "LOCAL", "driver_mvr_points": 2, "cdl_ind": "No", "pip_limit": "", "um_limit": 1000000}], "hits": [["UW-CA-001", "CAE2026018", "Long-haul heavy truck"], ["UW-CA-003", "CAE2026018", "Heavy truck driver without CDL"], ["UW-CA-001", "CAE2026018", "Long-haul heavy truck"], ["UW-CA-003", "CAE2026018", "Heavy truck driver without CDL"], ["UW-CA-002", "CAA2026019", "6 MVR points"], ["UW-ES-001", "CAE2026018", "Surplus lines tax 474.69 added"]]}}, "downloads": [{"file": "SI2_Commercial_CDM_and_Ontology.zip", "ext": "ZIP", "title": "Everything in one file", "desc": "The workbook, SQL Server script, CSV tables, Turtle and JSON-LD, generated in the same run.", "size": "154 KB"}, {"file": "SI2_Commercial_CDM.xlsx", "ext": "XLSX", "title": "CDM workbook", "desc": "Keys, objects, elements, applicability, resolved examples, pick lists, rules, rating, crosswalk and synthetic data.", "size": "73 KB"}, {"file": "SI2_Commercial_CDM_SQLServer.sql", "ext": "SQL", "title": "SQL Server script", "desc": "Schema cdm: metadata tables, entity tables with synthetic rows, the resolve function and a premium view.", "size": "103 KB"}, {"file": "SI2_Commercial_CDM_csv.zip", "ext": "CSV", "title": "CSV tables", "desc": "Every metadata and sample-data table as CSV.", "size": "26 KB"}, {"file": "SI2_Commercial_Ontology.ttl", "ext": "TTL", "title": "Ontology (Turtle)", "desc": "OWL classes and properties, SKOS pick lists and synonyms, applicability by key, rules and rating steps.", "size": "109 KB"}, {"file": "SI2_Commercial_Ontology.jsonld", "ext": "JSON", "title": "Ontology (JSON-LD)", "desc": "The same graph as JSON-LD for APIs and AI agents.", "size": "341 KB"}]};
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = n => typeof n === 'number' ? n.toLocaleString('en-US') : n;
+
+/* stats */
+$('#stats').innerHTML = D.stats.map(([v, l]) => `<div class="stat"><b>${fmt(v)}</b><span>${esc(l)}</span></div>`).join('');
+/* keys */
+$('#keytable tbody').innerHTML = D.keys.map(k => `<tr><td class="k">${esc(k[0])}</td><td>${esc(k[1])}</td><td class="hide-sm">${esc(k[2])}</td><td>${esc(k[3])}</td></tr>`).join('');
+
+/* resolver: the same most-specific-wins rule as build.py and cdm.fn_ResolveElement */
+const REQ = {Y:'Required', N:'Optional', NA:'Not applicable'};
+function resolve(e, ctx){
+  if (e.lobs !== '*' && !e.lobs.split(',').includes(ctx.lob)) return null;
+  if (!e.modules.split(',').includes(ctx.module)) return {req:'NA', def:'', label:e.name, by:'module', reason:'Not used by this module'};
+  let best = null, bs = -1;
+  for (const a of D.applic) {
+    if (a.e !== e.code) continue;
+    if (Object.entries(a.s).every(([k, v]) => ctx[k] === v) && Object.keys(a.s).length > bs) { best = a; bs = Object.keys(a.s).length; }
+  }
+  if (!best) return {req:e.base_required, def:'', label:e.name, by:'(base)', reason:'Base definition', base:true};
+  return {req:best.r, def:best.d || '', label:best.l || e.name, by:Object.entries(best.s).map(([k, v]) => `${k}=${v}`).join(', '), reason:best.why};
+}
+const STATES = {US:['FL','TX','CA','NY','NJ','PA','IL','GA','MI','OH','WA','ND','WY','CO','NC','SC'], CA:['ON','QC','BC','AB'], GB:['ENG','SCT','WLS']};
+const PRODUCTS = {CP:['CP-Std 2025'], WC:['WC-Std 2025'], GL:['GL-Std 2025','GL-Contractors 2025','GL-ClaimsMade 2025'], CA:['CA-Std 2025']};
+function fillStates(){ const c = $('#c-country').value; $('#c-state').innerHTML = STATES[c].map(s => `<option>${s}</option>`).join(''); }
+function fillProducts(){ $('#c-product').innerHTML = PRODUCTS[$('#c-lob').value].map(p => `<option>${p}</option>`).join(''); }
+function run(){
+  const ctx = {country:$('#c-country').value, state:$('#c-state').value, company:$('#c-company').value, lob:$('#c-lob').value,
+               module:$('#c-module').value, product:$('#c-product').value, line:'Commercial'};
+  const rows = []; const n = {Y:0, N:0, NA:0}; let other = 0;
+  for (const e of D.elements) {
+    const r = resolve(e, ctx); if (!r) continue;
+    if (r.by === 'module') { other++; continue; }
+    n[r.req]++;
+    rows.push({e, r});
+  }
+  const order = {Y:0, N:1, NA:2};
+  rows.sort((a, b) => (a.r.base === b.r.base ? 0 : a.r.base ? 1 : -1) || order[a.r.req] - order[b.r.req]);
+  $('#restable tbody').innerHTML = rows.map(({e, r}) => {
+    const cls = r.req === 'Y' ? 'req' : r.req === 'N' ? 'opt' : 'na';
+    return `<tr class="${r.req === 'NA' ? 'na' : ''} ${r.base ? '' : 'changed'}"><td><code>${esc(e.code)}</code></td><td>${esc(r.label)}</td><td>${esc(e.object)}</td>
+      <td><span class="pill ${cls}">${REQ[r.req]}</span></td><td>${esc(r.def)}</td><td><code>${esc(r.by)}</code></td><td class="hide-sm">${esc(r.reason)}</td></tr>`;
+  }).join('');
+  $('#summary').innerHTML = `<b>${rows.length}</b> elements · <b>${n.Y}</b> required · <b>${n.N}</b> optional · <b>${n.NA}</b> not applicable · ${other} more belong to other modules`;
+}
+$('#c-country').addEventListener('change', () => { fillStates(); run(); });
+$('#c-lob').addEventListener('change', () => { fillProducts(); run(); });
+['#c-state','#c-company','#c-module','#c-product'].forEach(s => $(s).addEventListener('change', run));
+fillStates(); fillProducts(); run();
+
+/* lines of business */
+const LOBN = {CP:"Commercial Property", WC:"Workers' Compensation", GL:"General Liability", CA:"Commercial Auto"};
+function table(rows){
+  if (!rows.length) return '<p class="fine">No records.</p>';
+  const cols = Object.keys(rows[0]);
+  return `<div class="scroll"><table class="t small"><thead><tr>${cols.map(c => `<th>${esc(c.replace(/_/g, ' '))}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map(r => `<tr>${cols.map(c => `<td>${esc(typeof r[c] === 'number' && !/year/.test(c) ? fmt(r[c]) : r[c])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+function showLob(code){
+  document.querySelectorAll('#lobtabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.lob === code));
+  const L = D.lobs[code];
+  $('#lobpanel').innerHTML = `<div class="lob">
+    <div class="card"><span class="tag">objects</span><h3>What ${esc(LOBN[code])} describes</h3><p style="color:var(--muted);font-size:14.5px">${esc(L.objects.join(' · '))}</p>
+      <span class="tag" style="margin-top:6px">distinctive elements</span><ul>${L.elements.map(e => `<li><b>${esc(e[1])}</b> <code>${esc(e[0])}</code>${e[2] ? ' · pick list ' + esc(e[2]) : ''}</li>`).join('')}</ul></div>
+    <div class="card"><span class="tag">rating (illustrative)</span><h3>Rating algorithm</h3><ol>${L.rating.map(r => `<li>${esc(r[0])}: <code>${esc(r[1])}</code></li>`).join('')}</ol>
+      <span class="tag" style="margin-top:6px">rules</span><ul>${L.rules.map(r => `<li><b>${esc(r[0])}</b> ${esc(r[1])}: ${esc(r[2])} → ${esc(r[3])}</li>`).join('')}</ul></div>
+    <div class="card full"><span class="tag">synthetic data</span><h3>A few ${esc(LOBN[code])} records</h3>${table(L.sample)}</div>
+    <div class="card full"><span class="tag">rule findings on the synthetic data</span>${L.hits.length ? `<ul>${L.hits.map(h => `<li><b>${esc(h[0])}</b> on <code>${esc(h[1])}</code>: ${esc(h[2])}</li>`).join('')}</ul>` : '<p class="fine">No rule fired for this line.</p>'}</div>
+  </div>`;
+}
+$('#lobtabs').innerHTML = Object.keys(LOBN).map(c => `<button role="tab" data-lob="${c}">${LOBN[c]}</button>`).join('');
+document.querySelectorAll('#lobtabs button').forEach(b => b.addEventListener('click', () => showLob(b.dataset.lob)));
+showLob('CP');
+
+/* downloads */
+$('#dl').innerHTML = D.downloads.map((f, i) => `<a class="file ${i === 0 ? 'all' : ''}" href="downloads/${esc(f.file)}" download>
+  <span class="ext">${esc(f.ext)}</span><span><h3>${esc(f.title)}</h3><p>${esc(f.desc)}</p><div class="size">${esc(f.file)} · ${esc(f.size)}</div></span></a>`).join('');
+</script>
+</body>
+</html>

@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="How SI² generates the commercial lines canonical data model and the ontology at the same time from one governed store, and why the context key (country, state, company, line, product, object, module, dates) matters. Downloads for Commercial Property, Workers' Compensation, General Liability and Commercial Auto.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 136%22%3E%3Cpath d=%22M60 6 L110 24 V64 C110 97 88 119 60 130 C32 119 10 97 10 64 V24 Z%22 fill=%22%230B1B2B%22/%3E%3Ctext x=%2255%22 y=%2288%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-weight=%22800%22 font-size=%2246%22 fill=%22%23fff%22%3ESI%3C/text%3E%3C/svg%3E">
+<title>SI² CDM and Ontology</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --navy:#0B1B2B; --bg:#F5F7FA; --surface:#FFFFFF; --fg:#0B1B2B; --muted:#4A5868; --line:#D8DFE7;
+  --accent:#2B4CF2; --accent-ink:#FFFFFF; --accent-soft:#E7ECFE; --shield:#0B1B2B; --shield-text:#FFFFFF;
+  --ok:#0E7C6B; --warn:#A35A00; --na:#7A8794;
+  --font-display:'Sora','Segoe UI',system-ui,sans-serif; --font-body:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#08131F; --surface:#0F2133; --fg:#EEF2F7; --muted:#A3B1C0; --line:#22384E;
+    --accent:#7FA0FF; --accent-ink:#08131F; --accent-soft:#16294A; --shield:#FFFFFF; --shield-text:#0B1B2B;
+    --ok:#4FD1B5; --warn:#F2B35B; --na:#7F8FA0; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#08131F; --surface:#0F2133; --fg:#EEF2F7; --muted:#A3B1C0; --line:#22384E;
+  --accent:#7FA0FF; --accent-ink:#08131F; --accent-soft:#16294A; --shield:#FFFFFF; --shield-text:#0B1B2B;
+  --ok:#4FD1B5; --warn:#F2B35B; --na:#7F8FA0; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:16px;line-height:1.6}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:24px}
+h1,h2,h3,h4{font-family:var(--font-display);text-wrap:balance;margin:0;line-height:1.15}
+p{margin:0}
+a{color:var(--accent)}
+code,.mono{font-family:var(--font-mono);font-size:.9em}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:4px}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+header.site{border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:0;z-index:5}
+header.site .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--fg)}
+.brand b{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:-.01em}
+.brand sup{color:var(--accent);font-size:13px}
+nav.links{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+nav.links a{color:var(--muted);text-decoration:none;font-size:15px}
+nav.links a:hover,nav.links a[aria-current]{color:var(--fg)}
+nav.links a[aria-current]{font-weight:600}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:8px;border:1px solid transparent;font:600 15px var(--font-body);cursor:pointer;text-decoration:none}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;border-color:var(--line);color:var(--fg)}
+.btn.ghost:hover{border-color:var(--accent)}
+nav.links .btn{color:var(--accent-ink)}
+.hero .wrap{padding-block:64px 48px;display:flex;flex-direction:column;gap:18px}
+.hero h1{font-size:clamp(32px,4.8vw,52px);font-weight:800;letter-spacing:-.02em;max-width:22ch}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .lede{font-size:19px;color:var(--muted);max-width:66ch}
+.hero .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+section.block{padding-block:56px;border-top:1px solid var(--line)}
+.block-head{display:flex;flex-direction:column;gap:10px;max-width:66ch;margin-bottom:28px}
+.block-head h2{font-size:clamp(24px,3.2vw,34px);font-weight:700}
+.block-head p{color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.stat{background:var(--surface);padding:20px 22px}
+.stat b{display:block;font-family:var(--font-display);font-size:28px;font-weight:800;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:14px}
+
+/* one store, two projections */
+.store{display:grid;grid-template-columns:minmax(0,1fr) 56px minmax(0,1.1fr) 56px minmax(0,1fr);align-items:stretch;gap:0}
+.store .box{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:10px}
+.store .box.center{border:2px solid var(--accent);background:var(--accent-soft)}
+.store h3{font-size:18px}
+.store ul{margin:0;padding-left:18px;color:var(--muted);font-size:15px;display:flex;flex-direction:column;gap:4px}
+.store .arrow{display:flex;align-items:center;justify-content:center;color:var(--accent)}
+.store .outs{display:flex;flex-direction:column;gap:12px}
+.store .outs .box{flex:1}
+.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;list-style:none;padding:0;margin:28px 0 0}
+.flow li{background:var(--surface);padding:20px;display:flex;flex-direction:column;gap:6px}
+.flow .n{font-family:var(--font-mono);font-size:13px;color:var(--accent)}
+.flow h3{font-size:16px}
+.flow p{color:var(--muted);font-size:14px}
+
+/* keys */
+table.t{width:100%;border-collapse:collapse;font-size:15px;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.t th,.t td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+.t thead th{font:600 12px var(--font-body);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;background:var(--bg)}
+.t tr:last-child td{border-bottom:0}
+.t td.k{font-family:var(--font-mono);font-size:14px;color:var(--accent);white-space:nowrap}
+.scroll{overflow-x:auto;border-radius:12px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:28px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px}
+.card h3{font-size:17px}
+.card .tag{font-family:var(--font-mono);font-size:12px;color:var(--accent)}
+.card ul{margin:0;padding-left:18px;font-size:14.5px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+.card ul b{color:var(--fg);font-weight:600}
+.rule{margin-top:28px;border-left:3px solid var(--accent);background:var(--surface);padding:16px 20px;border-radius:0 12px 12px 0;display:flex;flex-direction:column;gap:6px}
+.rule p{color:var(--muted);font-size:15px}
+
+/* resolver */
+.resolver{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:18px}
+.ctl{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.ctl label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--muted);min-width:0}
+select{width:100%;min-height:44px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);font:15px var(--font-body)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:2px 10px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.pill.req{color:var(--ok)} .pill.opt{color:var(--muted)} .pill.na{color:var(--na);border-style:dashed}
+tr.na td{color:var(--na)}
+tr.changed td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+.summary{font-size:15px}
+.summary b{font-variant-numeric:tabular-nums}
+
+/* lob tabs */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tabs button{min-height:42px;padding:0 16px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--fg);font:500 15px var(--font-body);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+:root[data-theme="dark"] .tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}}
+.lob{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.lob .card.full{grid-column:1 / -1}
+.lob ol{margin:0;padding-left:20px;font-size:14.5px;display:flex;flex-direction:column;gap:6px}
+.lob ol code{color:var(--muted)}
+.t.small{font-size:13.5px}
+.t.small th,.t.small td{padding:8px 10px;white-space:nowrap}
+#restable td:last-child{white-space:normal;min-width:240px}
+
+/* downloads */
+.dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.dl a.file{display:flex;gap:16px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;text-decoration:none;color:var(--fg)}
+.dl a.file:hover{border-color:var(--accent)}
+.dl .ext{flex:none;font-family:var(--font-mono);font-size:12px;font-weight:500;width:56px;height:56px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--accent-soft);color:var(--accent)}
+.dl h3{font-size:16px;margin-bottom:4px}
+.dl p{color:var(--muted);font-size:14px}
+.dl .size{font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-top:6px}
+.dl a.file.all{grid-column:1 / -1;border:2px solid var(--accent)}
+.gov{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.gov .card.mand{border-left:4px solid var(--warn)}
+.gov .card.rel{border-left:4px solid var(--ok)}
+footer{border-top:1px solid var(--line);padding-block:32px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.fine{font-size:13px;color:var(--muted);margin-top:8px}
+@media (max-width:900px){
+  .store{grid-template-columns:minmax(0,1fr)}
+  .store .arrow{height:36px;transform:rotate(90deg)}
+  .flow,.ctl{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:640px){
+  .wrap{padding-inline:16px}
+  nav.links a:not(.btn):not([aria-current]){display:none}
+  .stats,.flow,.ctl,.cards,.lob,.dl,.gov{grid-template-columns:minmax(0,1fr)}
+  .t{font-size:14px}
+  .t th,.t td{padding:9px 10px}
+  .hide-sm{display:none}
+}
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="SI² home">
+      <svg width="30" height="34" viewBox="0 0 120 136" aria-hidden="true">
+        <path d="M60 6 L110 24 V64 C110 97 88 119 60 130 C32 119 10 97 10 64 V24 Z" fill="var(--shield)"></path>
+        <text x="55" y="88" text-anchor="middle" font-family="Sora, Arial, sans-serif" font-weight="800" font-size="46" fill="var(--shield-text)">SI</text>
+      </svg>
+      <b>SI<sup>2</sup></b>
+    </a>
+    <nav class="links" aria-label="Main">
+      <a href="index.html#roles">For every role</a>
+      <a href="index.html#solutions">Solutions</a>
+      <a href="cdm-ontology.html" aria-current="page">CDM &amp; Ontology</a>
+      <a href="index.html#demos">Demos</a>
+      <a class="btn primary" href="#downloads">Download</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Commercial lines · CDM and ontology</span>
+    <h1>One governed store. <em>The CDM and the ontology</em> at the same time.</h1>
+    <p class="lede">Every field an insurer uses varies by country, state, company, line, product, object and module. SI² records each data element once, scopes it with a context key, has a subject-matter expert approve it, and generates the canonical data model and the ontology from that same store, so the two can never drift apart.</p>
+    <div class="cta">
+      <a class="btn primary" href="#downloads">Download the CDM and ontology</a>
+      <a class="btn ghost" href="#keys">See how the keys work</a>
+    </div>
+  </div>
+</section>
+
+<section class="block" aria-label="What is in the model">
+  <div class="wrap">
+    <div class="stats" id="stats"></div>
+    <p class="fine">Commercial Property, Workers' Compensation, General Liability and Commercial Auto, with a few synthetic policies, claims and cessions for each line. Codes, rates and data are illustrative.</p>
+  </div>
+</section>
+
+<section class="block" id="how">
+  <div class="wrap">
+    <div class="block-head">
+      <span class="eyebrow">How it is generated</span>
+      <h2>One store, two projections</h2>
+      <p>The CDM and the ontology are not built by two teams. They are two outputs of one table set: objects, elements, scopes, pick lists, rules and rating steps. Change a row once and both outputs change together.</p>
+    </div>
+    <div class="store">
+      <div class="box">
+        <span class="eyebrow">Collect</span>
+        <h3>Every source, every name</h3>
+        <ul>
+          <li>Standards: ACORD forms, IBM data models, ISO and NCCI statistical plans</li>
+          <li>Policy systems: Guidewire, Duck Creek, legacy COBOL / DB2, home-built</li>
+          <li>Agency management system exports, billing, claims, reinsurance, finance</li>
+        </ul>
+      </div>
+      <div class="arrow" aria-hidden="true"><svg width="40" height="20" viewBox="0 0 40 20"><path d="M2 10h32M26 3l8 7-8 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="box center">
+        <span class="eyebrow">The governed store</span>
+        <h3>One row per meaning</h3>
+        <ul>
+          <li><b>Objects</b> and relations (Policy, Location, Building, Vehicle, Driver, Class …)</li>
+          <li><b>Elements</b> with definition, type and the synonyms each system uses</li>
+          <li><b>Applicability</b> by context key: required, optional or not applicable, defaults, labels</li>
+          <li><b>Pick lists</b> and options, each option scoped where it applies</li>
+          <li><b>Rules</b> and <b>rating steps</b> that reference elements by code</li>
+          <li>SME approval, effective dates and history on every row</li>
+        </ul>
+      </div>
+      <div class="arrow" aria-hidden="true"><svg width="40" height="20" viewBox="0 0 40 20"><path d="M2 10h32M26 3l8 7-8 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="outs">
+        <div class="box">
+          <span class="eyebrow">Projection 1</span>
+          <h3>Canonical data model</h3>
+          <ul><li>Entity tables and SQL Server DDL</li><li>Workbook and CSV for analysts</li><li>Resolve function for any context</li></ul>
+        </div>
+        <div class="box">
+          <span class="eyebrow">Projection 2</span>
+          <h3>Ontology</h3>
+          <ul><li>OWL classes and properties</li><li>SKOS pick lists and synonyms</li><li>Turtle and JSON-LD for graphs and AI</li></ul>
+        </div>
+      </div>
+    </div>
+    <ol class="flow">
+      <li><span class="n">01</span><h3>Design the template</h3><p>Agree the objects, the context key and the columns every element must have.</p></li>
+      <li><span class="n">02</span><h3>Collect elements</h3><p>Load field lists from standards and every company system, including legacy.</p></li>
+      <li><span class="n">03</span><h3>SI² proposes</h3><p>Matches synonyms to one element, suggests scopes, pick lists and rules.</p></li>
+      <li><span class="n">04</span><h3>SME approves by key</h3><p>An expert approves each element in each country, state, company and line. A second person signs off.</p></li>
+      <li><span class="n">05</span><h3>Publish both</h3><p>The CDM and the ontology are generated together and versioned as one release.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="block" id="keys">
+  <div class="wrap">
+    <div class="block-head">
+      <span class="eyebrow">The context key</span>
+      <h2>Why the keys matter</h2>
+      <p>A field is not simply "required". It is required <em>for</em> a country, a state, a writing company, a line, a product edition, an object and a module, from a date. The context key records exactly that. A star (<code>*</code>) means "all", and the most specific matching row wins.</p>
+    </div>
+    <div class="scroll"><table class="t" id="keytable">
+      <thead><tr><th>Key</th><th>Meaning</th><th class="hide-sm">Examples</th><th>Why it matters</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+
+    <div class="cards">
+      <div class="card">
+        <span class="tag">country</span><h3>By country</h3>
+        <ul>
+          <li><b>United States:</b> states, ZIP codes, FEIN, private workers' comp in most states.</li>
+          <li><b>Canada:</b> provinces, postal codes, business number instead of FEIN; workers' comp is provided by provincial boards, so the WC class is not applicable.</li>
+          <li><b>Great Britain:</b> no states, postcodes, and employers' liability is compulsory.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag">state</span><h3>By state: property and auto</h3>
+        <ul>
+          <li><b>Florida, Texas:</b> named-storm or windstorm percentage deductible required; Florida also needs the flood zone.</li>
+          <li><b>California:</b> earthquake percentage deductible.</li>
+          <li><b>Florida, New York, Michigan, New Jersey:</b> no-fault personal injury protection on commercial auto.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag">state</span><h3>By state: workers' comp and liability</h3>
+        <ul>
+          <li><b>Ohio, Washington, North Dakota, Wyoming:</b> monopolistic state funds, so no private class payroll (stop-gap employers' liability only).</li>
+          <li><b>California, New York, New Jersey, Pennsylvania:</b> independent bureaus instead of NCCI.</li>
+          <li><b>New York:</b> contractors must answer the Labor Law 240/241 exposure question.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag">company</span><h3>By writing company</h3>
+        <ul>
+          <li><b>Admitted paper:</b> filed rates and forms; no surplus lines tax.</li>
+          <li><b>Excess and surplus paper:</b> surplus lines tax always, stamping fee in states with a stamping office (for example Texas, New York, California).</li>
+          <li>Each company in a group can carry its own pick-list options and rules.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag">lob · product</span><h3>By line and product edition</h3>
+        <ul>
+          <li><b>General liability claims-made</b> product needs a retroactive date; occurrence forms do not.</li>
+          <li><b>Commercial property</b> uses construction class, protection class and roof year; the other lines do not.</li>
+          <li>Old policies keep the product edition they were written on.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag">object · module · dates</span><h3>By object, module and date</h3>
+        <ul>
+          <li><b>Object:</b> an element belongs to one object (Building, Vehicle, Driver, Class) wherever it is used.</li>
+          <li><b>Module:</b> claims needs the injured worker's average weekly wage; finance needs the annual statement line; claims does not need the FEIN.</li>
+          <li><b>Dates:</b> nothing is deleted; a change ends one row and starts the next.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rule">
+      <h3>Most specific wins</h3>
+      <p>For a Florida commercial property policy, the row <code>state=FL, lob=CP</code> beats the row <code>lob=CP</code>, which beats the base definition. Specificity counts the keys that are not <code>*</code>. The same rule runs in SQL (<code>cdm.fn_ResolveElement</code>), in the ontology (each applicability is an individual carrying its key) and in the resolver below.</p>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="resolver">
+  <div class="wrap">
+    <div class="block-head">
+      <span class="eyebrow">Try it</span>
+      <h2>Resolve the model for a context</h2>
+      <p>Pick a context. Every element is resolved against the store: required, optional or not applicable, with its default, the label for that context and the scope that decided it. Rows marked with a blue edge differ from the base definition.</p>
+    </div>
+    <div class="resolver">
+      <div class="ctl">
+        <label>Country<select id="c-country"><option value="US">United States</option><option value="CA">Canada</option><option value="GB">Great Britain</option></select></label>
+        <label>State / province<select id="c-state"></select></label>
+        <label>Company<select id="c-company"><option value="SI2-ADM">SI² admitted</option><option value="SI2-ES">SI² excess &amp; surplus</option></select></label>
+        <label>Line of business<select id="c-lob"><option value="CP">Commercial Property</option><option value="WC">Workers' Compensation</option><option value="GL">General Liability</option><option value="CA">Commercial Auto</option></select></label>
+        <label>Module<select id="c-module"><option>Policy</option><option>Billing</option><option>Claims</option><option>Reinsurance</option><option>Finance</option><option>Reporting</option></select></label>
+      </div>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--muted);max-width:420px">Product edition<select id="c-product"></select></label>
+      <div class="legend"><span><span class="pill req">Required</span></span><span><span class="pill opt">Optional</span></span><span><span class="pill na">Not applicable</span></span><span id="summary" class="summary" aria-live="polite"></span></div>
+      <div class="scroll"><table class="t small" id="restable">
+        <thead><tr><th>Element</th><th>Label in this context</th><th>Object</th><th>Status</th><th>Default</th><th>Decided by</th><th class="hide-sm">Reason</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="lines">
+  <div class="wrap">
+    <div class="block-head">
+      <span class="eyebrow">Lines of business</span>
+      <h2>Commercial Property, Workers' Comp, General Liability, Commercial Auto</h2>
+      <p>For each line: the objects it uses, its distinctive elements, the rules and the rating steps, and a few synthetic records generated from the model. The rules ran on the synthetic data; their findings are listed.</p>
+    </div>
+    <div class="tabs" role="tablist" id="lobtabs"></div>
+    <div id="lobpanel" role="tabpanel"></div>
+  </div>
+</section>
+
+<section class="block" id="downloads">
+  <div class="wrap">
+    <div class="block-head">
+      <span class="eyebrow">Downloads</span>
+      <h2>Download the CDM and the ontology</h2>
+      <p>Generated in one run from the same store (version __VERSION__). Load the SQL script into SQL Server, open the workbook in Excel, or load the Turtle file into any graph tool such as Protégé, GraphDB or Neo4j.</p>
+    </div>
+    <div class="dl" id="dl"></div>
+  </div>
+</section>
+
+<section class="block" id="governance">
+  <div class="wrap">
+    <div class="block-head">
+      <span class="eyebrow">Keeping it current</span>
+      <h2>When a source system changes</h2>
+      <p>SI² watches every connected source. A new field in Guidewire, a new class code from a bureau, a new ACORD form version or a changed legacy copybook becomes a proposed change to the store, and both outputs follow.</p>
+    </div>
+    <div class="gov">
+      <div class="card mand">
+        <span class="tag">Mandatory alert</span><h3>Act now</h3>
+        <ul>
+          <li>Regulatory or bureau changes with an effective date: a new state rule, class code or statistical plan edition.</li>
+          <li>A change that breaks a mapping in production.</li>
+          <li>The owner is alerted and the change is tracked to closure by its due date.</li>
+        </ul>
+      </div>
+      <div class="card rel">
+        <span class="tag">Release approval</span><h3>Bundle and approve</h3>
+        <ul>
+          <li>New optional fields, new synonyms, label changes, new pick-list options.</li>
+          <li>Grouped into a release; an SME approves and a second person signs off.</li>
+          <li>The CDM and the ontology are published together with the release number.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 SI² · si2insure.com</span>
+    <span><a href="index.html">Back to the home page</a></span>
+  </div>
+  <div class="wrap"><p class="fine">All data on this page and in the downloads is synthetic. Codes, rates, factors and rules are illustrative and simplified; verify against the manuals and filings your company licenses. SI² is independent and is not affiliated with, endorsed or sponsored by ISO / Verisk, NCCI, the state rating bureaus, ACORD, IBM, Guidewire, Duck Creek or any software vendor; their names describe formats SI² works with.</p></div>
+</footer>
+
+<script>
+const D = __DATA__;
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = n => typeof n === 'number' ? n.toLocaleString('en-US') : n;
+
+/* stats */
+$('#stats').innerHTML = D.stats.map(([v, l]) => `<div class="stat"><b>${fmt(v)}</b><span>${esc(l)}</span></div>`).join('');
+/* keys */
+$('#keytable tbody').innerHTML = D.keys.map(k => `<tr><td class="k">${esc(k[0])}</td><td>${esc(k[1])}</td><td class="hide-sm">${esc(k[2])}</td><td>${esc(k[3])}</td></tr>`).join('');
+
+/* resolver: the same most-specific-wins rule as build.py and cdm.fn_ResolveElement */
+const REQ = {Y:'Required', N:'Optional', NA:'Not applicable'};
+function resolve(e, ctx){
+  if (e.lobs !== '*' && !e.lobs.split(',').includes(ctx.lob)) return null;
+  if (!e.modules.split(',').includes(ctx.module)) return {req:'NA', def:'', label:e.name, by:'module', reason:'Not used by this module'};
+  let best = null, bs = -1;
+  for (const a of D.applic) {
+    if (a.e !== e.code) continue;
+    if (Object.entries(a.s).every(([k, v]) => ctx[k] === v) && Object.keys(a.s).length > bs) { best = a; bs = Object.keys(a.s).length; }
+  }
+  if (!best) return {req:e.base_required, def:'', label:e.name, by:'(base)', reason:'Base definition', base:true};
+  return {req:best.r, def:best.d || '', label:best.l || e.name, by:Object.entries(best.s).map(([k, v]) => `${k}=${v}`).join(', '), reason:best.why};
+}
+const STATES = {US:['FL','TX','CA','NY','NJ','PA','IL','GA','MI','OH','WA','ND','WY','CO','NC','SC'], CA:['ON','QC','BC','AB'], GB:['ENG','SCT','WLS']};
+const PRODUCTS = {CP:['CP-Std 2025'], WC:['WC-Std 2025'], GL:['GL-Std 2025','GL-Contractors 2025','GL-ClaimsMade 2025'], CA:['CA-Std 2025']};
+function fillStates(){ const c = $('#c-country').value; $('#c-state').innerHTML = STATES[c].map(s => `<option>${s}</option>`).join(''); }
+function fillProducts(){ $('#c-product').innerHTML = PRODUCTS[$('#c-lob').value].map(p => `<option>${p}</option>`).join(''); }
+function run(){
+  const ctx = {country:$('#c-country').value, state:$('#c-state').value, company:$('#c-company').value, lob:$('#c-lob').value,
+               module:$('#c-module').value, product:$('#c-product').value, line:'Commercial'};
+  const rows = []; const n = {Y:0, N:0, NA:0}; let other = 0;
+  for (const e of D.elements) {
+    const r = resolve(e, ctx); if (!r) continue;
+    if (r.by === 'module') { other++; continue; }
+    n[r.req]++;
+    rows.push({e, r});
+  }
+  const order = {Y:0, N:1, NA:2};
+  rows.sort((a, b) => (a.r.base === b.r.base ? 0 : a.r.base ? 1 : -1) || order[a.r.req] - order[b.r.req]);
+  $('#restable tbody').innerHTML = rows.map(({e, r}) => {
+    const cls = r.req === 'Y' ? 'req' : r.req === 'N' ? 'opt' : 'na';
+    return `<tr class="${r.req === 'NA' ? 'na' : ''} ${r.base ? '' : 'changed'}"><td><code>${esc(e.code)}</code></td><td>${esc(r.label)}</td><td>${esc(e.object)}</td>
+      <td><span class="pill ${cls}">${REQ[r.req]}</span></td><td>${esc(r.def)}</td><td><code>${esc(r.by)}</code></td><td class="hide-sm">${esc(r.reason)}</td></tr>`;
+  }).join('');
+  $('#summary').innerHTML = `<b>${rows.length}</b> elements · <b>${n.Y}</b> required · <b>${n.N}</b> optional · <b>${n.NA}</b> not applicable · ${other} more belong to other modules`;
+}
+$('#c-country').addEventListener('change', () => { fillStates(); run(); });
+$('#c-lob').addEventListener('change', () => { fillProducts(); run(); });
+['#c-state','#c-company','#c-module','#c-product'].forEach(s => $(s).addEventListener('change', run));
+fillStates(); fillProducts(); run();
+
+/* lines of business */
+const LOBN = {CP:"Commercial Property", WC:"Workers' Compensation", GL:"General Liability", CA:"Commercial Auto"};
+function table(rows){
+  if (!rows.length) return '<p class="fine">No records.</p>';
+  const cols = Object.keys(rows[0]);
+  return `<div class="scroll"><table class="t small"><thead><tr>${cols.map(c => `<th>${esc(c.replace(/_/g, ' '))}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map(r => `<tr>${cols.map(c => `<td>${esc(typeof r[c] === 'number' && !/year/.test(c) ? fmt(r[c]) : r[c])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+function showLob(code){
+  document.querySelectorAll('#lobtabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.lob === code));
+  const L = D.lobs[code];
+  $('#lobpanel').innerHTML = `<div class="lob">
+    <div class="card"><span class="tag">objects</span><h3>What ${esc(LOBN[code])} describes</h3><p style="color:var(--muted);font-size:14.5px">${esc(L.objects.join(' · '))}</p>
+      <span class="tag" style="margin-top:6px">distinctive elements</span><ul>${L.elements.map(e => `<li><b>${esc(e[1])}</b> <code>${esc(e[0])}</code>${e[2] ? ' · pick list ' + esc(e[2]) : ''}</li>`).join('')}</ul></div>
+    <div class="card"><span class="tag">rating (illustrative)</span><h3>Rating algorithm</h3><ol>${L.rating.map(r => `<li>${esc(r[0])}: <code>${esc(r[1])}</code></li>`).join('')}</ol>
+      <span class="tag" style="margin-top:6px">rules</span><ul>${L.rules.map(r => `<li><b>${esc(r[0])}</b> ${esc(r[1])}: ${esc(r[2])} → ${esc(r[3])}</li>`).join('')}</ul></div>
+    <div class="card full"><span class="tag">synthetic data</span><h3>A few ${esc(LOBN[code])} records</h3>${table(L.sample)}</div>
+    <div class="card full"><span class="tag">rule findings on the synthetic data</span>${L.hits.length ? `<ul>${L.hits.map(h => `<li><b>${esc(h[0])}</b> on <code>${esc(h[1])}</code>: ${esc(h[2])}</li>`).join('')}</ul>` : '<p class="fine">No rule fired for this line.</p>'}</div>
+  </div>`;
+}
+$('#lobtabs').innerHTML = Object.keys(LOBN).map(c => `<button role="tab" data-lob="${c}">${LOBN[c]}</button>`).join('');
+document.querySelectorAll('#lobtabs button').forEach(b => b.addEventListener('click', () => showLob(b.dataset.lob)));
+showLob('CP');
+
+/* downloads */
+$('#dl').innerHTML = D.downloads.map((f, i) => `<a class="file ${i === 0 ? 'all' : ''}" href="downloads/${esc(f.file)}" download>
+  <span class="ext">${esc(f.ext)}</span><span><h3>${esc(f.title)}</h3><p>${esc(f.desc)}</p><div class="size">${esc(f.file)} · ${esc(f.size)}</div></span></a>`).join('');
+</script>
+</body>
+</html>

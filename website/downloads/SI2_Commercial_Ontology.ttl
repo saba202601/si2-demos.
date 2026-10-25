@@ -1,0 +1,3578 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix si2: <https://si2insure.com/ontology/commercial#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://si2insure.com/ontology/commercial> a owl:Ontology ;
+    dcterms:title "SI² Commercial Lines Ontology (CP, WC, GL, CA)" ;
+    rdfs:comment "Generated from the same governed store as the SI² Commercial CDM. Codes are illustrative." ;
+    owl:versionInfo "2026.10" .
+
+si2:AP001 a si2:Applicability ;
+    si2:appliesToElement si2:SURPLUS_LINES_TAX ;
+    si2:key_company "SI2-ES" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "*" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:reason "Excess & surplus lines policies pay surplus lines tax." ;
+    si2:required "Required" ;
+    si2:specificity 1 .
+
+si2:AP002 a si2:Applicability ;
+    si2:appliesToElement si2:SURPLUS_LINES_TAX ;
+    si2:key_company "SI2-ADM" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "*" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:reason "Admitted paper does not pay surplus lines tax." ;
+    si2:required "Not applicable" ;
+    si2:specificity 1 .
+
+si2:AP003 a si2:Applicability ;
+    si2:appliesToElement si2:STAMPING_FEE ;
+    si2:key_company "SI2-ADM" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "*" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:reason "Admitted paper has no stamping fee." ;
+    si2:required "Not applicable" ;
+    si2:specificity 1 .
+
+si2:AP004 a si2:Applicability ;
+    si2:appliesToElement si2:STAMPING_FEE ;
+    si2:key_company "SI2-ES" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "*" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:reason "Only some states run a stamping office." ;
+    si2:required "Optional" ;
+    si2:specificity 1 .
+
+si2:AP005 a si2:Applicability ;
+    si2:appliesToElement si2:STAMPING_FEE ;
+    si2:key_company "SI2-ES" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "*" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "TX" ;
+    si2:reason "Texas surplus lines stamping office fee." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP006 a si2:Applicability ;
+    si2:appliesToElement si2:STAMPING_FEE ;
+    si2:key_company "SI2-ES" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "*" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "NY" ;
+    si2:reason "New York surplus lines stamping fee." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP007 a si2:Applicability ;
+    si2:appliesToElement si2:STAMPING_FEE ;
+    si2:key_company "SI2-ES" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "*" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "CA" ;
+    si2:reason "California surplus lines stamping fee." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP008 a si2:Applicability ;
+    si2:appliesToElement si2:POSTAL_CODE ;
+    si2:key_company "*" ;
+    si2:key_country "CA" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "*" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:labelOverride "Postal code" ;
+    si2:reason "Canadian address format." ;
+    si2:required "Required" ;
+    si2:specificity 1 .
+
+si2:AP009 a si2:Applicability ;
+    si2:appliesToElement si2:POSTAL_CODE ;
+    si2:key_company "*" ;
+    si2:key_country "GB" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "*" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:labelOverride "Postcode" ;
+    si2:reason "UK address format." ;
+    si2:required "Required" ;
+    si2:specificity 1 .
+
+si2:AP010 a si2:Applicability ;
+    si2:appliesToElement si2:STATE ;
+    si2:key_company "*" ;
+    si2:key_country "CA" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "*" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:labelOverride "Province" ;
+    si2:reason "Canada uses provinces." ;
+    si2:required "Required" ;
+    si2:specificity 1 .
+
+si2:AP011 a si2:Applicability ;
+    si2:appliesToElement si2:STATE ;
+    si2:key_company "*" ;
+    si2:key_country "GB" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "*" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:labelOverride "County" ;
+    si2:reason "Great Britain has no states." ;
+    si2:required "Optional" ;
+    si2:specificity 1 .
+
+si2:AP012 a si2:Applicability ;
+    si2:appliesToElement si2:WC_CLASS_CODE ;
+    si2:key_company "*" ;
+    si2:key_country "CA" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "WC" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:reason "Workers' compensation in Canada is provided by provincial boards, not private insurers." ;
+    si2:required "Not applicable" ;
+    si2:specificity 2 .
+
+si2:AP013 a si2:Applicability ;
+    si2:appliesToElement si2:FEIN ;
+    si2:key_company "*" ;
+    si2:key_country "CA" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "*" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:labelOverride "Business number" ;
+    si2:reason "Canada uses a CRA business number instead of FEIN." ;
+    si2:required "Not applicable" ;
+    si2:specificity 1 .
+
+si2:AP014 a si2:Applicability ;
+    si2:appliesToElement si2:EL_LIMIT_EACH_ACCIDENT ;
+    si2:defaultValue "5000000" ;
+    si2:key_company "*" ;
+    si2:key_country "GB" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "WC" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:labelOverride "Employers' liability limit" ;
+    si2:reason "Employers' liability is compulsory in Great Britain." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP015 a si2:Applicability ;
+    si2:appliesToElement si2:WIND_DEDUCTIBLE_PCT ;
+    si2:defaultValue "2" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CP" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "FL" ;
+    si2:labelOverride "Hurricane deductible %" ;
+    si2:reason "Florida coastal property carries a hurricane percentage deductible." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP016 a si2:Applicability ;
+    si2:appliesToElement si2:WIND_DEDUCTIBLE_PCT ;
+    si2:defaultValue "2" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CP" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "TX" ;
+    si2:labelOverride "Windstorm and hail deductible %" ;
+    si2:reason "Texas coastal and hail exposure." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP017 a si2:Applicability ;
+    si2:appliesToElement si2:WIND_DEDUCTIBLE_PCT ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CP" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:reason "Optional elsewhere." ;
+    si2:required "Optional" ;
+    si2:specificity 1 .
+
+si2:AP018 a si2:Applicability ;
+    si2:appliesToElement si2:EQ_DEDUCTIBLE_PCT ;
+    si2:defaultValue "10" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CP" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "CA" ;
+    si2:reason "Earthquake coverage in California carries a percentage deductible." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP019 a si2:Applicability ;
+    si2:appliesToElement si2:EQ_DEDUCTIBLE_PCT ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CP" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:reason "Optional elsewhere." ;
+    si2:required "Optional" ;
+    si2:specificity 1 .
+
+si2:AP020 a si2:Applicability ;
+    si2:appliesToElement si2:FLOOD_ZONE ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CP" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "FL" ;
+    si2:reason "Required for Florida property underwriting and catastrophe modeling." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP021 a si2:Applicability ;
+    si2:appliesToElement si2:ROOF_YEAR ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CP" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:reason "Roof age drives eligibility and wind / hail rating." ;
+    si2:required "Required" ;
+    si2:specificity 1 .
+
+si2:AP022 a si2:Applicability ;
+    si2:appliesToElement si2:WC_CLASS_CODE ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "WC" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "OH" ;
+    si2:reason "Ohio is a monopolistic state fund state: no private workers' comp (stop-gap employers liability only)." ;
+    si2:required "Not applicable" ;
+    si2:specificity 2 .
+
+si2:AP023 a si2:Applicability ;
+    si2:appliesToElement si2:WC_CLASS_CODE ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "WC" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "WA" ;
+    si2:reason "Washington is a monopolistic state fund state." ;
+    si2:required "Not applicable" ;
+    si2:specificity 2 .
+
+si2:AP024 a si2:Applicability ;
+    si2:appliesToElement si2:WC_CLASS_CODE ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "WC" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "ND" ;
+    si2:reason "North Dakota is a monopolistic state fund state." ;
+    si2:required "Not applicable" ;
+    si2:specificity 2 .
+
+si2:AP025 a si2:Applicability ;
+    si2:appliesToElement si2:WC_CLASS_CODE ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "WC" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "WY" ;
+    si2:reason "Wyoming is a monopolistic state fund state." ;
+    si2:required "Not applicable" ;
+    si2:specificity 2 .
+
+si2:AP026 a si2:Applicability ;
+    si2:appliesToElement si2:WC_BUREAU ;
+    si2:defaultValue "WCIRB" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "WC" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "CA" ;
+    si2:reason "California classes and statistical reporting follow the WCIRB." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP027 a si2:Applicability ;
+    si2:appliesToElement si2:WC_BUREAU ;
+    si2:defaultValue "NYCIRB" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "WC" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "NY" ;
+    si2:reason "New York follows the NYCIRB." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP028 a si2:Applicability ;
+    si2:appliesToElement si2:WC_BUREAU ;
+    si2:defaultValue "NJCRIB" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "WC" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "NJ" ;
+    si2:reason "New Jersey follows the NJCRIB." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP029 a si2:Applicability ;
+    si2:appliesToElement si2:WC_BUREAU ;
+    si2:defaultValue "PCRB" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "WC" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "PA" ;
+    si2:reason "Pennsylvania follows the PCRB." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP030 a si2:Applicability ;
+    si2:appliesToElement si2:WC_BUREAU ;
+    si2:defaultValue "STATE_FUND" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "WC" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "OH" ;
+    si2:reason "Ohio Bureau of Workers' Compensation (monopolistic)." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP031 a si2:Applicability ;
+    si2:appliesToElement si2:WC_BUREAU ;
+    si2:defaultValue "STATE_FUND" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "WC" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "WA" ;
+    si2:reason "Washington Department of Labor & Industries (monopolistic)." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP032 a si2:Applicability ;
+    si2:appliesToElement si2:WC_BUREAU ;
+    si2:defaultValue "NCCI" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "WC" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:reason "NCCI states." ;
+    si2:required "Required" ;
+    si2:specificity 1 .
+
+si2:AP033 a si2:Applicability ;
+    si2:appliesToElement si2:EXPERIENCE_MOD ;
+    si2:defaultValue "1.00" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "WC" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:reason "Experience rating applies when the risk qualifies." ;
+    si2:required "Required" ;
+    si2:specificity 1 .
+
+si2:AP034 a si2:Applicability ;
+    si2:appliesToElement si2:NY_LABOR_LAW_EXPOSURE ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "GL" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "NY" ;
+    si2:reason "Contractors in New York must answer the Labor Law 240/241 exposure question." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP035 a si2:Applicability ;
+    si2:appliesToElement si2:NY_LABOR_LAW_EXPOSURE ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "GL" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:reason "Not applicable outside New York." ;
+    si2:required "Not applicable" ;
+    si2:specificity 1 .
+
+si2:AP036 a si2:Applicability ;
+    si2:appliesToElement si2:RETROACTIVE_DATE ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "GL" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "GL-ClaimsMade 2025" ;
+    si2:key_state "*" ;
+    si2:reason "Required on claims-made forms." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP037 a si2:Applicability ;
+    si2:appliesToElement si2:RETROACTIVE_DATE ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "GL" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:reason "Not used on occurrence forms." ;
+    si2:required "Not applicable" ;
+    si2:specificity 1 .
+
+si2:AP038 a si2:Applicability ;
+    si2:appliesToElement si2:PIP_LIMIT ;
+    si2:defaultValue "10000" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CA" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "FL" ;
+    si2:reason "Florida no-fault personal injury protection." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP039 a si2:Applicability ;
+    si2:appliesToElement si2:PIP_LIMIT ;
+    si2:defaultValue "50000" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CA" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "NY" ;
+    si2:reason "New York no-fault (basic economic loss)." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP040 a si2:Applicability ;
+    si2:appliesToElement si2:PIP_LIMIT ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CA" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "MI" ;
+    si2:reason "Michigan no-fault." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP041 a si2:Applicability ;
+    si2:appliesToElement si2:PIP_LIMIT ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CA" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "NJ" ;
+    si2:reason "New Jersey no-fault." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP042 a si2:Applicability ;
+    si2:appliesToElement si2:PIP_LIMIT ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CA" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:reason "Not a no-fault state." ;
+    si2:required "Not applicable" ;
+    si2:specificity 1 .
+
+si2:AP043 a si2:Applicability ;
+    si2:appliesToElement si2:UM_LIMIT ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CA" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:reason "Uninsured motorists is offered in every state; rejection must be documented where allowed." ;
+    si2:required "Required" ;
+    si2:specificity 1 .
+
+si2:AP044 a si2:Applicability ;
+    si2:appliesToElement si2:CDL_IND ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CA" ;
+    si2:key_module "*" ;
+    si2:key_object "Driver" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:reason "Needed for heavy and extra-heavy trucks." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP045 a si2:Applicability ;
+    si2:appliesToElement si2:FEIN ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "*" ;
+    si2:key_module "Claims" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:reason "Claims does not need the FEIN (data minimization)." ;
+    si2:required "Not applicable" ;
+    si2:specificity 1 .
+
+si2:AP046 a si2:Applicability ;
+    si2:appliesToElement si2:INJURED_WORKER_AWW ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "WC" ;
+    si2:key_module "Claims" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:reason "Indemnity benefits are computed from the average weekly wage." ;
+    si2:required "Required" ;
+    si2:specificity 2 .
+
+si2:AP047 a si2:Applicability ;
+    si2:appliesToElement si2:ANNUAL_STATEMENT_LINE ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "*" ;
+    si2:key_module "Finance" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:reason "Every premium and loss must carry its annual statement line." ;
+    si2:required "Required" ;
+    si2:specificity 1 .
+
+si2:AUDITED_PAYROLL a owl:DatatypeProperty ;
+    rdfs:label "Audited payroll" ;
+    rdfs:domain si2:Classification ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "AUD_PAYROLL" ;
+    skos:definition "Remuneration found at premium audit." ;
+    si2:mapsFrom "LEGACY:AUD_PAYROLL" ;
+    si2:usedInLob si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:AUTO_SYMBOL a owl:DatatypeProperty ;
+    rdfs:label "Covered auto symbol" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:string ;
+    skos:altLabel "SYMBOL" ;
+    skos:definition "Which autos the coverage applies to." ;
+    si2:acordForm "137" ;
+    si2:hasPickList si2:PL_AUTO_SYMBOL ;
+    si2:mapsFrom "ACORD:ACORD 137: Covered auto symbol",
+        "LEGACY:SYMBOL" ;
+    si2:usedInLob si2:LOB_CA ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:BUSINESS_INCOME_LIMIT a owl:DatatypeProperty ;
+    rdfs:label "Business income limit" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "BI_LMT",
+        "TimeElement" ;
+    skos:definition "Limit for business income and extra expense." ;
+    si2:mapsFrom "GW_PC:TimeElement",
+        "LEGACY:BI_LMT" ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:BillingAccount_bills_Policy a owl:ObjectProperty ;
+    rdfs:comment "cardinality 1..*" ;
+    rdfs:domain si2:BillingAccount ;
+    rdfs:range si2:Policy ;
+    rdfs:subPropertyOf si2:bills .
+
+si2:Building_locatedAt_Location a owl:ObjectProperty ;
+    rdfs:comment "cardinality 1" ;
+    rdfs:domain si2:Building ;
+    rdfs:range si2:Location ;
+    rdfs:subPropertyOf si2:locatedAt .
+
+si2:CASE_RESERVE a owl:DatatypeProperty ;
+    rdfs:label "Case reserve" ;
+    rdfs:domain si2:ClaimFinancial ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "OS_RSV",
+        "Reserve" ;
+    skos:definition "Outstanding reserve on the claim." ;
+    si2:mapsFrom "GW_PC:Reserve",
+        "LEGACY:OS_RSV" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Finance,
+        si2:MOD_Reinsurance,
+        si2:MOD_Reporting .
+
+si2:CAUSE_OF_LOSS a owl:DatatypeProperty ;
+    rdfs:label "Cause of loss" ;
+    rdfs:domain si2:Claim ;
+    rdfs:range xsd:string ;
+    skos:altLabel "COL_CD",
+        "LossCause" ;
+    skos:definition "What caused the loss." ;
+    si2:hasPickList si2:PL_CAUSE_OF_LOSS ;
+    si2:mapsFrom "GW_PC:LossCause",
+        "LEGACY:COL_CD" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Reinsurance,
+        si2:MOD_Reporting .
+
+si2:CEDED_PREMIUM a owl:DatatypeProperty ;
+    rdfs:label "Ceded premium" ;
+    rdfs:domain si2:Cession ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "CED_PREM" ;
+    skos:definition "Premium ceded to reinsurers." ;
+    si2:mapsFrom "LEGACY:CED_PREM" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Finance,
+        si2:MOD_Reinsurance .
+
+si2:CLAIM_NUMBER a owl:DatatypeProperty ;
+    rdfs:label "Claim number" ;
+    rdfs:domain si2:Claim ;
+    rdfs:range xsd:string ;
+    skos:altLabel "CLM_NO",
+        "ClaimNumber" ;
+    skos:definition "Identifier of the claim." ;
+    si2:mapsFrom "GW_PC:ClaimNumber",
+        "LEGACY:CLM_NO" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Finance,
+        si2:MOD_Reinsurance,
+        si2:MOD_Reporting .
+
+si2:CLAIM_STATUS a owl:DatatypeProperty ;
+    rdfs:label "Claim status" ;
+    rdfs:domain si2:Claim ;
+    rdfs:range xsd:string ;
+    skos:altLabel "CLM_STAT",
+        "State" ;
+    skos:definition "Open, closed or reopened." ;
+    si2:hasPickList si2:PL_CLAIM_STATUS ;
+    si2:mapsFrom "GW_PC:State",
+        "LEGACY:CLM_STAT" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Reporting .
+
+si2:COINSURANCE a owl:DatatypeProperty ;
+    rdfs:label "Coinsurance" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:string ;
+    skos:altLabel "COINS_PCT" ;
+    skos:definition "Coinsurance percentage." ;
+    si2:acordForm "140" ;
+    si2:hasPickList si2:PL_COINSURANCE ;
+    si2:mapsFrom "ACORD:ACORD 140: Coinsurance",
+        "LEGACY:COINS_PCT" ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:COMMISSION_RATE a owl:DatatypeProperty ;
+    rdfs:label "Commission rate" ;
+    rdfs:domain si2:Producer ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "COMM_PCT",
+        "CommissionRate" ;
+    skos:definition "Commission percentage paid to the producer." ;
+    si2:mapsFrom "GW_PC:CommissionRate",
+        "LEGACY:COMM_PCT" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Finance .
+
+si2:CO_SI2_ADM a si2:WritingCompany ;
+    rdfs:label "SI² Insurance Company (admitted)" .
+
+si2:CO_SI2_ES a si2:WritingCompany ;
+    rdfs:label "SI² Specialty Insurance Company (excess & surplus lines)" .
+
+si2:Cession_cedes_ClaimFinancial a owl:ObjectProperty ;
+    rdfs:comment "cardinality 0..*" ;
+    rdfs:domain si2:Cession ;
+    rdfs:range si2:ClaimFinancial ;
+    rdfs:subPropertyOf si2:cedes .
+
+si2:Cession_cedes_Premium a owl:ObjectProperty ;
+    rdfs:comment "cardinality 0..*" ;
+    rdfs:domain si2:Cession ;
+    rdfs:range si2:Premium ;
+    rdfs:subPropertyOf si2:cedes .
+
+si2:ClaimFinancial_postedTo_Claim a owl:ObjectProperty ;
+    rdfs:comment "cardinality 1" ;
+    rdfs:domain si2:ClaimFinancial ;
+    rdfs:range si2:Claim ;
+    rdfs:subPropertyOf si2:postedTo .
+
+si2:Claim_involves_Coverage a owl:ObjectProperty ;
+    rdfs:comment "cardinality 1..*" ;
+    rdfs:domain si2:Claim ;
+    rdfs:range si2:Coverage ;
+    rdfs:subPropertyOf si2:involves .
+
+si2:Claim_reportedUnder_Policy a owl:ObjectProperty ;
+    rdfs:comment "cardinality 1" ;
+    rdfs:domain si2:Claim ;
+    rdfs:range si2:Policy ;
+    rdfs:subPropertyOf si2:reportedUnder .
+
+si2:Classification_atLocation_Location a owl:ObjectProperty ;
+    rdfs:comment "cardinality 0..1" ;
+    rdfs:domain si2:Classification ;
+    rdfs:range si2:Location ;
+    rdfs:subPropertyOf si2:atLocation .
+
+si2:Classification_ratedUnder_Coverage a owl:ObjectProperty ;
+    rdfs:comment "cardinality 1" ;
+    rdfs:domain si2:Classification ;
+    rdfs:range si2:Coverage ;
+    rdfs:subPropertyOf si2:ratedUnder .
+
+si2:ContextKey a owl:Class ;
+    rdfs:label "Context key" .
+
+si2:Coverage_covers_Building a owl:ObjectProperty ;
+    rdfs:comment "cardinality 0..1" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range si2:Building ;
+    rdfs:subPropertyOf si2:covers .
+
+si2:Coverage_covers_Vehicle a owl:ObjectProperty ;
+    rdfs:comment "cardinality 0..1" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range si2:Vehicle ;
+    rdfs:subPropertyOf si2:covers .
+
+si2:Coverage_partOf_Policy a owl:ObjectProperty ;
+    rdfs:comment "cardinality 1" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range si2:Policy ;
+    rdfs:subPropertyOf si2:partOf .
+
+si2:DRIVER_LICENSE_STATE a owl:DatatypeProperty ;
+    rdfs:label "Driver license state" ;
+    rdfs:domain si2:Driver ;
+    rdfs:range xsd:string ;
+    skos:altLabel "DL_ST" ;
+    skos:definition "Licensing state of the driver." ;
+    si2:mapsFrom "LEGACY:DL_ST" ;
+    si2:usedInLob si2:LOB_CA ;
+    si2:usedInModule si2:MOD_Policy .
+
+si2:Driver_drives_Vehicle a owl:ObjectProperty ;
+    rdfs:comment "cardinality 0..*" ;
+    rdfs:domain si2:Driver ;
+    rdfs:range si2:Vehicle ;
+    rdfs:subPropertyOf si2:drives .
+
+si2:EL_LIMIT_DISEASE_EMPLOYEE a owl:DatatypeProperty ;
+    rdfs:label "Employers liability - disease each employee" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "EL_DIS_EE" ;
+    skos:definition "Part Two disease limit per employee." ;
+    si2:mapsFrom "LEGACY:EL_DIS_EE" ;
+    si2:usedInLob si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:EL_LIMIT_DISEASE_POLICY a owl:DatatypeProperty ;
+    rdfs:label "Employers liability - disease policy limit" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "EL_DIS_POL" ;
+    skos:definition "Part Two disease policy limit." ;
+    si2:mapsFrom "LEGACY:EL_DIS_POL" ;
+    si2:usedInLob si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:FULL_TIME_EMPLOYEES a owl:DatatypeProperty ;
+    rdfs:label "Number of full-time employees" ;
+    rdfs:domain si2:Classification ;
+    rdfs:range xsd:integer ;
+    skos:altLabel "NUM_EE" ;
+    skos:definition "Employees in the class." ;
+    si2:mapsFrom "LEGACY:NUM_EE" ;
+    si2:usedInLob si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Policy .
+
+si2:GARAGING_ZIP a owl:DatatypeProperty ;
+    rdfs:label "Garaging ZIP" ;
+    rdfs:domain si2:Vehicle ;
+    rdfs:range xsd:string ;
+    skos:altLabel "GAR_ZIP",
+        "GaragingLocation" ;
+    skos:definition "Where the vehicle is principally garaged." ;
+    si2:acordForm "137" ;
+    si2:mapsFrom "ACORD:ACORD 137: Garaging ZIP",
+        "GW_PC:GaragingLocation",
+        "LEGACY:GAR_ZIP" ;
+    si2:usedInLob si2:LOB_CA ;
+    si2:usedInModule si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:GL_COVERAGE_FORM a owl:DatatypeProperty ;
+    rdfs:label "Coverage form" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:string ;
+    skos:altLabel "CGL_FORM" ;
+    skos:definition "Occurrence or claims-made." ;
+    si2:hasPickList si2:PL_GL_FORM ;
+    si2:mapsFrom "LEGACY:CGL_FORM" ;
+    si2:usedInLob si2:LOB_GL ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:GL_PREMIUM_BASIS a owl:DatatypeProperty ;
+    rdfs:label "Premium basis" ;
+    rdfs:domain si2:Classification ;
+    rdfs:range xsd:string ;
+    skos:altLabel "PREM_BASIS" ;
+    skos:definition "Exposure basis for the class." ;
+    si2:hasPickList si2:PL_GL_PREMIUM_BASIS ;
+    si2:mapsFrom "LEGACY:PREM_BASIS" ;
+    si2:usedInLob si2:LOB_GL ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:GVW a owl:DatatypeProperty ;
+    rdfs:label "Gross vehicle weight" ;
+    rdfs:domain si2:Vehicle ;
+    rdfs:range xsd:integer ;
+    skos:altLabel "GVW",
+        "GrossWeight" ;
+    skos:definition "Gross vehicle weight in pounds." ;
+    si2:mapsFrom "GW_PC:GrossWeight",
+        "LEGACY:GVW" ;
+    si2:usedInLob si2:LOB_CA ;
+    si2:usedInModule si2:MOD_Policy .
+
+si2:LEGAL_ENTITY_TYPE a owl:DatatypeProperty ;
+    rdfs:label "Legal entity type" ;
+    rdfs:domain si2:Party ;
+    rdfs:range xsd:string ;
+    skos:altLabel "ENT_TYPE",
+        "OrganizationType" ;
+    skos:definition "Legal form of the named insured." ;
+    si2:acordForm "125" ;
+    si2:hasPickList si2:PL_ENTITY_TYPE ;
+    si2:mapsFrom "ACORD:ACORD 125: Legal entity type",
+        "GW_PC:OrganizationType",
+        "LEGACY:ENT_TYPE" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Policy .
+
+si2:LINE_OF_BUSINESS a owl:DatatypeProperty ;
+    rdfs:label "Line of business" ;
+    rdfs:domain si2:Policy ;
+    rdfs:range xsd:string ;
+    skos:altLabel "Coverage part",
+        "LOB_CD",
+        "LineCode" ;
+    skos:definition "Line of business of the coverage part." ;
+    si2:hasPickList si2:PL_LOB ;
+    si2:mapsFrom "AMS:Coverage part",
+        "GW_PC:LineCode",
+        "LEGACY:LOB_CD" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Claims,
+        si2:MOD_Finance,
+        si2:MOD_Policy,
+        si2:MOD_Reinsurance,
+        si2:MOD_Reporting .
+
+si2:LOCATION_ADDRESS a owl:DatatypeProperty ;
+    rdfs:label "Location address" ;
+    rdfs:domain si2:Location ;
+    rdfs:range xsd:string ;
+    skos:altLabel "AddressLine1",
+        "LOC_ADDR" ;
+    skos:definition "Street address of the premises." ;
+    si2:mapsFrom "AMS:AddressLine1",
+        "LEGACY:LOC_ADDR" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:LOSS_DATE a owl:DatatypeProperty ;
+    rdfs:label "Date of loss" ;
+    rdfs:domain si2:Claim ;
+    rdfs:range xsd:date ;
+    skos:altLabel "Accident date",
+        "LOSS_DT",
+        "LossDate" ;
+    skos:definition "Date the loss occurred." ;
+    si2:mapsFrom "AMS:Accident date",
+        "GW_PC:LossDate",
+        "LEGACY:LOSS_DT" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Reinsurance,
+        si2:MOD_Reporting .
+
+si2:Location_insuredUnder_Policy a owl:ObjectProperty ;
+    rdfs:comment "cardinality 1" ;
+    rdfs:domain si2:Location ;
+    rdfs:range si2:Policy ;
+    rdfs:subPropertyOf si2:insuredUnder .
+
+si2:NAICS_CODE a owl:DatatypeProperty ;
+    rdfs:label "NAICS code" ;
+    rdfs:domain si2:Party ;
+    rdfs:range xsd:string ;
+    skos:altLabel "IndustryCode",
+        "NAICS",
+        "SIC" ;
+    skos:definition "Industry classification of the insured's business." ;
+    si2:acordForm "125" ;
+    si2:mapsFrom "ACORD:ACORD 125: NAICS code",
+        "GW_PC:IndustryCode",
+        "LEGACY:NAICS",
+        "LEGACY:SIC" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:NAMED_INSURED_NAME a owl:DatatypeProperty ;
+    rdfs:label "Named insured name" ;
+    rdfs:domain si2:Party ;
+    rdfs:range xsd:string ;
+    skos:altLabel "Applicant name",
+        "INSD_NAME",
+        "PrimaryNamedInsured" ;
+    skos:definition "Legal name of the first named insured." ;
+    si2:acordForm "125" ;
+    si2:mapsFrom "ACORD:ACORD 125: Named insured name",
+        "AMS:Applicant name",
+        "GW_PC:PrimaryNamedInsured",
+        "LEGACY:INSD_NAME" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:PAID_LOSS a owl:DatatypeProperty ;
+    rdfs:label "Paid loss" ;
+    rdfs:domain si2:ClaimFinancial ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "PD_LOSS",
+        "PaymentAmount" ;
+    skos:definition "Loss payment amount." ;
+    si2:mapsFrom "GW_PC:PaymentAmount",
+        "LEGACY:PD_LOSS" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Finance,
+        si2:MOD_Reinsurance,
+        si2:MOD_Reporting .
+
+si2:PAYMENT_PLAN a owl:DatatypeProperty ;
+    rdfs:label "Payment plan" ;
+    rdfs:domain si2:BillingAccount ;
+    rdfs:range xsd:string ;
+    skos:altLabel "BillingPlan",
+        "PAY_PLAN" ;
+    skos:definition "How premium is billed." ;
+    si2:hasPickList si2:PL_PAYMENT_PLAN ;
+    si2:mapsFrom "GW_PC:BillingPlan",
+        "LEGACY:PAY_PLAN" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Billing .
+
+si2:PERSONAL_ADV_INJURY_LIMIT a owl:DatatypeProperty ;
+    rdfs:label "Personal and advertising injury limit" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "PAI_LMT" ;
+    skos:definition "Limit for personal and advertising injury." ;
+    si2:mapsFrom "LEGACY:PAI_LMT" ;
+    si2:usedInLob si2:LOB_GL ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:PL_ADDRESS_FORMAT_CA_PC a skos:Concept ;
+    skos:inScheme si2:PL_ADDRESS_FORMAT ;
+    skos:notation "CA_PC" ;
+    skos:prefLabel "Canadian postal code (A1A 1A1)" ;
+    skos:scopeNote "applies where country=CA" .
+
+si2:PL_ADDRESS_FORMAT_UK_PC a skos:Concept ;
+    skos:inScheme si2:PL_ADDRESS_FORMAT ;
+    skos:notation "UK_PC" ;
+    skos:prefLabel "UK postcode" ;
+    skos:scopeNote "applies where country=GB" .
+
+si2:PL_ADDRESS_FORMAT_ZIP a skos:Concept ;
+    skos:inScheme si2:PL_ADDRESS_FORMAT ;
+    skos:notation "ZIP" ;
+    skos:prefLabel "US ZIP / ZIP+4" ;
+    skos:scopeNote "applies where country=US" .
+
+si2:PL_AUTO_SYMBOL_1 a skos:Concept ;
+    skos:inScheme si2:PL_AUTO_SYMBOL ;
+    skos:notation "1" ;
+    skos:prefLabel "Any auto" .
+
+si2:PL_AUTO_SYMBOL_2 a skos:Concept ;
+    skos:inScheme si2:PL_AUTO_SYMBOL ;
+    skos:notation "2" ;
+    skos:prefLabel "Owned autos only" .
+
+si2:PL_AUTO_SYMBOL_7 a skos:Concept ;
+    skos:inScheme si2:PL_AUTO_SYMBOL ;
+    skos:notation "7" ;
+    skos:prefLabel "Specifically described autos" .
+
+si2:PL_AUTO_SYMBOL_8 a skos:Concept ;
+    skos:inScheme si2:PL_AUTO_SYMBOL ;
+    skos:notation "8" ;
+    skos:prefLabel "Hired autos only" .
+
+si2:PL_AUTO_SYMBOL_9 a skos:Concept ;
+    skos:inScheme si2:PL_AUTO_SYMBOL ;
+    skos:notation "9" ;
+    skos:prefLabel "Non-owned autos only" .
+
+si2:PL_CAUSES_OF_LOSS_BASIC a skos:Concept ;
+    skos:inScheme si2:PL_CAUSES_OF_LOSS ;
+    skos:notation "BASIC" ;
+    skos:prefLabel "Basic" .
+
+si2:PL_CAUSES_OF_LOSS_BROAD a skos:Concept ;
+    skos:inScheme si2:PL_CAUSES_OF_LOSS ;
+    skos:notation "BROAD" ;
+    skos:prefLabel "Broad" .
+
+si2:PL_CAUSES_OF_LOSS_SPECIAL a skos:Concept ;
+    skos:inScheme si2:PL_CAUSES_OF_LOSS ;
+    skos:notation "SPECIAL" ;
+    skos:prefLabel "Special" .
+
+si2:PL_CAUSE_OF_LOSS_BI a skos:Concept ;
+    skos:inScheme si2:PL_CAUSE_OF_LOSS ;
+    skos:notation "BI" ;
+    skos:prefLabel "Bodily injury" .
+
+si2:PL_CAUSE_OF_LOSS_COLL a skos:Concept ;
+    skos:inScheme si2:PL_CAUSE_OF_LOSS ;
+    skos:notation "COLL" ;
+    skos:prefLabel "Collision" .
+
+si2:PL_CAUSE_OF_LOSS_EQ a skos:Concept ;
+    skos:inScheme si2:PL_CAUSE_OF_LOSS ;
+    skos:notation "EQ" ;
+    skos:prefLabel "Earthquake" .
+
+si2:PL_CAUSE_OF_LOSS_FIRE a skos:Concept ;
+    skos:inScheme si2:PL_CAUSE_OF_LOSS ;
+    skos:notation "FIRE" ;
+    skos:prefLabel "Fire" .
+
+si2:PL_CAUSE_OF_LOSS_HAIL a skos:Concept ;
+    skos:inScheme si2:PL_CAUSE_OF_LOSS ;
+    skos:notation "HAIL" ;
+    skos:prefLabel "Hail" .
+
+si2:PL_CAUSE_OF_LOSS_INJURY a skos:Concept ;
+    skos:inScheme si2:PL_CAUSE_OF_LOSS ;
+    skos:notation "INJURY" ;
+    skos:prefLabel "Workplace injury" .
+
+si2:PL_CAUSE_OF_LOSS_PD a skos:Concept ;
+    skos:inScheme si2:PL_CAUSE_OF_LOSS ;
+    skos:notation "PD" ;
+    skos:prefLabel "Property damage" .
+
+si2:PL_CAUSE_OF_LOSS_THEFT a skos:Concept ;
+    skos:inScheme si2:PL_CAUSE_OF_LOSS ;
+    skos:notation "THEFT" ;
+    skos:prefLabel "Theft" .
+
+si2:PL_CAUSE_OF_LOSS_WATER a skos:Concept ;
+    skos:inScheme si2:PL_CAUSE_OF_LOSS ;
+    skos:notation "WATER" ;
+    skos:prefLabel "Water damage" .
+
+si2:PL_CAUSE_OF_LOSS_WIND a skos:Concept ;
+    skos:inScheme si2:PL_CAUSE_OF_LOSS ;
+    skos:notation "WIND" ;
+    skos:prefLabel "Windstorm / hurricane" .
+
+si2:PL_CLAIM_STATUS_CLOSED a skos:Concept ;
+    skos:inScheme si2:PL_CLAIM_STATUS ;
+    skos:notation "CLOSED" ;
+    skos:prefLabel "Closed" .
+
+si2:PL_CLAIM_STATUS_OPEN a skos:Concept ;
+    skos:inScheme si2:PL_CLAIM_STATUS ;
+    skos:notation "OPEN" ;
+    skos:prefLabel "Open" .
+
+si2:PL_CLAIM_STATUS_REOPEN a skos:Concept ;
+    skos:inScheme si2:PL_CLAIM_STATUS ;
+    skos:notation "REOPEN" ;
+    skos:prefLabel "Reopened" .
+
+si2:PL_COINSURANCE_100 a skos:Concept ;
+    skos:inScheme si2:PL_COINSURANCE ;
+    skos:notation "100" ;
+    skos:prefLabel "100%" .
+
+si2:PL_COINSURANCE_80 a skos:Concept ;
+    skos:inScheme si2:PL_COINSURANCE ;
+    skos:notation "80" ;
+    skos:prefLabel "80%" .
+
+si2:PL_COINSURANCE_90 a skos:Concept ;
+    skos:inScheme si2:PL_COINSURANCE ;
+    skos:notation "90" ;
+    skos:prefLabel "90%" .
+
+si2:PL_CONSTRUCTION_1 a skos:Concept ;
+    skos:inScheme si2:PL_CONSTRUCTION ;
+    skos:notation "1" ;
+    skos:prefLabel "Frame" .
+
+si2:PL_CONSTRUCTION_2 a skos:Concept ;
+    skos:inScheme si2:PL_CONSTRUCTION ;
+    skos:notation "2" ;
+    skos:prefLabel "Joisted masonry" .
+
+si2:PL_CONSTRUCTION_3 a skos:Concept ;
+    skos:inScheme si2:PL_CONSTRUCTION ;
+    skos:notation "3" ;
+    skos:prefLabel "Non-combustible" .
+
+si2:PL_CONSTRUCTION_4 a skos:Concept ;
+    skos:inScheme si2:PL_CONSTRUCTION ;
+    skos:notation "4" ;
+    skos:prefLabel "Masonry non-combustible" .
+
+si2:PL_CONSTRUCTION_5 a skos:Concept ;
+    skos:inScheme si2:PL_CONSTRUCTION ;
+    skos:notation "5" ;
+    skos:prefLabel "Modified fire resistive" .
+
+si2:PL_CONSTRUCTION_6 a skos:Concept ;
+    skos:inScheme si2:PL_CONSTRUCTION ;
+    skos:notation "6" ;
+    skos:prefLabel "Fire resistive" .
+
+si2:PL_DEDUCTIBLE_TYPE_EQ_PCT a skos:Concept ;
+    skos:inScheme si2:PL_DEDUCTIBLE_TYPE ;
+    skos:notation "EQ_PCT" ;
+    skos:prefLabel "Earthquake % of value" ;
+    skos:scopeNote "applies where country=US, state=CA" .
+
+si2:PL_DEDUCTIBLE_TYPE_FLAT a skos:Concept ;
+    skos:inScheme si2:PL_DEDUCTIBLE_TYPE ;
+    skos:notation "FLAT" ;
+    skos:prefLabel "Flat amount" .
+
+si2:PL_DEDUCTIBLE_TYPE_HAIL_PCT a skos:Concept ;
+    skos:inScheme si2:PL_DEDUCTIBLE_TYPE ;
+    skos:notation "HAIL_PCT" ;
+    skos:prefLabel "Wind / hail % of value" ;
+    skos:scopeNote "applies where country=US, state=CO",
+        "applies where country=US, state=TX" .
+
+si2:PL_DEDUCTIBLE_TYPE_WIND_PCT a skos:Concept ;
+    skos:inScheme si2:PL_DEDUCTIBLE_TYPE ;
+    skos:notation "WIND_PCT" ;
+    skos:prefLabel "Named storm / windstorm % of value" ;
+    skos:scopeNote "applies where country=US, state=FL",
+        "applies where country=US, state=NC",
+        "applies where country=US, state=SC",
+        "applies where country=US, state=TX" .
+
+si2:PL_ENTITY_TYPE_CORP a skos:Concept ;
+    skos:inScheme si2:PL_ENTITY_TYPE ;
+    skos:notation "CORP" ;
+    skos:prefLabel "Corporation" .
+
+si2:PL_ENTITY_TYPE_IND a skos:Concept ;
+    skos:inScheme si2:PL_ENTITY_TYPE ;
+    skos:notation "IND" ;
+    skos:prefLabel "Individual / sole proprietor" .
+
+si2:PL_ENTITY_TYPE_LLC a skos:Concept ;
+    skos:inScheme si2:PL_ENTITY_TYPE ;
+    skos:notation "LLC" ;
+    skos:prefLabel "Limited liability company" .
+
+si2:PL_ENTITY_TYPE_NFP a skos:Concept ;
+    skos:inScheme si2:PL_ENTITY_TYPE ;
+    skos:notation "NFP" ;
+    skos:prefLabel "Not-for-profit" .
+
+si2:PL_ENTITY_TYPE_PART a skos:Concept ;
+    skos:inScheme si2:PL_ENTITY_TYPE ;
+    skos:notation "PART" ;
+    skos:prefLabel "Partnership" .
+
+si2:PL_GL_CLASS_CONTR_CARP a skos:Concept ;
+    skos:inScheme si2:PL_GL_CLASS ;
+    skos:notation "CONTR-CARP" ;
+    skos:prefLabel "Carpentry contractor" .
+
+si2:PL_GL_CLASS_CONTR_PLUMB a skos:Concept ;
+    skos:inScheme si2:PL_GL_CLASS ;
+    skos:notation "CONTR-PLUMB" ;
+    skos:prefLabel "Plumbing contractor" .
+
+si2:PL_GL_CLASS_MFG_LIGHT a skos:Concept ;
+    skos:inScheme si2:PL_GL_CLASS ;
+    skos:notation "MFG-LIGHT" ;
+    skos:prefLabel "Light manufacturing" .
+
+si2:PL_GL_CLASS_OFFICE a skos:Concept ;
+    skos:inScheme si2:PL_GL_CLASS ;
+    skos:notation "OFFICE" ;
+    skos:prefLabel "Office building occupancy" .
+
+si2:PL_GL_CLASS_RESTAURANT a skos:Concept ;
+    skos:inScheme si2:PL_GL_CLASS ;
+    skos:notation "RESTAURANT" ;
+    skos:prefLabel "Restaurant" .
+
+si2:PL_GL_CLASS_RETAIL a skos:Concept ;
+    skos:inScheme si2:PL_GL_CLASS ;
+    skos:notation "RETAIL" ;
+    skos:prefLabel "Retail store" .
+
+si2:PL_GL_FORM_CM a skos:Concept ;
+    skos:inScheme si2:PL_GL_FORM ;
+    skos:notation "CM" ;
+    skos:prefLabel "Claims-made" .
+
+si2:PL_GL_FORM_OCC a skos:Concept ;
+    skos:inScheme si2:PL_GL_FORM ;
+    skos:notation "OCC" ;
+    skos:prefLabel "Occurrence" .
+
+si2:PL_GL_PREMIUM_BASIS_AREA a skos:Concept ;
+    skos:inScheme si2:PL_GL_PREMIUM_BASIS ;
+    skos:notation "AREA" ;
+    skos:prefLabel "Area (per 1,000 sq ft)" .
+
+si2:PL_GL_PREMIUM_BASIS_COST a skos:Concept ;
+    skos:inScheme si2:PL_GL_PREMIUM_BASIS ;
+    skos:notation "COST" ;
+    skos:prefLabel "Total cost (per $1,000)" .
+
+si2:PL_GL_PREMIUM_BASIS_PAYROLL a skos:Concept ;
+    skos:inScheme si2:PL_GL_PREMIUM_BASIS ;
+    skos:notation "PAYROLL" ;
+    skos:prefLabel "Payroll (per $1,000)" .
+
+si2:PL_GL_PREMIUM_BASIS_SALES a skos:Concept ;
+    skos:inScheme si2:PL_GL_PREMIUM_BASIS ;
+    skos:notation "SALES" ;
+    skos:prefLabel "Gross sales (per $1,000)" .
+
+si2:PL_GL_PREMIUM_BASIS_UNITS a skos:Concept ;
+    skos:inScheme si2:PL_GL_PREMIUM_BASIS ;
+    skos:notation "UNITS" ;
+    skos:prefLabel "Units" .
+
+si2:PL_LOB_CA a skos:Concept ;
+    skos:inScheme si2:PL_LOB ;
+    skos:notation "CA" ;
+    skos:prefLabel "Commercial Auto" .
+
+si2:PL_LOB_CP a skos:Concept ;
+    skos:inScheme si2:PL_LOB ;
+    skos:notation "CP" ;
+    skos:prefLabel "Commercial Property" .
+
+si2:PL_LOB_GL a skos:Concept ;
+    skos:inScheme si2:PL_LOB ;
+    skos:notation "GL" ;
+    skos:prefLabel "General Liability" .
+
+si2:PL_LOB_WC a skos:Concept ;
+    skos:inScheme si2:PL_LOB ;
+    skos:notation "WC" ;
+    skos:prefLabel "Workers' Compensation" .
+
+si2:PL_PAYMENT_PLAN_AUDIT a skos:Concept ;
+    skos:inScheme si2:PL_PAYMENT_PLAN ;
+    skos:notation "AUDIT" ;
+    skos:prefLabel "Reporting / audit basis" .
+
+si2:PL_PAYMENT_PLAN_MON a skos:Concept ;
+    skos:inScheme si2:PL_PAYMENT_PLAN ;
+    skos:notation "MON" ;
+    skos:prefLabel "Monthly" .
+
+si2:PL_PAYMENT_PLAN_PIF a skos:Concept ;
+    skos:inScheme si2:PL_PAYMENT_PLAN ;
+    skos:notation "PIF" ;
+    skos:prefLabel "Paid in full" .
+
+si2:PL_PAYMENT_PLAN_QTR a skos:Concept ;
+    skos:inScheme si2:PL_PAYMENT_PLAN ;
+    skos:notation "QTR" ;
+    skos:prefLabel "Quarterly" .
+
+si2:PL_PROTECTION_CLASS_1 a skos:Concept ;
+    skos:inScheme si2:PL_PROTECTION_CLASS ;
+    skos:notation "1" ;
+    skos:prefLabel "Class 1" .
+
+si2:PL_PROTECTION_CLASS_10 a skos:Concept ;
+    skos:inScheme si2:PL_PROTECTION_CLASS ;
+    skos:notation "10" ;
+    skos:prefLabel "Class 10" .
+
+si2:PL_PROTECTION_CLASS_2 a skos:Concept ;
+    skos:inScheme si2:PL_PROTECTION_CLASS ;
+    skos:notation "2" ;
+    skos:prefLabel "Class 2" .
+
+si2:PL_PROTECTION_CLASS_3 a skos:Concept ;
+    skos:inScheme si2:PL_PROTECTION_CLASS ;
+    skos:notation "3" ;
+    skos:prefLabel "Class 3" .
+
+si2:PL_PROTECTION_CLASS_4 a skos:Concept ;
+    skos:inScheme si2:PL_PROTECTION_CLASS ;
+    skos:notation "4" ;
+    skos:prefLabel "Class 4" .
+
+si2:PL_PROTECTION_CLASS_5 a skos:Concept ;
+    skos:inScheme si2:PL_PROTECTION_CLASS ;
+    skos:notation "5" ;
+    skos:prefLabel "Class 5" .
+
+si2:PL_PROTECTION_CLASS_6 a skos:Concept ;
+    skos:inScheme si2:PL_PROTECTION_CLASS ;
+    skos:notation "6" ;
+    skos:prefLabel "Class 6" .
+
+si2:PL_PROTECTION_CLASS_7 a skos:Concept ;
+    skos:inScheme si2:PL_PROTECTION_CLASS ;
+    skos:notation "7" ;
+    skos:prefLabel "Class 7" .
+
+si2:PL_PROTECTION_CLASS_8 a skos:Concept ;
+    skos:inScheme si2:PL_PROTECTION_CLASS ;
+    skos:notation "8" ;
+    skos:prefLabel "Class 8" .
+
+si2:PL_PROTECTION_CLASS_9 a skos:Concept ;
+    skos:inScheme si2:PL_PROTECTION_CLASS ;
+    skos:notation "9" ;
+    skos:prefLabel "Class 9" .
+
+si2:PL_RADIUS_INTERMEDIATE a skos:Concept ;
+    skos:inScheme si2:PL_RADIUS ;
+    skos:notation "INTERMEDIATE" ;
+    skos:prefLabel "Intermediate (51-200 miles)" .
+
+si2:PL_RADIUS_LOCAL a skos:Concept ;
+    skos:inScheme si2:PL_RADIUS ;
+    skos:notation "LOCAL" ;
+    skos:prefLabel "Local (up to 50 miles)" .
+
+si2:PL_RADIUS_LONG a skos:Concept ;
+    skos:inScheme si2:PL_RADIUS ;
+    skos:notation "LONG" ;
+    skos:prefLabel "Long distance (over 200 miles)" .
+
+si2:PL_SPRINKLER_FULL a skos:Concept ;
+    skos:inScheme si2:PL_SPRINKLER ;
+    skos:notation "FULL" ;
+    skos:prefLabel "Fully sprinklered" .
+
+si2:PL_SPRINKLER_NONE a skos:Concept ;
+    skos:inScheme si2:PL_SPRINKLER ;
+    skos:notation "NONE" ;
+    skos:prefLabel "None" .
+
+si2:PL_SPRINKLER_PART a skos:Concept ;
+    skos:inScheme si2:PL_SPRINKLER ;
+    skos:notation "PART" ;
+    skos:prefLabel "Partially sprinklered" .
+
+si2:PL_TXN_TYPE_AU a skos:Concept ;
+    skos:inScheme si2:PL_TXN_TYPE ;
+    skos:notation "AU" ;
+    skos:prefLabel "Premium audit" .
+
+si2:PL_TXN_TYPE_CN a skos:Concept ;
+    skos:inScheme si2:PL_TXN_TYPE ;
+    skos:notation "CN" ;
+    skos:prefLabel "Cancellation" .
+
+si2:PL_TXN_TYPE_EN a skos:Concept ;
+    skos:inScheme si2:PL_TXN_TYPE ;
+    skos:notation "EN" ;
+    skos:prefLabel "Endorsement" .
+
+si2:PL_TXN_TYPE_NB a skos:Concept ;
+    skos:inScheme si2:PL_TXN_TYPE ;
+    skos:notation "NB" ;
+    skos:prefLabel "New business" .
+
+si2:PL_TXN_TYPE_RI a skos:Concept ;
+    skos:inScheme si2:PL_TXN_TYPE ;
+    skos:notation "RI" ;
+    skos:prefLabel "Reinstatement" .
+
+si2:PL_TXN_TYPE_RN a skos:Concept ;
+    skos:inScheme si2:PL_TXN_TYPE ;
+    skos:notation "RN" ;
+    skos:prefLabel "Renewal" .
+
+si2:PL_VALUATION_ACV a skos:Concept ;
+    skos:inScheme si2:PL_VALUATION ;
+    skos:notation "ACV" ;
+    skos:prefLabel "Actual cash value" .
+
+si2:PL_VALUATION_AGREED a skos:Concept ;
+    skos:inScheme si2:PL_VALUATION ;
+    skos:notation "AGREED" ;
+    skos:prefLabel "Agreed value" .
+
+si2:PL_VALUATION_RC a skos:Concept ;
+    skos:inScheme si2:PL_VALUATION ;
+    skos:notation "RC" ;
+    skos:prefLabel "Replacement cost" .
+
+si2:PL_VEHICLE_TYPE_HT a skos:Concept ;
+    skos:inScheme si2:PL_VEHICLE_TYPE ;
+    skos:notation "HT" ;
+    skos:prefLabel "Heavy truck (20,001-45,000)" .
+
+si2:PL_VEHICLE_TYPE_LT a skos:Concept ;
+    skos:inScheme si2:PL_VEHICLE_TYPE ;
+    skos:notation "LT" ;
+    skos:prefLabel "Light truck (≤10,000 lbs GVW)" .
+
+si2:PL_VEHICLE_TYPE_MT a skos:Concept ;
+    skos:inScheme si2:PL_VEHICLE_TYPE ;
+    skos:notation "MT" ;
+    skos:prefLabel "Medium truck (10,001-20,000)" .
+
+si2:PL_VEHICLE_TYPE_PPT a skos:Concept ;
+    skos:inScheme si2:PL_VEHICLE_TYPE ;
+    skos:notation "PPT" ;
+    skos:prefLabel "Private passenger type" .
+
+si2:PL_VEHICLE_TYPE_TRAC a skos:Concept ;
+    skos:inScheme si2:PL_VEHICLE_TYPE ;
+    skos:notation "TRAC" ;
+    skos:prefLabel "Truck-tractor" .
+
+si2:PL_VEHICLE_TYPE_XHT a skos:Concept ;
+    skos:inScheme si2:PL_VEHICLE_TYPE ;
+    skos:notation "XHT" ;
+    skos:prefLabel "Extra-heavy truck (>45,000)" .
+
+si2:PL_VEHICLE_USE_COMMERCIAL a skos:Concept ;
+    skos:inScheme si2:PL_VEHICLE_USE ;
+    skos:notation "COMMERCIAL" ;
+    skos:prefLabel "Commercial" .
+
+si2:PL_VEHICLE_USE_RETAIL a skos:Concept ;
+    skos:inScheme si2:PL_VEHICLE_USE ;
+    skos:notation "RETAIL" ;
+    skos:prefLabel "Retail" .
+
+si2:PL_VEHICLE_USE_SERVICE a skos:Concept ;
+    skos:inScheme si2:PL_VEHICLE_USE ;
+    skos:notation "SERVICE" ;
+    skos:prefLabel "Service" .
+
+si2:PL_WC_BUREAU_NCCI a skos:Concept ;
+    skos:inScheme si2:PL_WC_BUREAU ;
+    skos:notation "NCCI" ;
+    skos:prefLabel "NCCI" .
+
+si2:PL_WC_BUREAU_NJCRIB a skos:Concept ;
+    skos:inScheme si2:PL_WC_BUREAU ;
+    skos:notation "NJCRIB" ;
+    skos:prefLabel "NJCRIB (New Jersey)" ;
+    skos:scopeNote "applies where country=US, state=NJ" .
+
+si2:PL_WC_BUREAU_NYCIRB a skos:Concept ;
+    skos:inScheme si2:PL_WC_BUREAU ;
+    skos:notation "NYCIRB" ;
+    skos:prefLabel "NYCIRB (New York)" ;
+    skos:scopeNote "applies where country=US, state=NY" .
+
+si2:PL_WC_BUREAU_PCRB a skos:Concept ;
+    skos:inScheme si2:PL_WC_BUREAU ;
+    skos:notation "PCRB" ;
+    skos:prefLabel "PCRB (Pennsylvania)" ;
+    skos:scopeNote "applies where country=US, state=PA" .
+
+si2:PL_WC_BUREAU_STATE_FUND a skos:Concept ;
+    skos:inScheme si2:PL_WC_BUREAU ;
+    skos:notation "STATE_FUND" ;
+    skos:prefLabel "Monopolistic state fund" ;
+    skos:scopeNote "applies where country=US, state=ND",
+        "applies where country=US, state=OH",
+        "applies where country=US, state=WA",
+        "applies where country=US, state=WY" .
+
+si2:PL_WC_BUREAU_WCIRB a skos:Concept ;
+    skos:inScheme si2:PL_WC_BUREAU ;
+    skos:notation "WCIRB" ;
+    skos:prefLabel "WCIRB (California)" ;
+    skos:scopeNote "applies where country=US, state=CA" .
+
+si2:PL_WC_CLASS_5183 a skos:Concept ;
+    skos:inScheme si2:PL_WC_CLASS ;
+    skos:notation "5183" ;
+    skos:prefLabel "Plumbing" .
+
+si2:PL_WC_CLASS_5645 a skos:Concept ;
+    skos:inScheme si2:PL_WC_CLASS ;
+    skos:notation "5645" ;
+    skos:prefLabel "Carpentry - residential" .
+
+si2:PL_WC_CLASS_7219 a skos:Concept ;
+    skos:inScheme si2:PL_WC_CLASS ;
+    skos:notation "7219" ;
+    skos:prefLabel "Trucking - local hauling" .
+
+si2:PL_WC_CLASS_8742 a skos:Concept ;
+    skos:inScheme si2:PL_WC_CLASS ;
+    skos:notation "8742" ;
+    skos:prefLabel "Outside salespersons" .
+
+si2:PL_WC_CLASS_8810 a skos:Concept ;
+    skos:inScheme si2:PL_WC_CLASS ;
+    skos:notation "8810" ;
+    skos:prefLabel "Clerical office employees" .
+
+si2:PL_WC_CLASS_9015 a skos:Concept ;
+    skos:inScheme si2:PL_WC_CLASS ;
+    skos:notation "9015" ;
+    skos:prefLabel "Building operations" .
+
+si2:PL_WC_PART3_3A a skos:Concept ;
+    skos:inScheme si2:PL_WC_PART3 ;
+    skos:notation "3A" ;
+    skos:prefLabel "Part One - states listed in Item 3.A" .
+
+si2:PL_WC_PART3_3C a skos:Concept ;
+    skos:inScheme si2:PL_WC_PART3 ;
+    skos:notation "3C" ;
+    skos:prefLabel "Other states insurance - Item 3.C" .
+
+si2:POLICY_EFFECTIVE_DATE a owl:DatatypeProperty ;
+    rdfs:label "Policy effective date" ;
+    rdfs:domain si2:Policy ;
+    rdfs:range xsd:date ;
+    skos:altLabel "EFF_DT",
+        "PeriodStart",
+        "inception_date" ;
+    skos:definition "Date the policy term starts." ;
+    si2:mapsFrom "GW_PC:PeriodStart",
+        "HOMEBUILT:inception_date",
+        "LEGACY:EFF_DT" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Claims,
+        si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:POLICY_EXPIRATION_DATE a owl:DatatypeProperty ;
+    rdfs:label "Policy expiration date" ;
+    rdfs:domain si2:Policy ;
+    rdfs:range xsd:date ;
+    skos:altLabel "EXP_DT",
+        "PeriodEnd" ;
+    skos:definition "Date the policy term ends." ;
+    si2:mapsFrom "GW_PC:PeriodEnd",
+        "LEGACY:EXP_DT" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Claims,
+        si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:POLICY_NUMBER a owl:DatatypeProperty ;
+    rdfs:label "Policy number" ;
+    rdfs:domain si2:Policy ;
+    rdfs:range xsd:string ;
+    skos:altLabel "PM-POLICY-NO",
+        "POL_NO",
+        "PolicyNumber",
+        "policy_num" ;
+    skos:definition "Identifier of the policy term." ;
+    si2:mapsFrom "GW_PC:PolicyNumber",
+        "HOMEBUILT:policy_num",
+        "LEGACY:PM-POLICY-NO",
+        "LEGACY:POL_NO" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Claims,
+        si2:MOD_Finance,
+        si2:MOD_Policy,
+        si2:MOD_Reinsurance,
+        si2:MOD_Reporting .
+
+si2:PRODUCER_CODE a owl:DatatypeProperty ;
+    rdfs:label "Producer code" ;
+    rdfs:domain si2:Producer ;
+    rdfs:range xsd:string ;
+    skos:altLabel "AGT_NO",
+        "Agency number",
+        "ProducerCode" ;
+    skos:definition "Agency / broker code." ;
+    si2:acordForm "125" ;
+    si2:mapsFrom "ACORD:ACORD 125: Producer code",
+        "AMS:Agency number",
+        "GW_PC:ProducerCode",
+        "LEGACY:AGT_NO" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Finance,
+        si2:MOD_Policy .
+
+si2:PRODUCTS_AGGREGATE_LIMIT a owl:DatatypeProperty ;
+    rdfs:label "Products-completed operations aggregate" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "PCO_AGG" ;
+    skos:definition "Aggregate for products and completed work." ;
+    si2:mapsFrom "LEGACY:PCO_AGG" ;
+    si2:usedInLob si2:LOB_GL ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:PRODUCT_CODE a owl:DatatypeProperty ;
+    rdfs:label "Product and edition" ;
+    rdfs:domain si2:Policy ;
+    rdfs:range xsd:string ;
+    skos:altLabel "PROD_CD",
+        "ProductCode",
+        "Program" ;
+    skos:definition "Product and form edition (product key)." ;
+    si2:mapsFrom "GW_PC:ProductCode",
+        "GW_PC:Program",
+        "LEGACY:PROD_CD" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:PolicyTransaction_amends_Policy a owl:ObjectProperty ;
+    rdfs:comment "cardinality 1" ;
+    rdfs:domain si2:PolicyTransaction ;
+    rdfs:range si2:Policy ;
+    rdfs:subPropertyOf si2:amends .
+
+si2:Policy_hasNamedInsured_Party a owl:ObjectProperty ;
+    rdfs:comment "cardinality 1..*" ;
+    rdfs:domain si2:Policy ;
+    rdfs:range si2:Party ;
+    rdfs:subPropertyOf si2:hasNamedInsured .
+
+si2:Policy_placedBy_Producer a owl:ObjectProperty ;
+    rdfs:comment "cardinality 1" ;
+    rdfs:domain si2:Policy ;
+    rdfs:range si2:Producer ;
+    rdfs:subPropertyOf si2:placedBy .
+
+si2:Premium_chargedFor_Coverage a owl:ObjectProperty ;
+    rdfs:comment "cardinality 1" ;
+    rdfs:domain si2:Premium ;
+    rdfs:range si2:Coverage ;
+    rdfs:subPropertyOf si2:chargedFor .
+
+si2:RATE_CA_1 a si2:RatingStep ;
+    rdfs:label "Commercial Auto step 1: Liability base" ;
+    si2:formula "base rate[STATE, TERRITORY] x factor[VEHICLE_TYPE, VEHICLE_USE, RADIUS_CLASS]" ;
+    si2:stepNumber 1 ;
+    si2:usedInLob si2:LOB_CA ;
+    si2:usesElement si2:RADIUS_CLASS,
+        si2:STATE,
+        si2:TERRITORY,
+        si2:VEHICLE_TYPE,
+        si2:VEHICLE_USE .
+
+si2:RATE_CA_2 a si2:RatingStep ;
+    rdfs:label "Commercial Auto step 2: Increased limits" ;
+    si2:formula "x ILF[CA_LIABILITY_LIMIT]" ;
+    si2:stepNumber 2 ;
+    si2:usedInLob si2:LOB_CA ;
+    si2:usesElement si2:CA_LIABILITY_LIMIT .
+
+si2:RATE_CA_3 a si2:RatingStep ;
+    rdfs:label "Commercial Auto step 3: Physical damage" ;
+    si2:formula "COST_NEW x rate[VEHICLE_TYPE, age] x deductible factor" ;
+    si2:stepNumber 3 ;
+    si2:usedInLob si2:LOB_CA ;
+    si2:usesElement si2:COST_NEW,
+        si2:VEHICLE_TYPE .
+
+si2:RATE_CA_4 a si2:RatingStep ;
+    rdfs:label "Commercial Auto step 4: State coverages" ;
+    si2:formula "+ PIP[STATE] + UM[STATE, UM_LIMIT]" ;
+    si2:stepNumber 4 ;
+    si2:usedInLob si2:LOB_CA ;
+    si2:usesElement si2:STATE,
+        si2:UM_LIMIT .
+
+si2:RATE_CP_1 a si2:RatingStep ;
+    rdfs:label "Commercial Property step 1: Building base premium" ;
+    si2:formula "BUILDING_LIMIT / 100 x base rate[CONSTRUCTION_CLASS, PROTECTION_CLASS]" ;
+    si2:stepNumber 1 ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usesElement si2:BUILDING_LIMIT,
+        si2:CONSTRUCTION_CLASS,
+        si2:PROTECTION_CLASS .
+
+si2:RATE_CP_2 a si2:RatingStep ;
+    rdfs:label "Commercial Property step 2: Contents base premium" ;
+    si2:formula "BPP_LIMIT / 100 x contents rate[CONSTRUCTION_CLASS, PROTECTION_CLASS]" ;
+    si2:stepNumber 2 ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usesElement si2:BPP_LIMIT,
+        si2:CONSTRUCTION_CLASS,
+        si2:PROTECTION_CLASS .
+
+si2:RATE_CP_3 a si2:RatingStep ;
+    rdfs:label "Commercial Property step 3: Causes of loss" ;
+    si2:formula "x factor[CAUSES_OF_LOSS_FORM]" ;
+    si2:stepNumber 3 ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usesElement si2:CAUSES_OF_LOSS_FORM .
+
+si2:RATE_CP_4 a si2:RatingStep ;
+    rdfs:label "Commercial Property step 4: Sprinkler credit" ;
+    si2:formula "x factor[SPRINKLER]" ;
+    si2:stepNumber 4 ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usesElement si2:SPRINKLER .
+
+si2:RATE_CP_5 a si2:RatingStep ;
+    rdfs:label "Commercial Property step 5: Deductible credit" ;
+    si2:formula "x factor[DEDUCTIBLE_TYPE, DEDUCTIBLE_AMOUNT or WIND_DEDUCTIBLE_PCT]" ;
+    si2:stepNumber 5 ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usesElement si2:DEDUCTIBLE_AMOUNT,
+        si2:DEDUCTIBLE_TYPE,
+        si2:WIND_DEDUCTIBLE_PCT .
+
+si2:RATE_CP_6 a si2:RatingStep ;
+    rdfs:label "Commercial Property step 6: Territory (state key)" ;
+    si2:formula "x factor[STATE, TERRITORY]" ;
+    si2:stepNumber 6 ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usesElement si2:STATE,
+        si2:TERRITORY .
+
+si2:RATE_GL_1 a si2:RatingStep ;
+    rdfs:label "General Liability step 1: Premises / operations" ;
+    si2:formula "sum over classes: GL_EXPOSURE / basis divisor x rate[STATE, TERRITORY, GL_CLASS_CODE]" ;
+    si2:stepNumber 1 ;
+    si2:usedInLob si2:LOB_GL ;
+    si2:usesElement si2:GL_CLASS_CODE,
+        si2:GL_EXPOSURE,
+        si2:STATE,
+        si2:TERRITORY .
+
+si2:RATE_GL_2 a si2:RatingStep ;
+    rdfs:label "General Liability step 2: Increased limits" ;
+    si2:formula "x ILF[EACH_OCCURRENCE_LIMIT, GENERAL_AGGREGATE_LIMIT]" ;
+    si2:stepNumber 2 ;
+    si2:usedInLob si2:LOB_GL ;
+    si2:usesElement si2:EACH_OCCURRENCE_LIMIT,
+        si2:GENERAL_AGGREGATE_LIMIT .
+
+si2:RATE_GL_3 a si2:RatingStep ;
+    rdfs:label "General Liability step 3: Claims-made step" ;
+    si2:formula "x step factor[years since RETROACTIVE_DATE] (claims-made only)" ;
+    si2:stepNumber 3 ;
+    si2:usedInLob si2:LOB_GL ;
+    si2:usesElement si2:RETROACTIVE_DATE .
+
+si2:RATE_WC_1 a si2:RatingStep ;
+    rdfs:label "Workers' Compensation step 1: Manual premium" ;
+    si2:formula "sum over classes: ESTIMATED_PAYROLL / 100 x rate[STATE, WC_CLASS_CODE]" ;
+    si2:stepNumber 1 ;
+    si2:usedInLob si2:LOB_WC ;
+    si2:usesElement si2:ESTIMATED_PAYROLL,
+        si2:STATE,
+        si2:WC_CLASS_CODE .
+
+si2:RATE_WC_2 a si2:RatingStep ;
+    rdfs:label "Workers' Compensation step 2: Experience rating" ;
+    si2:formula "x EXPERIENCE_MOD" ;
+    si2:stepNumber 2 ;
+    si2:usedInLob si2:LOB_WC ;
+    si2:usesElement si2:EXPERIENCE_MOD .
+
+si2:RATE_WC_3 a si2:RatingStep ;
+    rdfs:label "Workers' Compensation step 3: Schedule rating" ;
+    si2:formula "x (1 + schedule credit/debit, capped by state)" ;
+    si2:stepNumber 3 ;
+    si2:usedInLob si2:LOB_WC .
+
+si2:RATE_WC_4 a si2:RatingStep ;
+    rdfs:label "Workers' Compensation step 4: Premium discount and expense constant" ;
+    si2:formula "- premium discount[STATE, premium size] + expense constant[STATE]" ;
+    si2:stepNumber 4 ;
+    si2:usedInLob si2:LOB_WC ;
+    si2:usesElement si2:STATE .
+
+si2:RULE_CL_WC_001 a si2:BusinessRule ;
+    rdfs:label "AWW required for indemnity" ;
+    si2:action "Block payment" ;
+    si2:condition "indemnity payment AND INJURED_WORKER_AWW is null" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "WC" ;
+    si2:key_module "Claims" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:phase "Validation" ;
+    si2:usesElement si2:INJURED_WORKER_AWW .
+
+si2:RULE_FN_001 a si2:BusinessRule ;
+    rdfs:label "Annual statement line" ;
+    si2:action "Block posting" ;
+    si2:condition "ANNUAL_STATEMENT_LINE is null" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "*" ;
+    si2:key_module "Finance" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:phase "Validation" ;
+    si2:usesElement si2:ANNUAL_STATEMENT_LINE,
+        si2:STATE .
+
+si2:RULE_UW_CA_001 a si2:BusinessRule ;
+    rdfs:label "Long-haul heavy trucks" ;
+    si2:action "Refer to transportation unit" ;
+    si2:condition "VEHICLE_TYPE in (HT, XHT, TRAC) AND RADIUS_CLASS = LONG" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CA" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:phase "Eligibility" ;
+    si2:usesElement si2:RADIUS_CLASS,
+        si2:VEHICLE_TYPE .
+
+si2:RULE_UW_CA_002 a si2:BusinessRule ;
+    rdfs:label "Driver MVR" ;
+    si2:action "Exclude driver or decline" ;
+    si2:condition "DRIVER_MVR_POINTS >= 6" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CA" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:phase "Eligibility" ;
+    si2:usesElement si2:DRIVER_MVR_POINTS .
+
+si2:RULE_UW_CA_003 a si2:BusinessRule ;
+    rdfs:label "CDL required" ;
+    si2:action "Error: driver needs a CDL" ;
+    si2:condition "VEHICLE_TYPE in (HT, XHT, TRAC) AND CDL_IND = false" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CA" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:phase "Validation" ;
+    si2:usesElement si2:CDL_IND,
+        si2:VEHICLE_TYPE .
+
+si2:RULE_UW_CP_001 a si2:BusinessRule ;
+    rdfs:label "Roof age limit" ;
+    si2:action "Refer to underwriter" ;
+    si2:condition "ROOF_YEAR < policy year - 20" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CP" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:phase "Eligibility" ;
+    si2:usesElement si2:ROOF_YEAR .
+
+si2:RULE_UW_CP_002 a si2:BusinessRule ;
+    rdfs:label "Roof age limit - Florida" ;
+    si2:action "Decline unless roof inspection" ;
+    si2:condition "ROOF_YEAR < policy year - 15" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CP" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "FL" ;
+    si2:phase "Eligibility" ;
+    si2:usesElement si2:ROOF_YEAR .
+
+si2:RULE_UW_CP_003 a si2:BusinessRule ;
+    rdfs:label "Frame high-rise" ;
+    si2:action "Decline" ;
+    si2:condition "CONSTRUCTION_CLASS = 1 AND STORIES > 4" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CP" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:phase "Eligibility" ;
+    si2:usesElement si2:CONSTRUCTION_CLASS,
+        si2:STORIES .
+
+si2:RULE_UW_CP_004 a si2:BusinessRule ;
+    rdfs:label "Coastal flood zone" ;
+    si2:action "Refer to catastrophe desk" ;
+    si2:condition "FLOOD_ZONE in (V, VE)" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "CP" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "FL" ;
+    si2:phase "Eligibility" ;
+    si2:usesElement si2:FLOOD_ZONE .
+
+si2:RULE_UW_ES_001 a si2:BusinessRule ;
+    rdfs:label "Surplus lines tax" ;
+    si2:action "Add SURPLUS_LINES_TAX = premium x state SL tax rate; add STAMPING_FEE where the state has one" ;
+    si2:condition "always" ;
+    si2:key_company "SI2-ES" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "*" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:phase "Rating" ;
+    si2:usesElement si2:STAMPING_FEE,
+        si2:SURPLUS_LINES_TAX .
+
+si2:RULE_UW_GL_001 a si2:BusinessRule ;
+    rdfs:label "NY Labor Law contractors" ;
+    si2:action "Refer; require action-over exclusion review" ;
+    si2:condition "GL_CLASS_CODE starts CONTR AND NY_LABOR_LAW_EXPOSURE = true" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "GL" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "NY" ;
+    si2:phase "Eligibility" ;
+    si2:usesElement si2:GL_CLASS_CODE,
+        si2:NY_LABOR_LAW_EXPOSURE .
+
+si2:RULE_UW_GL_002 a si2:BusinessRule ;
+    rdfs:label "Subcontractor ratio" ;
+    si2:action "Charge for uninsured subcontractors unless certificates on file" ;
+    si2:condition "SUBCONTRACTOR_COST / GL_EXPOSURE > 0.5" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "GL" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:phase "Rating" ;
+    si2:usesElement si2:GL_EXPOSURE,
+        si2:SUBCONTRACTOR_COST .
+
+si2:RULE_UW_WC_001 a si2:BusinessRule ;
+    rdfs:label "Monopolistic state" ;
+    si2:action "Block: write stop-gap EL only" ;
+    si2:condition "STATE in (OH, WA, ND, WY) AND WC_PART3_TYPE = 3A" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "WC" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:phase "Eligibility" ;
+    si2:usesElement si2:STATE,
+        si2:WC_PART3_TYPE .
+
+si2:RULE_UW_WC_002 a si2:BusinessRule ;
+    rdfs:label "High experience mod" ;
+    si2:action "Refer to underwriter" ;
+    si2:condition "EXPERIENCE_MOD > 1.50" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "WC" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:phase "Eligibility" ;
+    si2:usesElement si2:EXPERIENCE_MOD .
+
+si2:RULE_UW_WC_003 a si2:BusinessRule ;
+    rdfs:label "Bureau by state" ;
+    si2:action "Correct before issue" ;
+    si2:condition "WC_BUREAU must equal the state default (CA WCIRB, NY NYCIRB, NJ NJCRIB, PA PCRB, else NCCI)" ;
+    si2:key_company "*" ;
+    si2:key_country "*" ;
+    si2:key_effective_from "2025-01-01" ;
+    si2:key_effective_to "9999-12-31" ;
+    si2:key_line "Commercial" ;
+    si2:key_lob "WC" ;
+    si2:key_module "*" ;
+    si2:key_object "*" ;
+    si2:key_product "*" ;
+    si2:key_state "*" ;
+    si2:phase "Validation" ;
+    si2:usesElement si2:WC_BUREAU .
+
+si2:SQUARE_FEET a owl:DatatypeProperty ;
+    rdfs:label "Square feet" ;
+    rdfs:domain si2:Building ;
+    rdfs:range xsd:integer ;
+    skos:altLabel "Area",
+        "SQ_FT" ;
+    skos:definition "Total floor area." ;
+    si2:mapsFrom "GW_PC:Area",
+        "LEGACY:SQ_FT" ;
+    si2:usedInLob si2:LOB_CP,
+        si2:LOB_GL ;
+    si2:usedInModule si2:MOD_Policy .
+
+si2:SRC_ACORD a si2:SourceSystem ;
+    rdfs:label "ACORD (Standard)" ;
+    rdfs:comment "ACORD forms and data standards (125, 126, 130, 137, 140): reference vocabulary" .
+
+si2:SRC_AMS a si2:SourceSystem ;
+    rdfs:label "AMS (Agency management)" ;
+    rdfs:comment "Agency management system exports" .
+
+si2:SRC_DC_POL a si2:SourceSystem ;
+    rdfs:label "DC_POL (Policy admin (Duck Creek-style))" ;
+    rdfs:comment "Manuscript-based policy and rating data" .
+
+si2:SRC_GW_PC a si2:SourceSystem ;
+    rdfs:label "GW_PC (Policy admin (Guidewire-style))" ;
+    rdfs:comment "Policy administration configured entities and typelists" .
+
+si2:SRC_HOMEBUILT a si2:SourceSystem ;
+    rdfs:label "HOMEBUILT (Home-built)" ;
+    rdfs:comment "In-house rating and billing applications" .
+
+si2:SRC_IBM_IIW a si2:SourceSystem ;
+    rdfs:label "IBM_IIW (Standard)" ;
+    rdfs:comment "IBM insurance industry data models: reference vocabulary" .
+
+si2:SRC_ISO_NCCI a si2:SourceSystem ;
+    rdfs:label "ISO_NCCI (Standard)" ;
+    rdfs:comment "ISO and NCCI statistical plans and class codes" .
+
+si2:SRC_LEGACY a si2:SourceSystem ;
+    rdfs:label "LEGACY (Legacy)" ;
+    rdfs:comment "COBOL / DB2 policy and claims masters" .
+
+si2:StateCoverage_partOf_Policy a owl:ObjectProperty ;
+    rdfs:comment "cardinality 1" ;
+    rdfs:domain si2:StateCoverage ;
+    rdfs:range si2:Policy ;
+    rdfs:subPropertyOf si2:partOf .
+
+si2:TRANSACTION_EFFECTIVE_DATE a owl:DatatypeProperty ;
+    rdfs:label "Transaction effective date" ;
+    rdfs:domain si2:PolicyTransaction ;
+    rdfs:range xsd:date ;
+    skos:altLabel "EditEffectiveDate",
+        "TRANS_EFF_DT" ;
+    skos:definition "Date the transaction takes effect." ;
+    si2:mapsFrom "GW_PC:EditEffectiveDate",
+        "LEGACY:TRANS_EFF_DT" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:TRANSACTION_TYPE a owl:DatatypeProperty ;
+    rdfs:label "Transaction type" ;
+    rdfs:domain si2:PolicyTransaction ;
+    rdfs:range xsd:string ;
+    skos:altLabel "JobType",
+        "TRANS_CD" ;
+    skos:definition "Kind of policy transaction." ;
+    si2:hasPickList si2:PL_TXN_TYPE ;
+    si2:mapsFrom "GW_PC:JobType",
+        "LEGACY:TRANS_CD" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:TREATY_ID a owl:DatatypeProperty ;
+    rdfs:label "Treaty" ;
+    rdfs:domain si2:Cession ;
+    rdfs:range xsd:string ;
+    skos:altLabel "TRTY_ID" ;
+    skos:definition "Reinsurance treaty the cession belongs to." ;
+    si2:mapsFrom "LEGACY:TRTY_ID" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Finance,
+        si2:MOD_Reinsurance .
+
+si2:VALUATION a owl:DatatypeProperty ;
+    rdfs:label "Valuation" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:string ;
+    skos:altLabel "VAL_CD",
+        "ValuationMethod" ;
+    skos:definition "How a loss is valued." ;
+    si2:acordForm "140" ;
+    si2:hasPickList si2:PL_VALUATION ;
+    si2:mapsFrom "ACORD:ACORD 140: Valuation",
+        "GW_PC:ValuationMethod",
+        "LEGACY:VAL_CD" ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:VEHICLE_YEAR a owl:DatatypeProperty ;
+    rdfs:label "Model year" ;
+    rdfs:domain si2:Vehicle ;
+    rdfs:range xsd:integer ;
+    skos:altLabel "ModelYear",
+        "VEH_YR" ;
+    skos:definition "Vehicle model year." ;
+    si2:acordForm "137" ;
+    si2:mapsFrom "ACORD:ACORD 137: Model year",
+        "GW_PC:ModelYear",
+        "LEGACY:VEH_YR" ;
+    si2:usedInLob si2:LOB_CA ;
+    si2:usedInModule si2:MOD_Policy .
+
+si2:VIN a owl:DatatypeProperty ;
+    rdfs:label "Vehicle identification number" ;
+    rdfs:domain si2:Vehicle ;
+    rdfs:range xsd:string ;
+    skos:altLabel "VIN",
+        "VehicleIdNumber" ;
+    skos:definition "17-character VIN." ;
+    si2:acordForm "137" ;
+    si2:mapsFrom "ACORD:ACORD 137: Vehicle identification number",
+        "GW_PC:VehicleIdNumber",
+        "LEGACY:VIN" ;
+    si2:usedInLob si2:LOB_CA ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:Vehicle_insuredUnder_Policy a owl:ObjectProperty ;
+    rdfs:comment "cardinality 1" ;
+    rdfs:domain si2:Vehicle ;
+    rdfs:range si2:Policy ;
+    rdfs:subPropertyOf si2:insuredUnder .
+
+si2:WRITING_COMPANY a owl:DatatypeProperty ;
+    rdfs:label "Writing company" ;
+    rdfs:domain si2:Policy ;
+    rdfs:range xsd:string ;
+    skos:altLabel "CO_CD",
+        "Paper",
+        "UnderwritingCompany" ;
+    skos:definition "Company whose paper the policy is written on (company key)." ;
+    si2:mapsFrom "GW_PC:Paper",
+        "GW_PC:UnderwritingCompany",
+        "LEGACY:CO_CD" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Finance,
+        si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:WRITTEN_PREMIUM a owl:DatatypeProperty ;
+    rdfs:label "Written premium" ;
+    rdfs:domain si2:Premium ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "PM-WRITTEN-PREM",
+        "TransactionPremium",
+        "WRT_PREM" ;
+    skos:definition "Premium written by the transaction." ;
+    si2:mapsFrom "GW_PC:TransactionPremium",
+        "LEGACY:PM-WRITTEN-PREM",
+        "LEGACY:WRT_PREM" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Finance,
+        si2:MOD_Policy,
+        si2:MOD_Reinsurance,
+        si2:MOD_Reporting .
+
+si2:YEAR_BUILT a owl:DatatypeProperty ;
+    rdfs:label "Year built" ;
+    rdfs:domain si2:Building ;
+    rdfs:range xsd:integer ;
+    skos:altLabel "YR_BUILT",
+        "YearBuilt" ;
+    skos:definition "Year the building was constructed." ;
+    si2:acordForm "140" ;
+    si2:mapsFrom "ACORD:ACORD 140: Year built",
+        "GW_PC:YearBuilt",
+        "LEGACY:YR_BUILT" ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usedInModule si2:MOD_Policy .
+
+si2:acordForm a owl:AnnotationProperty ;
+    rdfs:label "ACORD form" .
+
+si2:action a rdf:Property ;
+    rdfs:label "action" .
+
+si2:appliesToElement a rdf:Property ;
+    rdfs:label "applies to element" .
+
+si2:condition a rdf:Property ;
+    rdfs:label "condition" .
+
+si2:defaultValue a rdf:Property ;
+    rdfs:label "default value" .
+
+si2:effectiveFrom a rdf:Property ;
+    rdfs:label "effective from" .
+
+si2:effectiveTo a rdf:Property ;
+    rdfs:label "effective to" .
+
+si2:formula a rdf:Property ;
+    rdfs:label "formula" .
+
+si2:hasPickList a rdf:Property ;
+    rdfs:label "has pick list" .
+
+si2:key_company a owl:DatatypeProperty ;
+    rdfs:label "company" ;
+    rdfs:domain si2:Applicability ;
+    rdfs:subPropertyOf si2:contextKey ;
+    skos:definition "Writing company / paper. Admitted paper follows filed rates and forms; E&S adds surplus lines tax and stamping fees and is not rate-filed in most states." .
+
+si2:key_country a owl:DatatypeProperty ;
+    rdfs:label "country" ;
+    rdfs:domain si2:Applicability ;
+    rdfs:subPropertyOf si2:contextKey ;
+    skos:definition "Country of the risk or contract. Laws, currency, address format and which lines exist (no private workers' comp in Canada; employers' liability compulsory in Great Britain)." .
+
+si2:key_effective_from a owl:DatatypeProperty ;
+    rdfs:label "effective_from" ;
+    rdfs:domain si2:Applicability ;
+    rdfs:subPropertyOf si2:contextKey ;
+    skos:definition "Effective dates. Nothing is deleted: a change ends one row and starts another." .
+
+si2:key_effective_to a owl:DatatypeProperty ;
+    rdfs:label "effective_to" ;
+    rdfs:domain si2:Applicability ;
+    rdfs:subPropertyOf si2:contextKey ;
+    skos:definition "Effective dates. Nothing is deleted: a change ends one row and starts another." .
+
+si2:key_line a owl:DatatypeProperty ;
+    rdfs:label "line" ;
+    rdfs:domain si2:Applicability ;
+    rdfs:subPropertyOf si2:contextKey ;
+    skos:definition "Personal or commercial line. Separates personal from commercial vocabularies." .
+
+si2:key_lob a owl:DatatypeProperty ;
+    rdfs:label "lob" ;
+    rdfs:domain si2:Applicability ;
+    rdfs:subPropertyOf si2:contextKey ;
+    skos:definition "Line of business. Which coverages, objects and rating apply." .
+
+si2:key_module a owl:DatatypeProperty ;
+    rdfs:label "module" ;
+    rdfs:domain si2:Applicability ;
+    rdfs:subPropertyOf si2:contextKey ;
+    skos:definition "Where the element is used. Same meaning in every module; applicability and requiredness can differ." .
+
+si2:key_object a owl:DatatypeProperty ;
+    rdfs:label "object" ;
+    rdfs:domain si2:Applicability ;
+    rdfs:subPropertyOf si2:contextKey ;
+    skos:definition "Risk object the element describes. An element belongs to one object, wherever it is used." .
+
+si2:key_product a owl:DatatypeProperty ;
+    rdfs:label "product" ;
+    rdfs:domain si2:Applicability ;
+    rdfs:subPropertyOf si2:contextKey ;
+    skos:definition "Product and form edition. Products change by edition; old policies keep the edition they were written on." .
+
+si2:key_state a owl:DatatypeProperty ;
+    rdfs:label "state" ;
+    rdfs:domain si2:Applicability ;
+    rdfs:subPropertyOf si2:contextKey ;
+    skos:definition "State, province or territory. Filed rates, forms, mandatory coverages, bureaus. Most variation lives here." .
+
+si2:labelOverride a rdf:Property ;
+    rdfs:label "label override" .
+
+si2:mapsFrom a rdf:Property ;
+    rdfs:label "maps from source field" .
+
+si2:phase a rdf:Property ;
+    rdfs:label "phase" .
+
+si2:reason a owl:AnnotationProperty ;
+    rdfs:label "reason" .
+
+si2:required a rdf:Property ;
+    rdfs:label "required" .
+
+si2:specificity a rdf:Property ;
+    rdfs:label "specificity" .
+
+si2:stepNumber a rdf:Property ;
+    rdfs:label "step" .
+
+si2:usedInLob a rdf:Property ;
+    rdfs:label "used in line of business" .
+
+si2:usedInModule a rdf:Property ;
+    rdfs:label "used in module" .
+
+si2:usesElement a rdf:Property ;
+    rdfs:label "uses element" .
+
+si2:BPP_LIMIT a owl:DatatypeProperty ;
+    rdfs:label "Business personal property limit" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "BPP_LMT",
+        "ContentsLimit" ;
+    skos:definition "Limit for business personal property." ;
+    si2:acordForm "140" ;
+    si2:mapsFrom "ACORD:ACORD 140: Business personal property limit",
+        "GW_PC:ContentsLimit",
+        "LEGACY:BPP_LMT" ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy,
+        si2:MOD_Reinsurance .
+
+si2:BUILDING_LIMIT a owl:DatatypeProperty ;
+    rdfs:label "Building limit" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "BLDG_LMT",
+        "BuildingLimit" ;
+    skos:definition "Limit of insurance for the building." ;
+    si2:acordForm "140" ;
+    si2:mapsFrom "ACORD:ACORD 140: Building limit",
+        "GW_PC:BuildingLimit",
+        "LEGACY:BLDG_LMT" ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy,
+        si2:MOD_Reinsurance .
+
+si2:CAUSES_OF_LOSS_FORM a owl:DatatypeProperty ;
+    rdfs:label "Causes of loss form" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:string ;
+    skos:altLabel "COL_FORM",
+        "PerilForm" ;
+    skos:definition "Perils insured." ;
+    si2:acordForm "140" ;
+    si2:hasPickList si2:PL_CAUSES_OF_LOSS ;
+    si2:mapsFrom "ACORD:ACORD 140: Causes of loss form",
+        "GW_PC:PerilForm",
+        "LEGACY:COL_FORM" ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:CA_LIABILITY_LIMIT a owl:DatatypeProperty ;
+    rdfs:label "Auto liability combined single limit" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "CSL",
+        "LiabLimit" ;
+    skos:definition "Combined single limit for liability." ;
+    si2:acordForm "137" ;
+    si2:mapsFrom "ACORD:ACORD 137: Auto liability combined single limit",
+        "GW_PC:LiabLimit",
+        "LEGACY:CSL" ;
+    si2:usedInLob si2:LOB_CA ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy,
+        si2:MOD_Reinsurance .
+
+si2:COST_NEW a owl:DatatypeProperty ;
+    rdfs:label "Cost new" ;
+    rdfs:domain si2:Vehicle ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "COST_NEW",
+        "StatedAmount" ;
+    skos:definition "Original cost new for physical damage rating." ;
+    si2:acordForm "137" ;
+    si2:mapsFrom "ACORD:ACORD 137: Cost new",
+        "GW_PC:StatedAmount",
+        "LEGACY:COST_NEW" ;
+    si2:usedInLob si2:LOB_CA ;
+    si2:usedInModule si2:MOD_Policy .
+
+si2:DEDUCTIBLE_AMOUNT a owl:DatatypeProperty ;
+    rdfs:label "Deductible amount" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "DED_AMT",
+        "Deductible" ;
+    skos:definition "Flat deductible." ;
+    si2:mapsFrom "GW_PC:Deductible",
+        "LEGACY:DED_AMT" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:DEDUCTIBLE_TYPE a owl:DatatypeProperty ;
+    rdfs:label "Deductible type" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:string ;
+    skos:altLabel "DED_TYPE" ;
+    skos:definition "Kind of deductible." ;
+    si2:hasPickList si2:PL_DEDUCTIBLE_TYPE ;
+    si2:mapsFrom "LEGACY:DED_TYPE" ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:DRIVER_MVR_POINTS a owl:DatatypeProperty ;
+    rdfs:label "MVR points" ;
+    rdfs:domain si2:Driver ;
+    rdfs:range xsd:integer ;
+    skos:altLabel "MVR_PTS" ;
+    skos:definition "Violation points from the motor vehicle record." ;
+    si2:mapsFrom "LEGACY:MVR_PTS" ;
+    si2:usedInLob si2:LOB_CA ;
+    si2:usedInModule si2:MOD_Policy .
+
+si2:EACH_OCCURRENCE_LIMIT a owl:DatatypeProperty ;
+    rdfs:label "Each occurrence limit" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "OCC_LMT",
+        "PerOccurrence" ;
+    skos:definition "Most paid for any one occurrence." ;
+    si2:acordForm "126" ;
+    si2:mapsFrom "ACORD:ACORD 126: Each occurrence limit",
+        "GW_PC:PerOccurrence",
+        "LEGACY:OCC_LMT" ;
+    si2:usedInLob si2:LOB_GL ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy,
+        si2:MOD_Reinsurance .
+
+si2:EL_LIMIT_EACH_ACCIDENT a owl:DatatypeProperty ;
+    rdfs:label "Employers liability - each accident" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "EL_ACC" ;
+    skos:definition "Part Two limit per accident." ;
+    si2:acordForm "130" ;
+    si2:mapsFrom "ACORD:ACORD 130: Employers liability - each accident",
+        "LEGACY:EL_ACC" ;
+    si2:usedInLob si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:ESTIMATED_PAYROLL a owl:DatatypeProperty ;
+    rdfs:label "Estimated annual payroll" ;
+    rdfs:domain si2:Classification ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "BasisAmount",
+        "EST_PAYROLL" ;
+    skos:definition "Remuneration estimated for the class." ;
+    si2:acordForm "130" ;
+    si2:mapsFrom "ACORD:ACORD 130: Estimated annual payroll",
+        "GW_PC:BasisAmount",
+        "LEGACY:EST_PAYROLL" ;
+    si2:usedInLob si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:GENERAL_AGGREGATE_LIMIT a owl:DatatypeProperty ;
+    rdfs:label "General aggregate limit" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "GEN_AGG" ;
+    skos:definition "Most paid in the term other than products-completed operations." ;
+    si2:acordForm "126" ;
+    si2:mapsFrom "ACORD:ACORD 126: General aggregate limit",
+        "LEGACY:GEN_AGG" ;
+    si2:usedInLob si2:LOB_GL ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy,
+        si2:MOD_Reinsurance .
+
+si2:SPRINKLER a owl:DatatypeProperty ;
+    rdfs:label "Sprinkler protection" ;
+    rdfs:domain si2:Building ;
+    rdfs:range xsd:string ;
+    skos:altLabel "SPRK_IND",
+        "Sprinklered" ;
+    skos:definition "Automatic sprinkler protection." ;
+    si2:acordForm "140" ;
+    si2:hasPickList si2:PL_SPRINKLER ;
+    si2:mapsFrom "ACORD:ACORD 140: Sprinkler protection",
+        "GW_PC:Sprinklered",
+        "LEGACY:SPRK_IND" ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usedInModule si2:MOD_Policy .
+
+si2:STORIES a owl:DatatypeProperty ;
+    rdfs:label "Number of stories" ;
+    rdfs:domain si2:Building ;
+    rdfs:range xsd:integer ;
+    skos:altLabel "NUM_STORIES" ;
+    skos:definition "Stories above grade." ;
+    si2:mapsFrom "LEGACY:NUM_STORIES" ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usedInModule si2:MOD_Policy .
+
+si2:SUBCONTRACTOR_COST a owl:DatatypeProperty ;
+    rdfs:label "Subcontracted work cost" ;
+    rdfs:domain si2:Classification ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "SUB_COST" ;
+    skos:definition "Cost of work let to subcontractors (contractors)." ;
+    si2:mapsFrom "LEGACY:SUB_COST" ;
+    si2:usedInLob si2:LOB_GL ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Policy .
+
+si2:VEHICLE_USE a owl:DatatypeProperty ;
+    rdfs:label "Vehicle use" ;
+    rdfs:domain si2:Vehicle ;
+    rdfs:range xsd:string ;
+    skos:altLabel "USE_CD" ;
+    skos:definition "Business use class." ;
+    si2:hasPickList si2:PL_VEHICLE_USE ;
+    si2:mapsFrom "LEGACY:USE_CD" ;
+    si2:usedInLob si2:LOB_CA ;
+    si2:usedInModule si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:WC_PART3_TYPE a owl:DatatypeProperty ;
+    rdfs:label "State coverage type" ;
+    rdfs:domain si2:StateCoverage ;
+    rdfs:range xsd:string ;
+    skos:altLabel "ITEM3" ;
+    skos:definition "Whether the state is listed in 3.A or covered under 3.C." ;
+    si2:hasPickList si2:PL_WC_PART3 ;
+    si2:mapsFrom "LEGACY:ITEM3" ;
+    si2:usedInLob si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Policy .
+
+si2:amends a owl:ObjectProperty ;
+    rdfs:label "amends" .
+
+si2:atLocation a owl:ObjectProperty ;
+    rdfs:label "atLocation" .
+
+si2:bills a owl:ObjectProperty ;
+    rdfs:label "bills" .
+
+si2:chargedFor a owl:ObjectProperty ;
+    rdfs:label "chargedFor" .
+
+si2:drives a owl:ObjectProperty ;
+    rdfs:label "drives" .
+
+si2:hasNamedInsured a owl:ObjectProperty ;
+    rdfs:label "hasNamedInsured" .
+
+si2:involves a owl:ObjectProperty ;
+    rdfs:label "involves" .
+
+si2:locatedAt a owl:ObjectProperty ;
+    rdfs:label "locatedAt" .
+
+si2:placedBy a owl:ObjectProperty ;
+    rdfs:label "placedBy" .
+
+si2:postedTo a owl:ObjectProperty ;
+    rdfs:label "postedTo" .
+
+si2:ratedUnder a owl:ObjectProperty ;
+    rdfs:label "ratedUnder" .
+
+si2:reportedUnder a owl:ObjectProperty ;
+    rdfs:label "reportedUnder" .
+
+si2:ANNUAL_STATEMENT_LINE a owl:DatatypeProperty ;
+    rdfs:label "Annual statement line" ;
+    rdfs:domain si2:Premium ;
+    rdfs:range xsd:string ;
+    skos:altLabel "ASL" ;
+    skos:definition "NAIC annual statement line the premium and losses report on." ;
+    si2:mapsFrom "LEGACY:ASL" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Finance,
+        si2:MOD_Reporting .
+
+si2:BillingAccount a owl:Class ;
+    rdfs:label "Billing account" ;
+    skos:definition "Account that receives invoices and payments." .
+
+si2:CDL_IND a owl:DatatypeProperty ;
+    rdfs:label "Commercial driver's license" ;
+    rdfs:domain si2:Driver ;
+    rdfs:range xsd:boolean ;
+    skos:altLabel "CDL" ;
+    skos:definition "Driver holds a commercial driver's license." ;
+    si2:mapsFrom "LEGACY:CDL" ;
+    si2:usedInLob si2:LOB_CA ;
+    si2:usedInModule si2:MOD_Policy .
+
+si2:EQ_DEDUCTIBLE_PCT a owl:DatatypeProperty ;
+    rdfs:label "Earthquake deductible %" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "EQ_DED" ;
+    skos:definition "Percentage deductible for earthquake." ;
+    si2:mapsFrom "LEGACY:EQ_DED" ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:FEIN a owl:DatatypeProperty ;
+    rdfs:label "Federal employer ID number" ;
+    rdfs:domain si2:Party ;
+    rdfs:range xsd:string ;
+    skos:altLabel "EIN",
+        "FEIN",
+        "TaxID" ;
+    skos:definition "Employer tax identifier (masked outside authorized roles)." ;
+    si2:acordForm "125,130" ;
+    si2:mapsFrom "ACORD:ACORD 125,130: Federal employer ID number",
+        "GW_PC:TaxID",
+        "LEGACY:EIN",
+        "LEGACY:FEIN" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:FLOOD_ZONE a owl:DatatypeProperty ;
+    rdfs:label "Flood zone" ;
+    rdfs:domain si2:Location ;
+    rdfs:range xsd:string ;
+    skos:altLabel "FLD_ZONE",
+        "FloodZone" ;
+    skos:definition "FEMA flood zone." ;
+    si2:mapsFrom "GW_PC:FloodZone",
+        "LEGACY:FLD_ZONE" ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usedInModule si2:MOD_Policy,
+        si2:MOD_Reinsurance .
+
+si2:GL_CLASS_CODE a owl:DatatypeProperty ;
+    rdfs:label "GL classification" ;
+    rdfs:domain si2:Classification ;
+    rdfs:range xsd:string ;
+    skos:altLabel "ClassCode",
+        "GL_CLASS" ;
+    skos:definition "General liability rating class." ;
+    si2:acordForm "126" ;
+    si2:hasPickList si2:PL_GL_CLASS ;
+    si2:mapsFrom "ACORD:ACORD 126: GL classification",
+        "GW_PC:ClassCode",
+        "LEGACY:GL_CLASS" ;
+    si2:usedInLob si2:LOB_GL ;
+    si2:usedInModule si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:GL_EXPOSURE a owl:DatatypeProperty ;
+    rdfs:label "Exposure amount" ;
+    rdfs:domain si2:Classification ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "BasisAmount",
+        "EXPOSURE" ;
+    skos:definition "Exposure in the premium basis." ;
+    si2:acordForm "126" ;
+    si2:mapsFrom "ACORD:ACORD 126: Exposure amount",
+        "GW_PC:BasisAmount",
+        "LEGACY:EXPOSURE" ;
+    si2:usedInLob si2:LOB_GL ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:INJURED_WORKER_AWW a owl:DatatypeProperty ;
+    rdfs:label "Average weekly wage" ;
+    rdfs:domain si2:Claim ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "AWW" ;
+    skos:definition "Injured worker's average weekly wage (WC)." ;
+    si2:mapsFrom "LEGACY:AWW" ;
+    si2:usedInLob si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Reporting .
+
+si2:POSTAL_CODE a owl:DatatypeProperty ;
+    rdfs:label "Postal code" ;
+    rdfs:domain si2:Location ;
+    rdfs:range xsd:string ;
+    skos:altLabel "PostalCode",
+        "ZIP" ;
+    skos:definition "ZIP or postal code; format by country." ;
+    si2:hasPickList si2:PL_ADDRESS_FORMAT ;
+    si2:mapsFrom "GW_PC:PostalCode",
+        "LEGACY:ZIP" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:PROTECTION_CLASS a owl:DatatypeProperty ;
+    rdfs:label "Public protection class" ;
+    rdfs:domain si2:Building ;
+    rdfs:range xsd:string ;
+    skos:altLabel "FireProtectionClass",
+        "PPC" ;
+    skos:definition "Fire protection class of the community." ;
+    si2:acordForm "140" ;
+    si2:hasPickList si2:PL_PROTECTION_CLASS ;
+    si2:mapsFrom "ACORD:ACORD 140: Public protection class",
+        "GW_PC:FireProtectionClass",
+        "LEGACY:PPC" ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usedInModule si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:RADIUS_CLASS a owl:DatatypeProperty ;
+    rdfs:label "Radius of operation" ;
+    rdfs:domain si2:Vehicle ;
+    rdfs:range xsd:string ;
+    skos:altLabel "RADIUS" ;
+    skos:definition "Farthest regular trip distance." ;
+    si2:acordForm "137" ;
+    si2:hasPickList si2:PL_RADIUS ;
+    si2:mapsFrom "ACORD:ACORD 137: Radius of operation",
+        "LEGACY:RADIUS" ;
+    si2:usedInLob si2:LOB_CA ;
+    si2:usedInModule si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:UM_LIMIT a owl:DatatypeProperty ;
+    rdfs:label "Uninsured motorists limit" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "UMBI",
+        "UM_LMT" ;
+    skos:definition "Uninsured / underinsured motorists limit." ;
+    si2:mapsFrom "LEGACY:UMBI",
+        "LEGACY:UM_LMT" ;
+    si2:usedInLob si2:LOB_CA ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:WritingCompany a owl:Class ;
+    rdfs:label "Writing company" .
+
+si2:cedes a owl:ObjectProperty ;
+    rdfs:label "cedes" .
+
+si2:covers a owl:ObjectProperty ;
+    rdfs:label "covers" .
+
+si2:insuredUnder a owl:ObjectProperty ;
+    rdfs:label "insuredUnder" .
+
+si2:partOf a owl:ObjectProperty ;
+    rdfs:label "partOf" .
+
+si2:CONSTRUCTION_CLASS a owl:DatatypeProperty ;
+    rdfs:label "Construction class" ;
+    rdfs:domain si2:Building ;
+    rdfs:range xsd:string ;
+    skos:altLabel "CONST_CD",
+        "ConstructionType" ;
+    skos:definition "Fire-resistance class of the building." ;
+    si2:acordForm "140" ;
+    si2:hasPickList si2:PL_CONSTRUCTION ;
+    si2:mapsFrom "ACORD:ACORD 140: Construction class",
+        "GW_PC:ConstructionType",
+        "LEGACY:CONST_CD" ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usedInModule si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:EXPERIENCE_MOD a owl:DatatypeProperty ;
+    rdfs:label "Experience modification" ;
+    rdfs:domain si2:StateCoverage ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "EMOD",
+        "ExpMod",
+        "XMOD" ;
+    skos:definition "Experience rating modification factor." ;
+    si2:acordForm "130" ;
+    si2:mapsFrom "ACORD:ACORD 130: Experience modification",
+        "GW_PC:ExpMod",
+        "LEGACY:EMOD",
+        "LEGACY:XMOD" ;
+    si2:usedInLob si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:NY_LABOR_LAW_EXPOSURE a owl:DatatypeProperty ;
+    rdfs:label "New York Labor Law exposure" ;
+    rdfs:domain si2:Classification ;
+    rdfs:range xsd:boolean ;
+    skos:altLabel "NY_LL_240" ;
+    skos:definition "Whether operations involve elevation or construction work subject to NY Labor Law sections 240/241." ;
+    si2:mapsFrom "LEGACY:NY_LL_240" ;
+    si2:usedInLob si2:LOB_GL ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:PL_GL_FORM a skos:ConceptScheme ;
+    rdfs:label "General liability coverage form" .
+
+si2:PL_WC_PART3 a skos:ConceptScheme ;
+    rdfs:label "Workers' comp state coverage" .
+
+si2:PolicyTransaction a owl:Class ;
+    rdfs:label "Policy transaction" ;
+    rdfs:subClassOf si2:Policy ;
+    skos:definition "New business, endorsement, cancellation, reinstatement, renewal or audit." .
+
+si2:Producer a owl:Class ;
+    rdfs:label "Producer" ;
+    rdfs:subClassOf si2:Party ;
+    skos:definition "Agency or broker that places the business." .
+
+si2:RETROACTIVE_DATE a owl:DatatypeProperty ;
+    rdfs:label "Retroactive date" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:date ;
+    skos:altLabel "RETRO_DT" ;
+    skos:definition "Earliest date of covered injury on claims-made forms." ;
+    si2:mapsFrom "LEGACY:RETRO_DT" ;
+    si2:usedInLob si2:LOB_GL ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:ROOF_YEAR a owl:DatatypeProperty ;
+    rdfs:label "Roof year" ;
+    rdfs:domain si2:Building ;
+    rdfs:range xsd:integer ;
+    skos:altLabel "ROOF_YR",
+        "RoofUpdateYear" ;
+    skos:definition "Year the roof was last replaced." ;
+    si2:acordForm "140" ;
+    si2:mapsFrom "ACORD:ACORD 140: Roof year",
+        "GW_PC:RoofUpdateYear",
+        "LEGACY:ROOF_YR" ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:SURPLUS_LINES_TAX a owl:DatatypeProperty ;
+    rdfs:label "Surplus lines tax" ;
+    rdfs:domain si2:Premium ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "SL_TAX",
+        "SurplusLinesTax" ;
+    skos:definition "Premium tax on excess and surplus lines business." ;
+    si2:mapsFrom "GW_PC:SurplusLinesTax",
+        "LEGACY:SL_TAX" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Finance,
+        si2:MOD_Policy .
+
+si2:TERRITORY a owl:DatatypeProperty ;
+    rdfs:label "Rating territory" ;
+    rdfs:domain si2:Location ;
+    rdfs:range xsd:string ;
+    skos:altLabel "TERR",
+        "TerritoryCode" ;
+    skos:definition "Rating territory derived from the address." ;
+    si2:mapsFrom "GW_PC:TerritoryCode",
+        "LEGACY:TERR" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL ;
+    si2:usedInModule si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:Cession a owl:Class ;
+    rdfs:label "Reinsurance cession" ;
+    skos:definition "Premium and loss ceded under a treaty." .
+
+si2:ClaimFinancial a owl:Class ;
+    rdfs:label "Claim financial transaction" ;
+    rdfs:subClassOf si2:Claim ;
+    skos:definition "Payment, recovery or reserve change." .
+
+si2:Driver a owl:Class ;
+    rdfs:label "Driver" ;
+    rdfs:subClassOf si2:Party ;
+    skos:definition "A person who drives covered autos." .
+
+si2:LineOfBusiness a owl:Class ;
+    rdfs:label "Line of business" .
+
+si2:PL_ADDRESS_FORMAT a skos:ConceptScheme ;
+    rdfs:label "Postal code format" .
+
+si2:PL_CAUSES_OF_LOSS a skos:ConceptScheme ;
+    rdfs:label "Causes of loss form" .
+
+si2:PL_CLAIM_STATUS a skos:ConceptScheme ;
+    rdfs:label "Claim status" .
+
+si2:PL_COINSURANCE a skos:ConceptScheme ;
+    rdfs:label "Coinsurance" .
+
+si2:PL_RADIUS a skos:ConceptScheme ;
+    rdfs:label "Radius of operation" .
+
+si2:PL_SPRINKLER a skos:ConceptScheme ;
+    rdfs:label "Sprinkler protection" .
+
+si2:PL_VALUATION a skos:ConceptScheme ;
+    rdfs:label "Valuation" .
+
+si2:PL_VEHICLE_USE a skos:ConceptScheme ;
+    rdfs:label "Vehicle use" .
+
+si2:StateCoverage a owl:Class ;
+    rdfs:label "Workers' comp state" ;
+    skos:definition "A state covered under Part One (3.A) or Other States (3.C)." .
+
+si2:VEHICLE_TYPE a owl:DatatypeProperty ;
+    rdfs:label "Vehicle type" ;
+    rdfs:domain si2:Vehicle ;
+    rdfs:range xsd:string ;
+    skos:altLabel "VEH_TYPE",
+        "VehicleClass" ;
+    skos:definition "Size class of the vehicle." ;
+    si2:acordForm "137" ;
+    si2:hasPickList si2:PL_VEHICLE_TYPE ;
+    si2:mapsFrom "ACORD:ACORD 137: Vehicle type",
+        "GW_PC:VehicleClass",
+        "LEGACY:VEH_TYPE" ;
+    si2:usedInLob si2:LOB_CA ;
+    si2:usedInModule si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:WIND_DEDUCTIBLE_PCT a owl:DatatypeProperty ;
+    rdfs:label "Named storm / windstorm deductible %" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "HurricaneDeductible",
+        "WIND_DED" ;
+    skos:definition "Percentage deductible for windstorm or named storm." ;
+    si2:mapsFrom "GW_PC:HurricaneDeductible",
+        "LEGACY:WIND_DED" ;
+    si2:usedInLob si2:LOB_CP ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:PIP_LIMIT a owl:DatatypeProperty ;
+    rdfs:label "Personal injury protection limit" ;
+    rdfs:domain si2:Coverage ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "PIP_LMT" ;
+    skos:definition "No-fault personal injury protection." ;
+    si2:mapsFrom "LEGACY:PIP_LMT" ;
+    si2:usedInLob si2:LOB_CA ;
+    si2:usedInModule si2:MOD_Claims,
+        si2:MOD_Policy .
+
+si2:PL_DEDUCTIBLE_TYPE a skos:ConceptScheme ;
+    rdfs:label "Deductible type" .
+
+si2:PL_LOB a skos:ConceptScheme ;
+    rdfs:label "Line of business" .
+
+si2:PL_PAYMENT_PLAN a skos:ConceptScheme ;
+    rdfs:label "Payment plan" .
+
+si2:Module a owl:Class ;
+    rdfs:label "Module" .
+
+si2:PL_AUTO_SYMBOL a skos:ConceptScheme ;
+    rdfs:label "Covered auto symbol" .
+
+si2:PL_ENTITY_TYPE a skos:ConceptScheme ;
+    rdfs:label "Legal entity type" .
+
+si2:PL_GL_PREMIUM_BASIS a skos:ConceptScheme ;
+    rdfs:label "General liability premium basis" .
+
+si2:Premium a owl:Class ;
+    rdfs:label "Premium" ;
+    skos:definition "Premium by coverage, state and transaction." .
+
+si2:STAMPING_FEE a owl:DatatypeProperty ;
+    rdfs:label "Stamping office fee" ;
+    rdfs:domain si2:Premium ;
+    rdfs:range xsd:decimal ;
+    skos:altLabel "STAMP_FEE" ;
+    skos:definition "Fee charged by a state surplus lines stamping office." ;
+    si2:mapsFrom "LEGACY:STAMP_FEE" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Finance,
+        si2:MOD_Policy .
+
+si2:WC_CLASS_CODE a owl:DatatypeProperty ;
+    rdfs:label "WC classification code" ;
+    rdfs:domain si2:Classification ;
+    rdfs:range xsd:string ;
+    skos:altLabel "CLASS_CD",
+        "ClassCode",
+        "WCClass" ;
+    skos:definition "Workers' comp class for the payroll." ;
+    si2:acordForm "130" ;
+    si2:hasPickList si2:PL_WC_CLASS ;
+    si2:mapsFrom "ACORD:ACORD 130: WC classification code",
+        "GW_PC:ClassCode",
+        "GW_PC:WCClass",
+        "LEGACY:CLASS_CD" ;
+    si2:usedInLob si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:PL_CONSTRUCTION a skos:ConceptScheme ;
+    rdfs:label "Construction class" .
+
+si2:PL_GL_CLASS a skos:ConceptScheme ;
+    rdfs:label "General liability classification (illustrative)" .
+
+si2:PL_TXN_TYPE a skos:ConceptScheme ;
+    rdfs:label "Transaction type" .
+
+si2:PL_VEHICLE_TYPE a skos:ConceptScheme ;
+    rdfs:label "Commercial vehicle type" .
+
+si2:PL_WC_BUREAU a skos:ConceptScheme ;
+    rdfs:label "Workers' comp rating / data bureau" .
+
+si2:PL_WC_CLASS a skos:ConceptScheme ;
+    rdfs:label "Workers' comp classification (illustrative)" .
+
+si2:Party a owl:Class ;
+    rdfs:label "Party" ;
+    skos:definition "A person or organization in any role: named insured, additional insured, producer, claimant, employer." .
+
+si2:SourceSystem a owl:Class ;
+    rdfs:label "Source system" .
+
+si2:WC_BUREAU a owl:DatatypeProperty ;
+    rdfs:label "WC rating / data bureau" ;
+    rdfs:domain si2:StateCoverage ;
+    rdfs:range xsd:string ;
+    skos:altLabel "BUREAU" ;
+    skos:definition "Bureau that governs the state's classes and statistical reporting." ;
+    si2:hasPickList si2:PL_WC_BUREAU ;
+    si2:mapsFrom "LEGACY:BUREAU" ;
+    si2:usedInLob si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:Building a owl:Class ;
+    rdfs:label "Building" ;
+    rdfs:subClassOf si2:Location ;
+    skos:definition "A structure at a location (Commercial Property)." .
+
+si2:Claim a owl:Class ;
+    rdfs:label "Claim" ;
+    skos:definition "A reported loss." .
+
+si2:Location a owl:Class ;
+    rdfs:label "Location" ;
+    skos:definition "An insured premises address." .
+
+si2:STATE a owl:DatatypeProperty ;
+    rdfs:label "State / province" ;
+    rdfs:domain si2:Location ;
+    rdfs:range xsd:string ;
+    skos:altLabel "Jurisdiction",
+        "ST",
+        "State" ;
+    skos:definition "State or province of the location (state key)." ;
+    si2:mapsFrom "GW_PC:Jurisdiction",
+        "GW_PC:State",
+        "LEGACY:ST" ;
+    si2:usedInLob si2:LOB_CA,
+        si2:LOB_CP,
+        si2:LOB_GL,
+        si2:LOB_WC ;
+    si2:usedInModule si2:MOD_Billing,
+        si2:MOD_Claims,
+        si2:MOD_Policy,
+        si2:MOD_Reporting .
+
+si2:Classification a owl:Class ;
+    rdfs:label "Rating classification" ;
+    skos:definition "A rating class with its exposure: WC class payroll, GL class exposure." .
+
+si2:PL_CAUSE_OF_LOSS a skos:ConceptScheme ;
+    rdfs:label "Cause of loss" .
+
+si2:PL_PROTECTION_CLASS a skos:ConceptScheme ;
+    rdfs:label "Public protection class" .
+
+si2:Vehicle a owl:Class ;
+    rdfs:label "Vehicle" ;
+    skos:definition "A covered auto (Commercial Auto)." .
+
+si2:MOD_Finance a si2:Module ;
+    rdfs:label "Finance" .
+
+si2:BusinessRule a owl:Class ;
+    rdfs:label "Business rule" .
+
+si2:MOD_Reinsurance a si2:Module ;
+    rdfs:label "Reinsurance" .
+
+si2:Policy a owl:Class ;
+    rdfs:label "Policy" ;
+    skos:definition "The contract: one term of coverage for one or more lines." .
+
+si2:RatingStep a owl:Class ;
+    rdfs:label "Rating step" .
+
+si2:MOD_Billing a si2:Module ;
+    rdfs:label "Billing" .
+
+si2:Coverage a owl:Class ;
+    rdfs:label "Coverage" ;
+    skos:definition "A coverage on the policy with its limits and deductibles." .
+
+si2:MOD_Reporting a si2:Module ;
+    rdfs:label "Reporting" .
+
+si2:MOD_Claims a si2:Module ;
+    rdfs:label "Claims" .
+
+si2:LOB_WC a si2:LineOfBusiness ;
+    rdfs:label "Workers' Compensation" .
+
+si2:LOB_GL a si2:LineOfBusiness ;
+    rdfs:label "General Liability" .
+
+si2:LOB_CA a si2:LineOfBusiness ;
+    rdfs:label "Commercial Auto" .
+
+si2:LOB_CP a si2:LineOfBusiness ;
+    rdfs:label "Commercial Property" .
+
+si2:Applicability a owl:Class ;
+    rdfs:label "Applicability (element in a context)" .
+
+si2:MOD_Policy a si2:Module ;
+    rdfs:label "Policy" .
+
