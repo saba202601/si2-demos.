@@ -3236,7 +3236,6 @@ si2:PL_WC_PART3 a skos:ConceptScheme ;
 
 si2:PolicyTransaction a owl:Class ;
     rdfs:label "Policy transaction" ;
-    rdfs:subClassOf si2:Policy ;
     skos:definition "New business, endorsement, cancellation, reinstatement, renewal or audit." .
 
 si2:Producer a owl:Class ;
@@ -3308,7 +3307,6 @@ si2:Cession a owl:Class ;
 
 si2:ClaimFinancial a owl:Class ;
     rdfs:label "Claim financial transaction" ;
-    rdfs:subClassOf si2:Claim ;
     skos:definition "Payment, recovery or reserve change." .
 
 si2:Driver a owl:Class ;
@@ -3467,6 +3465,14 @@ si2:Party a owl:Class ;
     rdfs:label "Party" ;
     skos:definition "A person or organization in any role: named insured, additional insured, producer, claimant, employer." .
 
+si2:Claim a owl:Class ;
+    rdfs:label "Claim" ;
+    skos:definition "A reported loss." .
+
+si2:Location a owl:Class ;
+    rdfs:label "Location" ;
+    skos:definition "An insured premises address." .
+
 si2:SourceSystem a owl:Class ;
     rdfs:label "Source system" .
 
@@ -3484,16 +3490,7 @@ si2:WC_BUREAU a owl:DatatypeProperty ;
 
 si2:Building a owl:Class ;
     rdfs:label "Building" ;
-    rdfs:subClassOf si2:Location ;
     skos:definition "A structure at a location (Commercial Property)." .
-
-si2:Claim a owl:Class ;
-    rdfs:label "Claim" ;
-    skos:definition "A reported loss." .
-
-si2:Location a owl:Class ;
-    rdfs:label "Location" ;
-    skos:definition "An insured premises address." .
 
 si2:STATE a owl:DatatypeProperty ;
     rdfs:label "State / province" ;
@@ -3535,12 +3532,12 @@ si2:MOD_Finance a si2:Module ;
 si2:BusinessRule a owl:Class ;
     rdfs:label "Business rule" .
 
-si2:MOD_Reinsurance a si2:Module ;
-    rdfs:label "Reinsurance" .
-
 si2:Policy a owl:Class ;
     rdfs:label "Policy" ;
     skos:definition "The contract: one term of coverage for one or more lines." .
+
+si2:MOD_Reinsurance a si2:Module ;
+    rdfs:label "Reinsurance" .
 
 si2:RatingStep a owl:Class ;
     rdfs:label "Rating step" .
