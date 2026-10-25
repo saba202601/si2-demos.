@@ -26,6 +26,7 @@ PAGES = {
         st.Page("app_migration.py", title="Legacy-to-Cloud Migration", icon="🚚", url_path="migration"),
         st.Page("app_iso_bureau.py", title="ISO Bureau Reporting", icon="📊", url_path="iso-bureau"),
         st.Page("app_bureau.py", title="NCCI Bureau Reporting", icon="🧾", url_path="ncci-bureau"),
+        st.Page("app_finance.py", title="Financial Reporting (Yellow Book)", icon="📒", url_path="financial-reporting"),
     ],
     "Decisions": [
         st.Page("app_rules.py", title="Business Rule Engine (demo)", icon="⚖️", url_path="rules-demo"),

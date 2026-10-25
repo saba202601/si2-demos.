@@ -13,9 +13,24 @@ All data is synthetic. Codes, record layouts and rating factors are illustrative
 | `app_migration.py` | Legacy-to-Cloud Migration Workbench | https://si2-migrate.streamlit.app |
 | `app_fraud.py` | Fraud Engine | https://si2-fraud.streamlit.app |
 | `app_roles.py` | Role-Based Super Intelligence (15 roles, 5 departments); engines in `roles/` | https://si2-roles.streamlit.app |
+| `app_finance.py` | Financial Reporting: NAIC P&C Annual Statement (Yellow Book), Schedule P, edits and the financial reporting ontology; see `finance/` | https://si2-finance.streamlit.app |
 | `app_iso_bureau.py` | ISO Bureau Reporting, all lines (PA, HO, CA, CP, GL, IM, CR, BP, FI, BR); see `iso_bureau/README.md` | https://si2-iso-bureau.streamlit.app |
 
 Shared code lives in `si2_common/` (branding, access code, synthetic data, rule evaluator, and the Canonical Gaps engine and screen).
+
+### Financial Reporting (NAIC P&C Annual Statement, "Yellow Book")
+
+`finance/`: the statutory annual statement as data and an engine that produces it.
+
+| File | What it does |
+|---|---|
+| `blank.py` | 86 pages and schedules, 1,450 lines, 17,259 fields (page x line x column). Pages 2-5, UIE Parts 1/1A/1B/2/2A/3 and the investment income exhibit read from the NAIC 2026 P&C blank; Schedule P, state page, Schedule F Part 3 and Five-Year Historical Data marked *SI² outline – verify* |
+| `source.py` | Nine feeds of a synthetic company: policy premium, GL premium, claim payments, case reserves, IBNR, expenses, GL balances, investment income, reinsurers |
+| `engine.py` | Generates every page (UIE, Pages 2-5, state page, Schedule F Part 3, Schedule P Parts 1-3 for 23 lines, Five-Year) with lineage; 27 cross-check edits |
+| `ontology.py` | Financial reporting ontology: 89 concepts, 10 dimensions, 519 relations; every field mapped to a concept and its dimensions; Turtle / JSON-LD / CSV; SI2Canonical gaps as proposals |
+| `db.py`, `install.py`, `sql/` | Tables on SQLite or SQL Server (schema `fin` in SI2Canonical); `python -m finance.install` creates and loads them; `run_finance_install.bat` on the desktop |
+
+Tests: `tests/test_finance.py` (catalog, balance and edits, the late-GL-entry reconciliation break, ontology validity, SQLite round trip, the app end to end with two-person approval).
 
 ### SI² Canonical Master on SQL Server
 

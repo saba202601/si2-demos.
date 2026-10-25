@@ -15,3 +15,4 @@ sql/si2_canonical/bridge_out/
 sql/si2_canonical/bridge_selftest_out/
 sql/si2_canonical/bridge_log.txt
 sql/si2_canonical/backup_log.txt
+data/finance.db
