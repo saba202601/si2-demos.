@@ -1,0 +1,7915 @@
+[
+ {
+  "@id": "https://si2insure.com/ontology/coverage#defaultValue",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#DatatypeProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "default value"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Eff_END_HO_SPP_1",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#EndorsementEffect"
+  ],
+  "https://si2insure.com/ontology/coverage#effectType": [
+   {
+    "@value": "Add"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#targetCoverage": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_HO_SPP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#value": [
+   {
+    "@value": "schedule"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_CP_BLDG_VALUATION",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Building: VALUATION"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Valuation"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "RC, ACV, AGREED"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Default RC"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "VALUATION"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA039",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Optional physical damage."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_CA_COMP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "1000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "CA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Offered"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA006",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Section II medical payments."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_HO_F"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "5000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "HO"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA025",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Time element."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_CP_BI"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "CP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Offered"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#parentCoverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#ObjectProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "follows coverage"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_CA_COMP",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Comprehensive"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#ComprehensiveCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "CA_COMP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Object"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachesToObjectType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Vehicle"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_CA_COMP_DED"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "CA"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Level_Coverage",
+  "@type": [
+   "http://www.w3.org/2004/02/skos/core#Concept"
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Attaches to another coverage and follows it"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#inScheme": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#AttachLevels"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#prefLabel": [
+   {
+    "@value": "Coverage"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_CP_BLDG",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Building"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#CommercialBuildingCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "CP_BLDG"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Object"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachesToObjectType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Building"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_CP_BLDG_LIMIT"
+   },
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_CP_BLDG_COINS"
+   },
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_CP_BLDG_VALUATION"
+   },
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_CP_BLDG_AOP_DED"
+   },
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_CP_BLDG_WIND_DED"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "CP"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#targetCoverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#ObjectProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "target coverage"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_CA_COMP_DED",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Comprehensive: DED"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#FlatDeductible"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "500, 1000, 2500"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Default 1000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "DED"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#key_object",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#DatatypeProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "object"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#attachesTo",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#ObjectProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "attaches to (policy, line, coverage or object)"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#ProductsCompletedOperationsLiability",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "ProductsCompletedOperationsLiability"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#LiabilityCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Liability from products and completed work."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#End_END_GL_DESIG_OPS",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Designated operations exclusion"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#ExclusionEndorsement"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasEffect": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Eff_END_GL_DESIG_OPS_1"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "GL"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_WC_PART1_LIMIT",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Part One - Workers' Compensation: LIMIT"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Limit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "STATUTORY"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Statutory"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "LIMIT"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_CA_LIAB_CSL",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Auto Liability: CSL"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#CombinedSingleLimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "500000, 1000000, 2000000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Default 1000000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "CSL"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_WC_EL",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Part Two - Employers Liability"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#EmployersLiability"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "WC_EL"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_WC_EL_EACH_ACC"
+   },
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_WC_EL_DIS_POL"
+   },
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_WC_EL_DIS_EE"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "WC"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA005",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Section II liability."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_HO_E"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "300000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "HO"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_HO_SPP_LIMIT",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Scheduled Personal Property: LIMIT"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Limit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Sum of scheduled items"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "LIMIT"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#AutoPhysicalDamageCoverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "AutoPhysicalDamageCoverage"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PropertyCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Damage to a covered vehicle."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA001",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Base coverage of the HO-3 form."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_HO_A"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "HO"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "HO-3 2024"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#MedicalPaymentsCoverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "MedicalPaymentsCoverage"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#FirstPartyInjuryCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Medical expenses of others or occupants, regardless of fault."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#inLine",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#ObjectProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "in line"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Valuation",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Valuation"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#CoverageTerm"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "How a loss is valued."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_PA_COLL",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Collision"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#CollisionCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "PA_COLL"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Object"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachesToObjectType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Vehicle"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_PA_COLL_DED"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "PA"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#appliesTo",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#ObjectProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "applies to"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA032",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Products-completed operations aggregate."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_GL_PCO"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "GL"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_PA_COMP",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Comprehensive"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#ComprehensiveCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "PA_COMP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Object"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachesToObjectType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Vehicle"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_PA_COMP_DED"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "PA"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA046",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Stop-gap employers liability only."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_WC_EL"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "1000000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "WC"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "OH"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Offered"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_PA_UM",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Uninsured Motorists"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#UninsuredMotoristsCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "PA_UM"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_PA_UM_PER_PERSON"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "PA"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA033",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Auto liability."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_CA_LIAB"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "1000000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "CA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_CP_BI_WAITING",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Business Income and Extra Expense: WAITING"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#WaitingPeriod"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "24, 72"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Default 72"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "WAITING"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_PA_PD",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Property Damage Liability"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#AutoLiability"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "PA_PD"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_PA_PD_LIMIT"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "PA"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#End_END_CA_HNOA",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Hired and non-owned auto"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#AddCoverageEndorsement"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasEffect": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Eff_END_CA_HNOA_1"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "CA"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#PerPersonLimit",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "PerPersonLimit"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Limit"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Most paid for one person."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_PA_UM_PER_PERSON",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Uninsured Motorists: PER_PERSON"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PerPersonLimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Up to BI limits"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "PER_PERSON"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_CP_BI_LIMIT",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Business Income and Extra Expense: LIMIT"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Limit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "12 months of income"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "LIMIT"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#lob",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#DatatypeProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "line of business"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA030",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Coverage B."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_GL_PAI"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "GL"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#End_END_HO_EQ",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Earthquake"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#AddCoverageEndorsement"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Coverage"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasEffect": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Eff_END_HO_EQ_1"
+   },
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Eff_END_HO_EQ_2"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "CA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "HO"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Eff_END_CA_HNOA_1",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#EndorsementEffect"
+  ],
+  "https://si2insure.com/ontology/coverage#effectType": [
+   {
+    "@value": "Add"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#targetCoverage": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_CA_LIAB"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#value": [
+   {
+    "@value": "Symbols 8 and 9"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA022",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Optional physical damage."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_PA_COMP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "250"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "PA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Offered"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA035",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Not a no-fault state."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_CA_PIP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "CA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Not available"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Coinsurance",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coinsurance"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#CoverageTerm"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Share of value the insured must carry."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#PersonalInjuryProtection",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "PersonalInjuryProtection"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#FirstPartyInjuryCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "No-fault benefits required in some states."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA031",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Coverage C."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_GL_MED"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "5000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "GL"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Offered"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA008",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Not offered countrywide in this illustration."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_HO_EQ"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "HO"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Not available"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CoverageTerm",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "CoverageTerm"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "A value that defines how much or how a coverage pays."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_CA_UM_LIMIT",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Uninsured Motorists: LIMIT"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#CombinedSingleLimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Up to CSL"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "LIMIT"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA027",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Texas coastal wind and hail."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_CP_BLDG_WIND_DED"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "2"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "CP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "TX"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_GL_PAI_LIMIT",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage B - Personal and Advertising Injury: LIMIT"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PerPersonLimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Equal to each occurrence"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "LIMIT"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Eff_END_GL_AI_OWNER_1",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#EndorsementEffect"
+  ],
+  "https://si2insure.com/ontology/coverage#effectType": [
+   {
+    "@value": "Broaden"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#targetCoverage": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_GL_OCC"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#value": [
+   {
+    "@value": "Scheduled owner as additional insured"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_CP_BPP",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Business Personal Property"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#BusinessPersonalPropertyCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "CP_BPP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Object"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachesToObjectType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Building"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_CP_BPP_LIMIT"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "CP"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#key_effective_to",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#DatatypeProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "effective_to"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA020",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "New Jersey no-fault."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_PA_PIP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "PA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "NJ"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_PA_BI_PER_PERSON",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Bodily Injury Liability: PER_PERSON"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PerPersonLimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "25000, 50000, 100000, 250000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "PER_PERSON"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#End_END_HO_CINC",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Increased Coverage C"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#ModifyTermEndorsement"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Coverage"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasEffect": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Eff_END_HO_CINC_1"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "HO"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_CP_BLDG_AOP_DED",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Building: AOP_DED"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#FlatDeductible"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "1000, 5000, 10000, 25000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Default 5000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "AOP_DED"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CoverageApplicability",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage applicability"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_PA_BI_PER_ACCIDENT",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Bodily Injury Liability: PER_ACCIDENT"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PerOccurrenceLimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "50000, 100000, 300000, 500000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "PER_ACCIDENT"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#InsuredObject",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Insured object"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_GL_PCO",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Products-Completed Operations"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#ProductsCompletedOperationsLiability"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "GL_PCO"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_GL_PCO_AGG"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "GL"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Limit",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Limit"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#CoverageTerm"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Most the coverage pays."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#EndorsementEffect",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Endorsement effect"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA018",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "New York no-fault."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_PA_PIP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "50000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "PA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "NY"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA003",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Follows Coverage A."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_HO_C"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "50% of HO_A"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "HO"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_HO_D_LIMIT",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage D - Loss of Use: LIMIT"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Sublimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "20% of HO_A"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "LIMIT"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Vehicle",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Vehicle"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#InsuredObject"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_GL_MED",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage C - Medical Payments"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#MedicalPaymentsCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "GL_MED"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_GL_MED_LIMIT"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "GL"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#hasTerm",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#ObjectProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "has term"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#WaitingPeriod",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "WaitingPeriod"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#CoverageTerm"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Time before a time-element coverage starts."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_PA_PIP_LIMIT",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Personal Injury Protection: LIMIT"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PerPersonLimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "State minimum"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "LIMIT"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Eff_END_CP_WIND_EXCL_1",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#EndorsementEffect"
+  ],
+  "https://si2insure.com/ontology/coverage#effectType": [
+   {
+    "@value": "Exclude"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#targetCoverage": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_CP_BLDG"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#value": [
+   {
+    "@value": "Windstorm or hail"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_HO_E_LIMIT",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage E - Personal Liability: LIMIT"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PerOccurrenceLimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "100000, 300000, 500000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Default 300000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "LIMIT"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_GL_OCC_EACH_OCC",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage A - Bodily Injury and Property Damage: EACH_OCC"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PerOccurrenceLimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "500000, 1000000, 2000000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Default 1000000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "EACH_OCC"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_WC_EL_EACH_ACC",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Part Two - Employers Liability: EACH_ACC"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PerOccurrenceLimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "100000, 500000, 1000000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Default 1000000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "EACH_ACC"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_HO_EQ",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Earthquake"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#DwellingCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "HO_EQ"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Coverage"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_HO_EQ_EQ_DED"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "HO"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#parentCoverage": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_HO_A"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#rule",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#DatatypeProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "rule"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA012",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Coastal windstorm deductible."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_HO_A_HURR_DED"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "2"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "HO"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "TX"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#End_END_GL_AI_OWNER",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Additional insured - owner (scheduled)"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#BroadenEndorsement"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Coverage"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasEffect": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Eff_END_GL_AI_OWNER_1"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "GL"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA041",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Monopolistic state fund."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_WC_PART1"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "WC"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "OH"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Not available"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_GL_PAI",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage B - Personal and Advertising Injury"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PersonalAdvertisingInjuryLiability"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "GL_PAI"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_GL_PAI_LIMIT"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "GL"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#hasTermType",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#ObjectProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "has term type"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA024",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Building or contents, at least one."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_CP_BPP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "CP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Offered"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#offerStatus",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#DatatypeProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "offer status"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#options",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#DatatypeProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "options"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#LossOfUseCoverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "LossOfUseCoverage"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#TimeElementCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Additional living expense and fair rental value."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#BusinessPersonalPropertyCoverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "BusinessPersonalPropertyCoverage"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PropertyCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Contents, stock and equipment of a business."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#End_END_HO_ROOF_ACV",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Roof surfacing at actual cash value"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#RestrictEndorsement"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Coverage"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasEffect": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Eff_END_HO_ROOF_ACV_1"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "HO"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Eff_END_HO_EQ_1",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#EndorsementEffect"
+  ],
+  "https://si2insure.com/ontology/coverage#effectType": [
+   {
+    "@value": "Add"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#targetCoverage": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_HO_EQ"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#termCode",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#DatatypeProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "term code"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#BusinessIncomeCoverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "BusinessIncomeCoverage"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#TimeElementCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Lost income and extra expense of a business."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_PA_COLL_DED",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Collision: DED"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#FlatDeductible"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "250, 500, 1000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Default 500"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "DED"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA034",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Rejection must be signed where allowed."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_CA_UM"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "CA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Offered"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Eff_END_HO_CINC_1",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#EndorsementEffect"
+  ],
+  "https://si2insure.com/ontology/coverage#effectType": [
+   {
+    "@value": "Modify term"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#targetCoverage": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_HO_C"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "LIMIT"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#value": [
+   {
+    "@value": "70% of HO_A"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Level_Line",
+  "@type": [
+   "http://www.w3.org/2004/02/skos/core#Concept"
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Applies to one line or coverage part in the policy"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#inScheme": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#AttachLevels"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#prefLabel": [
+   {
+    "@value": "Line"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA007",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "By endorsement."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_HO_SPP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "HO"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Offered"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#WorkersCompensationBenefits",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "WorkersCompensationBenefits"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#StatutoryBenefitsCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Benefits under the workers' compensation law of a state."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#FirstPartyCoverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "FirstPartyCoverage"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Coverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Pays the insured for its own loss."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_GL_MED_LIMIT",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage C - Medical Payments: LIMIT"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PerPersonLimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "5000, 10000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Default 5000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "LIMIT"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Classification",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Classification"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#InsuredObject"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_CP_BPP_LIMIT",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Business Personal Property: LIMIT"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Limit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Insured value"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "LIMIT"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_PA_PD_LIMIT",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Property Damage Liability: LIMIT"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PerOccurrenceLimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "25000, 50000, 100000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "LIMIT"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#End_END_HO_FL_AMEND",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Special provisions - Florida"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#StateAmendatoryEndorsement"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Policy"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasEffect": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Eff_END_HO_FL_AMEND_1"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "FL"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "HO"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#PropertyCoverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "PropertyCoverage"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#FirstPartyCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Direct physical loss to property."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_WC_EL_DIS_EE",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Part Two - Employers Liability: DIS_EE"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PerPersonLimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Equal to each accident"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "DIS_EE"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Ontology"
+  ],
+  "http://purl.org/dc/terms/title": [
+   {
+    "@value": "SI² Coverage Ontology: classes, catalog, terms and endorsements"
+   }
+  ],
+  "http://www.w3.org/2002/07/owl#versionInfo": [
+   {
+    "@value": "2026.10"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA037",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "New York no-fault."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_CA_PIP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "50000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "CA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "NY"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#key_company",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#DatatypeProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "company"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#EmployersLiability",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "EmployersLiability"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#LiabilityCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Employee injury claims outside workers' compensation."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_PA_COMP_DED",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Comprehensive: DED"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#FlatDeductible"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "100, 250, 500, 1000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Default 250"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "DED"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_HO_A_LIMIT",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage A - Dwelling: LIMIT"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Limit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Insured to replacement cost"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "LIMIT"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_HO_B_LIMIT",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage B - Other Structures: LIMIT"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Sublimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "10% of HO_A"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "LIMIT"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_HO_F",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage F - Medical Payments to Others"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#MedicalPaymentsCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "HO_F"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_HO_F_LIMIT"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "HO"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_CA_COLL",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Collision"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#CollisionCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "CA_COLL"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Object"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachesToObjectType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Vehicle"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_CA_COLL_DED"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "CA"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#AttachLevels",
+  "@type": [
+   "http://www.w3.org/2004/02/skos/core#ConceptScheme"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage attachment levels"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#BroadenEndorsement",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "BroadenEndorsement"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Endorsement"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Widens what a coverage covers or who is insured."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA042",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Monopolistic state fund."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_WC_PART1"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "WC"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "WA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Not available"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#effectType",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#DatatypeProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "effect type"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#BodilyInjuryPropertyDamageLiability",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "BodilyInjuryPropertyDamageLiability"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#LiabilityCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Bodily injury and property damage to others."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_HO_A",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage A - Dwelling"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#DwellingCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "HO_A"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Object"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachesToObjectType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Dwelling"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_HO_A_LIMIT"
+   },
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_HO_A_VALUATION"
+   },
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_HO_A_AOP_DED"
+   },
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_HO_A_HURR_DED"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "HO"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#DwellingCoverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "DwellingCoverage"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PropertyCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "The home and structures on a residence premises."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_CP_BLDG_LIMIT",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Building: LIMIT"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Limit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Insured value"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "LIMIT"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA011",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Florida hurricane deductible, policy level."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_HO_A_HURR_DED"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "2"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "HO"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "FL"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_PA_PIP",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Personal Injury Protection"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PersonalInjuryProtection"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "PA_PIP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_PA_PIP_LIMIT"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "PA"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_GL_OCC_GEN_AGG",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage A - Bodily Injury and Property Damage: GEN_AGG"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#AggregateLimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "2 x each occurrence"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "GEN_AGG"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#key_line",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#DatatypeProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "line"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#UninsuredMotoristsCoverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "UninsuredMotoristsCoverage"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Coverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Injury caused by an uninsured or underinsured driver."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA043",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Monopolistic state fund."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_WC_PART1"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "WC"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "ND"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Not available"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Dwelling",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Dwelling"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#InsuredObject"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA040",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Statutory benefits."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_WC_PART1"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "STATUTORY"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "WC"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Level_Endorsement",
+  "@type": [
+   "http://www.w3.org/2004/02/skos/core#Concept"
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Changes coverage at any of the other levels"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#inScheme": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#AttachLevels"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#prefLabel": [
+   {
+    "@value": "Endorsement"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#PercentDeductible",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "PercentDeductible"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Deductible"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "A percentage of a stated value."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_HO_C",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage C - Personal Property"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PersonalPropertyCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "HO_C"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Coverage"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_HO_C_LIMIT"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "HO"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#parentCoverage": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_HO_A"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_PA_MED_LIMIT",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Medical Payments: LIMIT"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PerPersonLimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "1000, 5000, 10000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "LIMIT"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#WindHailDeductible",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "WindHailDeductible"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PercentDeductible"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Percentage deductible for windstorm or hail."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#key_product",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#DatatypeProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "product"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA004",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Follows Coverage A."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_HO_D"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "20% of HO_A"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "HO"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Coverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "A promise to pay or defend for a defined loss, under stated terms."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_CA_COLL_DED",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Collision: DED"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#FlatDeductible"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "500, 1000, 2500"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Default 1000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "DED"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#RestrictEndorsement",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "RestrictEndorsement"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Endorsement"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Narrows a coverage or its valuation."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_HO_A_AOP_DED",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage A - Dwelling: AOP_DED"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#FlatDeductible"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "500, 1000, 2500, 5000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Default 1000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "AOP_DED"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_CP_BLDG_COINS",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Building: COINS"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Coinsurance"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "80, 90, 100"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Default 90"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "COINS"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#AutoLiability",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "AutoLiability"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#BodilyInjuryPropertyDamageLiability"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Liability from owning or using autos."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CombinedSingleLimit",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "CombinedSingleLimit"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Limit"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "One limit for bodily injury and property damage."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_GL_PCO_AGG",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Products-Completed Operations: AGG"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#AggregateLimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Equal to general aggregate"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "AGG"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#End_END_CP_WIND_EXCL",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Windstorm or hail exclusion"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#ExclusionEndorsement"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Object"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasEffect": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Eff_END_CP_WIND_EXCL_1"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "CP"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#PerOccurrenceLimit",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "PerOccurrenceLimit"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Limit"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Most paid for one occurrence."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CollisionCoverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "CollisionCoverage"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#AutoPhysicalDamageCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Collision with another object or upset."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA023",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Building or contents, at least one."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_CP_BLDG"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "CP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Offered"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#ExclusionEndorsement",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "ExclusionEndorsement"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Endorsement"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Removes a cause of loss, object or activity."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#key_module",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#DatatypeProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "module"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_HO_D",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage D - Loss of Use"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#LossOfUseCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "HO_D"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Coverage"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_HO_D_LIMIT"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "HO"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#parentCoverage": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_HO_A"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#End_END_WC_OTHER_STATES",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Other states insurance (3.C)"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#BroadenEndorsement"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasEffect": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Eff_END_WC_OTHER_STATES_1"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "WC"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_GL_OCC",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage A - Bodily Injury and Property Damage"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PremisesOperationsLiability"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "GL_OCC"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_GL_OCC_EACH_OCC"
+   },
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_GL_OCC_GEN_AGG"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "GL"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Level_Object",
+  "@type": [
+   "http://www.w3.org/2004/02/skos/core#Concept"
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Attaches to one insured object"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#inScheme": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#AttachLevels"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#prefLabel": [
+   {
+    "@value": "Object"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Eff_END_HO_FL_AMEND_1",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#EndorsementEffect"
+  ],
+  "https://si2insure.com/ontology/coverage#effectType": [
+   {
+    "@value": "Modify condition"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#value": [
+   {
+    "@value": "Cancellation and notice per state law"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#PolicyLine",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Policy line"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#key_country",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#DatatypeProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "country"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#value",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#DatatypeProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "value"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_HO_SPP",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Scheduled Personal Property"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PersonalPropertyCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "HO_SPP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Policy"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_HO_SPP_LIMIT"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "HO"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#StatutoryBenefitsCoverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "StatutoryBenefitsCoverage"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Coverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Benefits set by statute."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_HO_E",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage E - Personal Liability"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PersonalLiability"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "HO_E"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_HO_E_LIMIT"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "HO"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA002",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Follows Coverage A."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_HO_B"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "10% of HO_A"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "HO"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Eff_END_CA_TX_AMEND_1",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#EndorsementEffect"
+  ],
+  "https://si2insure.com/ontology/coverage#effectType": [
+   {
+    "@value": "Modify condition"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#value": [
+   {
+    "@value": "Texas conditions"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#attachLevel",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#ObjectProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "attach level"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_HO_A_VALUATION",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage A - Dwelling: VALUATION"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Valuation"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "RC, ACV"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Default RC"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "VALUATION"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_PA_MED",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Medical Payments"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#MedicalPaymentsCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "PA_MED"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_PA_MED_LIMIT"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "PA"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Eff_END_HO_ROOF_ACV_1",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#EndorsementEffect"
+  ],
+  "https://si2insure.com/ontology/coverage#effectType": [
+   {
+    "@value": "Restrict"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#targetCoverage": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_HO_A"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "VALUATION"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#value": [
+   {
+    "@value": "ACV for roof surfacing"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA014",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Financial responsibility law."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_PA_PD"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "25000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "PA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_WC_EL_DIS_POL",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Part Two - Employers Liability: DIS_POL"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#AggregateLimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Equal to each accident"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "DIS_POL"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA017",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Florida no-fault."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_PA_PIP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "10000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "PA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "FL"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#writtenPremium",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#DatatypeProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "written premium"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA044",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Monopolistic state fund."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_WC_PART1"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "WC"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "WY"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Not available"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#FirstPartyInjuryCoverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "FirstPartyInjuryCoverage"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#FirstPartyCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Medical and income benefits regardless of fault."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_CA_PIP_LIMIT",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Personal Injury Protection: LIMIT"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PerPersonLimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "State minimum"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "LIMIT"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#key_lob",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#DatatypeProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "lob"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#StateAmendatoryEndorsement",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "StateAmendatoryEndorsement"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Endorsement"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Changes conditions to meet a state's law."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#ComprehensiveCoverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "ComprehensiveCoverage"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#AutoPhysicalDamageCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Other than collision: theft, fire, hail, glass."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_CA_LIAB",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Auto Liability"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#AutoLiability"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "CA_LIAB"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_CA_LIAB_CSL"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "CA"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#PremisesOperationsLiability",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "PremisesOperationsLiability"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#BodilyInjuryPropertyDamageLiability"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Liability from premises and operations."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Building",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Building"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#InsuredObject"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA019",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Michigan no-fault; levels chosen by the insured."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_PA_PIP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "PA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "MI"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#EarthquakeDeductible",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "EarthquakeDeductible"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PercentDeductible"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Percentage deductible for earthquake."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Deductible",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Deductible"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#CoverageTerm"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Amount the insured bears before the coverage pays."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Level_Policy",
+  "@type": [
+   "http://www.w3.org/2004/02/skos/core#Concept"
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Applies to the whole policy term"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#inScheme": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#AttachLevels"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#prefLabel": [
+   {
+    "@value": "Policy"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#attachesToObjectType",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#ObjectProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "attaches to object type"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#key_state",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#DatatypeProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "state"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Sublimit",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Sublimit"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Limit"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "A smaller limit inside a parent limit."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_WC_PART1",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Part One - Workers' Compensation"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#WorkersCompensationBenefits"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "WC_PART1"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_WC_PART1_LIMIT"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "WC"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#FlatDeductible",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "FlatDeductible"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Deductible"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "A fixed amount."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#AggregateLimit",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "AggregateLimit"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Limit"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Most paid in the policy term."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#HurricaneDeductible",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "HurricaneDeductible"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PercentDeductible"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Percentage deductible for a hurricane or named storm."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_PA_BI",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Bodily Injury Liability"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#AutoLiability"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "PA_BI"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_PA_BI_PER_PERSON"
+   },
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_PA_BI_PER_ACCIDENT"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "PA"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA028",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Florida named storm."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_CP_BLDG_WIND_DED"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "2"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "CP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "FL"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#AddCoverageEndorsement",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "AddCoverageEndorsement"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Endorsement"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Adds a coverage."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#PersonalAdvertisingInjuryLiability",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "PersonalAdvertisingInjuryLiability"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#LiabilityCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Libel, slander, false arrest, advertising injury."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA036",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Florida no-fault."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_CA_PIP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "10000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "CA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "FL"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#End_END_CA_TX_AMEND",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Texas changes"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#StateAmendatoryEndorsement"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasEffect": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Eff_END_CA_TX_AMEND_1"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "TX"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "CA"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA026",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Optional elsewhere."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_CP_BLDG_WIND_DED"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "CP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Offered"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Policy",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Policy"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA045",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Part Two."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_WC_EL"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "1000000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "WC"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_HO_EQ_EQ_DED",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Earthquake: EQ_DED"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#EarthquakeDeductible"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "10, 15, 20"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Default 15"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "EQ_DED"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA016",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Not a no-fault state."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_PA_PIP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "PA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Not available"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA029",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Coverage A."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_GL_OCC"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "1000000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "GL"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Eff_END_WC_OTHER_STATES_1",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#EndorsementEffect"
+  ],
+  "https://si2insure.com/ontology/coverage#effectType": [
+   {
+    "@value": "Broaden"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#targetCoverage": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_WC_PART1"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#value": [
+   {
+    "@value": "States listed in 3.C"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Eff_END_HO_EQ_2",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#EndorsementEffect"
+  ],
+  "https://si2insure.com/ontology/coverage#effectType": [
+   {
+    "@value": "Modify term"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#targetCoverage": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_HO_EQ"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "EQ_DED"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#value": [
+   {
+    "@value": "15"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_HO_A_HURR_DED",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage A - Dwelling: HURR_DED"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#HurricaneDeductible"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "2, 5, 10"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Policy level where mandatory"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "HURR_DED"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA009",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Earthquake must be offered in California."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_HO_EQ"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "HO"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "CA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Offered"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CommercialBuildingCoverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "CommercialBuildingCoverage"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PropertyCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "A commercial building."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#ModifyTermEndorsement",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "ModifyTermEndorsement"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Endorsement"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Changes a limit, deductible or other term."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_HO_F_LIMIT",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage F - Medical Payments to Others: LIMIT"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PerPersonLimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "1000, 5000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Default 5000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "LIMIT"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA013",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Financial responsibility law."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_PA_BI"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "25000/50000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "PA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Mandatory"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_CA_PIP",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Personal Injury Protection"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PersonalInjuryProtection"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "CA_PIP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_CA_PIP_LIMIT"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "CA"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#PersonalPropertyCoverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "PersonalPropertyCoverage"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#PropertyCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Contents and belongings of a household."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_CP_BI",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Business Income and Extra Expense"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#BusinessIncomeCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "CP_BI"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Coverage"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_CP_BI_LIMIT"
+   },
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_CP_BI_WAITING"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "CP"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#parentCoverage": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_CP_BLDG"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Eff_END_GL_DESIG_OPS_1",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#EndorsementEffect"
+  ],
+  "https://si2insure.com/ontology/coverage#effectType": [
+   {
+    "@value": "Exclude"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#targetCoverage": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_GL_OCC"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#value": [
+   {
+    "@value": "Scheduled operations"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_CP_BLDG_WIND_DED",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Building: WIND_DED"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#WindHailDeductible"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#options": [
+   {
+    "@value": "1, 2, 5"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "Where mandatory"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "WIND_DED"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_HO_B",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage B - Other Structures"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#DwellingCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "HO_B"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Coverage"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_HO_B_LIMIT"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "HO"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#parentCoverage": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_HO_A"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#LiabilityCoverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "LiabilityCoverage"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Coverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Pays others for injury or damage the insured is legally liable for, and defends."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#key_effective_from",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#DatatypeProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "effective_from"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Endorsement",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Endorsement"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "A form that changes the policy."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA010",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "No hurricane deductible outside listed states."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_HO_A_HURR_DED"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "HO"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Not available"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA021",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Optional physical damage."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_PA_COLL"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "500"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "PA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Offered"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#TimeElementCoverage",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "TimeElementCoverage"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#FirstPartyCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Loss that grows with time after property damage."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#End_END_HO_SPP",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Scheduled personal property"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#AddCoverageEndorsement"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Policy"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasEffect": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Eff_END_HO_SPP_1"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "HO"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Cov_CA_UM",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Uninsured Motorists"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#UninsuredMotoristsCoverage"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#notation": [
+   {
+    "@value": "CA_UM"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#attachLevel": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Level_Line"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#hasTermType": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Term_CA_UM_LIMIT"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#lob": [
+   {
+    "@value": "CA"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA038",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Optional physical damage."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_CA_COLL"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#defaultValue": [
+   {
+    "@value": "1000"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Commercial"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "CA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Offered"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#CA015",
+  "@type": [
+   "https://si2insure.com/ontology/coverage#CoverageApplicability"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#comment": [
+   {
+    "@value": "Rejection must be signed where allowed."
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#appliesTo": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Cov_PA_UM"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_company": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_country": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_from": [
+   {
+    "@value": "2025-01-01"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_effective_to": [
+   {
+    "@value": "9999-12-31"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_line": [
+   {
+    "@value": "Personal"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_lob": [
+   {
+    "@value": "PA"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_module": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_object": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_product": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#key_state": [
+   {
+    "@value": "*"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#offerStatus": [
+   {
+    "@value": "Offered"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#PersonalLiability",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "PersonalLiability"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#BodilyInjuryPropertyDamageLiability"
+   }
+  ],
+  "http://www.w3.org/2004/02/skos/core#definition": [
+   {
+    "@value": "Liability of a household."
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#hasEffect",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#ObjectProperty"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "has effect"
+   }
+  ]
+ },
+ {
+  "@id": "https://si2insure.com/ontology/coverage#Term_HO_C_LIMIT",
+  "@type": [
+   "http://www.w3.org/2002/07/owl#Class"
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+   {
+    "@value": "Coverage C - Personal Property: LIMIT"
+   }
+  ],
+  "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+   {
+    "@id": "https://si2insure.com/ontology/coverage#Sublimit"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#rule": [
+   {
+    "@value": "50% of HO_A"
+   }
+  ],
+  "https://si2insure.com/ontology/coverage#termCode": [
+   {
+    "@value": "LIMIT"
+   }
+  ]
+ }
+]

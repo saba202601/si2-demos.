@@ -1,0 +1,735 @@
+@prefix ex: <https://si2insure.com/data/coverage-sample#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix si2c: <https://si2insure.com/ontology/coverage#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:CV002 a si2c:Cov_HO_B ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:attachesTo ex:CV001 ;
+    si2c:hasTerm ex:CV002_LIMIT .
+
+ex:CV003 a si2c:Cov_HO_C ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:attachesTo ex:CV001 ;
+    si2c:hasTerm ex:CV003_LIMIT .
+
+ex:CV004 a si2c:Cov_HO_D ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:attachesTo ex:CV001 ;
+    si2c:hasTerm ex:CV004_LIMIT .
+
+ex:CV005 a si2c:Cov_HO_E ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN001 ;
+    si2c:hasTerm ex:CV005_LIMIT ;
+    si2c:writtenPremium 367 .
+
+ex:CV006 a si2c:Cov_HO_F ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN001 ;
+    si2c:hasTerm ex:CV006_LIMIT .
+
+ex:CV007 a si2c:Cov_HO_SPP ;
+    si2c:attachLevel si2c:Level_Policy ;
+    si2c:attachesTo ex:HO2026001 ;
+    si2c:hasTerm ex:CV007_LIMIT ;
+    si2c:writtenPremium 380 .
+
+ex:CV009 a si2c:Cov_HO_B ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:attachesTo ex:CV008 ;
+    si2c:hasTerm ex:CV009_LIMIT .
+
+ex:CV010 a si2c:Cov_HO_C ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:attachesTo ex:CV008 ;
+    si2c:hasTerm ex:CV010_LIMIT .
+
+ex:CV011 a si2c:Cov_HO_D ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:attachesTo ex:CV008 ;
+    si2c:hasTerm ex:CV011_LIMIT .
+
+ex:CV012 a si2c:Cov_HO_E ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN002 ;
+    si2c:hasTerm ex:CV012_LIMIT ;
+    si2c:writtenPremium 177 .
+
+ex:CV013 a si2c:Cov_HO_F ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN002 ;
+    si2c:hasTerm ex:CV013_LIMIT .
+
+ex:CV014 a si2c:Cov_HO_EQ ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:attachesTo ex:CV008 ;
+    si2c:hasTerm ex:CV014_EQ_DED ;
+    si2c:writtenPremium 1180 .
+
+ex:CV016 a si2c:Cov_HO_B ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:attachesTo ex:CV015 ;
+    si2c:hasTerm ex:CV016_LIMIT .
+
+ex:CV017 a si2c:Cov_HO_C ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:attachesTo ex:CV015 ;
+    si2c:hasTerm ex:CV017_LIMIT .
+
+ex:CV018 a si2c:Cov_HO_D ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:attachesTo ex:CV015 ;
+    si2c:hasTerm ex:CV018_LIMIT .
+
+ex:CV019 a si2c:Cov_HO_E ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN003 ;
+    si2c:hasTerm ex:CV019_LIMIT ;
+    si2c:writtenPremium 85 .
+
+ex:CV020 a si2c:Cov_HO_F ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN003 ;
+    si2c:hasTerm ex:CV020_LIMIT .
+
+ex:CV021 a si2c:Cov_PA_BI ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN004 ;
+    si2c:hasTerm ex:CV021_PER_ACCIDENT,
+        ex:CV021_PER_PERSON ;
+    si2c:writtenPremium 820 .
+
+ex:CV022 a si2c:Cov_PA_PD ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN004 ;
+    si2c:hasTerm ex:CV022_LIMIT ;
+    si2c:writtenPremium 410 .
+
+ex:CV023 a si2c:Cov_PA_PIP ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN004 ;
+    si2c:hasTerm ex:CV023_LIMIT ;
+    si2c:writtenPremium 290 .
+
+ex:CV024 a si2c:Cov_PA_UM ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN004 ;
+    si2c:hasTerm ex:CV024_PER_PERSON ;
+    si2c:writtenPremium 140 .
+
+ex:CV025 a si2c:Cov_PA_COLL ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesTo ex:OB004 ;
+    si2c:hasTerm ex:CV025_DED ;
+    si2c:writtenPremium 520 .
+
+ex:CV026 a si2c:Cov_PA_COMP ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesTo ex:OB004 ;
+    si2c:hasTerm ex:CV026_DED ;
+    si2c:writtenPremium 190 .
+
+ex:CV027 a si2c:Cov_PA_COLL ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesTo ex:OB005 ;
+    si2c:hasTerm ex:CV027_DED ;
+    si2c:writtenPremium 520 .
+
+ex:CV028 a si2c:Cov_PA_COMP ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesTo ex:OB005 ;
+    si2c:hasTerm ex:CV028_DED ;
+    si2c:writtenPremium 190 .
+
+ex:CV030 a si2c:Cov_CP_BPP ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesTo ex:OB006 ;
+    si2c:hasTerm ex:CV030_LIMIT ;
+    si2c:writtenPremium 7900 .
+
+ex:CV031 a si2c:Cov_CP_BI ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:attachesTo ex:CV029 ;
+    si2c:hasTerm ex:CV031_LIMIT,
+        ex:CV031_WAITING ;
+    si2c:writtenPremium 5100 .
+
+ex:CV033 a si2c:Cov_GL_PAI ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN006 ;
+    si2c:hasTerm ex:CV033_LIMIT .
+
+ex:CV034 a si2c:Cov_GL_MED ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN006 ;
+    si2c:hasTerm ex:CV034_LIMIT .
+
+ex:CV035 a si2c:Cov_GL_PCO ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN006 ;
+    si2c:hasTerm ex:CV035_AGG ;
+    si2c:writtenPremium 6400 .
+
+ex:CV036 a si2c:Cov_CA_LIAB ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN007 ;
+    si2c:hasTerm ex:CV036_CSL ;
+    si2c:writtenPremium 9800 .
+
+ex:CV037 a si2c:Cov_CA_UM ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN007 ;
+    si2c:hasTerm ex:CV037_LIMIT ;
+    si2c:writtenPremium 600 .
+
+ex:CV038 a si2c:Cov_CA_COLL ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesTo ex:OB007 ;
+    si2c:hasTerm ex:CV038_DED ;
+    si2c:writtenPremium 2100 .
+
+ex:CV039 a si2c:Cov_CA_COMP ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesTo ex:OB007 ;
+    si2c:hasTerm ex:CV039_DED ;
+    si2c:writtenPremium 700 .
+
+ex:CV040 a si2c:Cov_CA_COLL ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesTo ex:OB008 ;
+    si2c:hasTerm ex:CV040_DED ;
+    si2c:writtenPremium 900 .
+
+ex:CV041 a si2c:Cov_CA_COMP ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesTo ex:OB008 ;
+    si2c:hasTerm ex:CV041_DED ;
+    si2c:writtenPremium 310 .
+
+ex:CV042 a si2c:Cov_CP_BLDG ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesTo ex:OB009 ;
+    si2c:hasTerm ex:CV042_AOP_DED,
+        ex:CV042_COINS,
+        ex:CV042_LIMIT,
+        ex:CV042_VALUATION ;
+    si2c:writtenPremium 31200 .
+
+ex:CV043 a si2c:Cov_GL_OCC ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN009 ;
+    si2c:hasTerm ex:CV043_EACH_OCC,
+        ex:CV043_GEN_AGG ;
+    si2c:writtenPremium 186000 .
+
+ex:CV044 a si2c:Cov_GL_PAI ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN009 ;
+    si2c:hasTerm ex:CV044_LIMIT .
+
+ex:CV045 a si2c:Cov_GL_PCO ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN009 ;
+    si2c:hasTerm ex:CV045_AGG ;
+    si2c:writtenPremium 31300 .
+
+ex:CV046 a si2c:Cov_WC_PART1 ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN010 ;
+    si2c:hasTerm ex:CV046_LIMIT ;
+    si2c:writtenPremium 61200 .
+
+ex:CV047 a si2c:Cov_WC_EL ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN010 ;
+    si2c:hasTerm ex:CV047_DIS_EE,
+        ex:CV047_DIS_POL,
+        ex:CV047_EACH_ACC .
+
+ex:EN001 a si2c:End_END_HO_SPP ;
+    si2c:attachLevel si2c:Level_Policy ;
+    si2c:attachesTo ex:HO2026001 .
+
+ex:EN002 a si2c:End_END_HO_ROOF_ACV ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:attachesTo ex:CV001 .
+
+ex:EN003 a si2c:End_END_HO_FL_AMEND ;
+    si2c:attachLevel si2c:Level_Policy ;
+    si2c:attachesTo ex:HO2026001 .
+
+ex:EN004 a si2c:End_END_HO_EQ ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:attachesTo ex:CV008 .
+
+ex:EN005 a si2c:End_END_HO_CINC ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:attachesTo ex:CV008 .
+
+ex:EN006 a si2c:End_END_GL_AI_OWNER ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:attachesTo ex:CV032 .
+
+ex:EN007 a si2c:End_END_CA_HNOA ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN007 .
+
+ex:EN008 a si2c:End_END_CA_TX_AMEND ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN007 .
+
+ex:EN009 a si2c:End_END_CP_WIND_EXCL ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesTo ex:OB009 .
+
+ex:EN010 a si2c:End_END_GL_DESIG_OPS ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN009 .
+
+ex:EN011 a si2c:End_END_WC_OTHER_STATES ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN010 .
+
+ex:OB010 a si2c:Classification ;
+    rdfs:label "Carpentry contractor, payroll 5,300,000" ;
+    si2c:inLine ex:LN009 .
+
+ex:OB011 a si2c:Classification ;
+    rdfs:label "Plumbing 5183, payroll 1,250,000" ;
+    si2c:inLine ex:LN010 .
+
+ex:CP2026001 a si2c:Policy ;
+    rdfs:label "Harbor Point Holdings" ;
+    si2c:key_company "SI2-ES" ;
+    si2c:key_product "CP-Std 2025" ;
+    si2c:key_state "FL" .
+
+ex:CV001_AOP_DED a si2c:Term_HO_A_AOP_DED ;
+    rdfs:comment "Default" ;
+    si2c:value 1000 .
+
+ex:CV001_HURR_DED a si2c:Term_HO_A_HURR_DED ;
+    rdfs:comment "Mandatory in FL; applies at Policy level" ;
+    si2c:value "2%" .
+
+ex:CV001_LIMIT a si2c:Term_HO_A_LIMIT ;
+    rdfs:comment "Selected" ;
+    si2c:value 450000 .
+
+ex:CV001_VALUATION a si2c:Term_HO_A_VALUATION ;
+    rdfs:comment "Default" ;
+    si2c:value "RC" .
+
+ex:CV002_LIMIT a si2c:Term_HO_B_LIMIT ;
+    rdfs:comment "Rule 10% of HO_A" ;
+    si2c:value 45000 .
+
+ex:CV003_LIMIT a si2c:Term_HO_C_LIMIT ;
+    rdfs:comment "Rule 50% of HO_A" ;
+    si2c:value 225000 .
+
+ex:CV004_LIMIT a si2c:Term_HO_D_LIMIT ;
+    rdfs:comment "Rule 20% of HO_A" ;
+    si2c:value 90000 .
+
+ex:CV005_LIMIT a si2c:Term_HO_E_LIMIT ;
+    rdfs:comment "Default" ;
+    si2c:value 300000 .
+
+ex:CV006_LIMIT a si2c:Term_HO_F_LIMIT ;
+    rdfs:comment "Default" ;
+    si2c:value 5000 .
+
+ex:CV007_LIMIT a si2c:Term_HO_SPP_LIMIT ;
+    rdfs:comment "Schedule: ring, watch, painting" ;
+    si2c:value 42000 .
+
+ex:CV008_AOP_DED a si2c:Term_HO_A_AOP_DED ;
+    rdfs:comment "Default" ;
+    si2c:value 1000 .
+
+ex:CV008_LIMIT a si2c:Term_HO_A_LIMIT ;
+    rdfs:comment "Selected" ;
+    si2c:value 820000 .
+
+ex:CV008_VALUATION a si2c:Term_HO_A_VALUATION ;
+    rdfs:comment "Default" ;
+    si2c:value "RC" .
+
+ex:CV009_LIMIT a si2c:Term_HO_B_LIMIT ;
+    rdfs:comment "Rule 10% of HO_A" ;
+    si2c:value 82000 .
+
+ex:CV010_LIMIT a si2c:Term_HO_C_LIMIT ;
+    rdfs:comment "Endorsement 70% of HO_A" ;
+    si2c:value 574000 .
+
+ex:CV011_LIMIT a si2c:Term_HO_D_LIMIT ;
+    rdfs:comment "Rule 20% of HO_A" ;
+    si2c:value 164000 .
+
+ex:CV012_LIMIT a si2c:Term_HO_E_LIMIT ;
+    rdfs:comment "Default" ;
+    si2c:value 300000 .
+
+ex:CV013_LIMIT a si2c:Term_HO_F_LIMIT ;
+    rdfs:comment "Default" ;
+    si2c:value 5000 .
+
+ex:CV014_EQ_DED a si2c:Term_HO_EQ_EQ_DED ;
+    rdfs:comment "Endorsement" ;
+    si2c:value 15 .
+
+ex:CV015_AOP_DED a si2c:Term_HO_A_AOP_DED ;
+    rdfs:comment "Default" ;
+    si2c:value 1000 .
+
+ex:CV015_LIMIT a si2c:Term_HO_A_LIMIT ;
+    rdfs:comment "Selected" ;
+    si2c:value 310000 .
+
+ex:CV015_VALUATION a si2c:Term_HO_A_VALUATION ;
+    rdfs:comment "Default" ;
+    si2c:value "RC" .
+
+ex:CV016_LIMIT a si2c:Term_HO_B_LIMIT ;
+    rdfs:comment "Rule 10% of HO_A" ;
+    si2c:value 31000 .
+
+ex:CV017_LIMIT a si2c:Term_HO_C_LIMIT ;
+    rdfs:comment "Rule 50% of HO_A" ;
+    si2c:value 155000 .
+
+ex:CV018_LIMIT a si2c:Term_HO_D_LIMIT ;
+    rdfs:comment "Rule 20% of HO_A" ;
+    si2c:value 62000 .
+
+ex:CV019_LIMIT a si2c:Term_HO_E_LIMIT ;
+    rdfs:comment "Default" ;
+    si2c:value 300000 .
+
+ex:CV020_LIMIT a si2c:Term_HO_F_LIMIT ;
+    rdfs:comment "Default" ;
+    si2c:value 5000 .
+
+ex:CV021_PER_ACCIDENT a si2c:Term_PA_BI_PER_ACCIDENT ;
+    rdfs:comment "Selected" ;
+    si2c:value 300000 .
+
+ex:CV021_PER_PERSON a si2c:Term_PA_BI_PER_PERSON ;
+    rdfs:comment "Selected" ;
+    si2c:value 100000 .
+
+ex:CV022_LIMIT a si2c:Term_PA_PD_LIMIT ;
+    rdfs:comment "Selected" ;
+    si2c:value 100000 .
+
+ex:CV023_LIMIT a si2c:Term_PA_PIP_LIMIT ;
+    rdfs:comment "Mandatory in NY" ;
+    si2c:value 50000 .
+
+ex:CV024_PER_PERSON a si2c:Term_PA_UM_PER_PERSON ;
+    rdfs:comment "Selected" ;
+    si2c:value 100000 .
+
+ex:CV025_DED a si2c:Term_PA_COLL_DED ;
+    rdfs:comment "Default" ;
+    si2c:value 500 .
+
+ex:CV026_DED a si2c:Term_PA_COMP_DED ;
+    rdfs:comment "Default" ;
+    si2c:value 250 .
+
+ex:CV027_DED a si2c:Term_PA_COLL_DED ;
+    rdfs:comment "Default" ;
+    si2c:value 500 .
+
+ex:CV028_DED a si2c:Term_PA_COMP_DED ;
+    rdfs:comment "Default" ;
+    si2c:value 250 .
+
+ex:CV029 a si2c:Cov_CP_BLDG ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesTo ex:OB006 ;
+    si2c:hasTerm ex:CV029_AOP_DED,
+        ex:CV029_COINS,
+        ex:CV029_LIMIT,
+        ex:CV029_VALUATION,
+        ex:CV029_WIND_DED ;
+    si2c:writtenPremium 38400 .
+
+ex:CV029_AOP_DED a si2c:Term_CP_BLDG_AOP_DED ;
+    rdfs:comment "Default" ;
+    si2c:value 5000 .
+
+ex:CV029_COINS a si2c:Term_CP_BLDG_COINS ;
+    rdfs:comment "Default" ;
+    si2c:value 90 .
+
+ex:CV029_LIMIT a si2c:Term_CP_BLDG_LIMIT ;
+    rdfs:comment "Selected" ;
+    si2c:value 6600000 .
+
+ex:CV029_VALUATION a si2c:Term_CP_BLDG_VALUATION ;
+    rdfs:comment "Default" ;
+    si2c:value "RC" .
+
+ex:CV029_WIND_DED a si2c:Term_CP_BLDG_WIND_DED ;
+    rdfs:comment "Mandatory in TX" ;
+    si2c:value "2%" .
+
+ex:CV030_LIMIT a si2c:Term_CP_BPP_LIMIT ;
+    rdfs:comment "Selected" ;
+    si2c:value 1500000 .
+
+ex:CV031_LIMIT a si2c:Term_CP_BI_LIMIT ;
+    rdfs:comment "Selected" ;
+    si2c:value 1200000 .
+
+ex:CV031_WAITING a si2c:Term_CP_BI_WAITING ;
+    rdfs:comment "Default" ;
+    si2c:value 72 .
+
+ex:CV032 a si2c:Cov_GL_OCC ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:attachesTo ex:LN006 ;
+    si2c:hasTerm ex:CV032_EACH_OCC,
+        ex:CV032_GEN_AGG ;
+    si2c:writtenPremium 21800 .
+
+ex:CV032_EACH_OCC a si2c:Term_GL_OCC_EACH_OCC ;
+    rdfs:comment "Default" ;
+    si2c:value 1000000 .
+
+ex:CV032_GEN_AGG a si2c:Term_GL_OCC_GEN_AGG ;
+    rdfs:comment "Rule 2 x each occurrence" ;
+    si2c:value 2000000 .
+
+ex:CV033_LIMIT a si2c:Term_GL_PAI_LIMIT ;
+    rdfs:comment "Rule" ;
+    si2c:value 1000000 .
+
+ex:CV034_LIMIT a si2c:Term_GL_MED_LIMIT ;
+    rdfs:comment "Default" ;
+    si2c:value 5000 .
+
+ex:CV035_AGG a si2c:Term_GL_PCO_AGG ;
+    rdfs:comment "Rule" ;
+    si2c:value 2000000 .
+
+ex:CV036_CSL a si2c:Term_CA_LIAB_CSL ;
+    rdfs:comment "Default" ;
+    si2c:value 1000000 .
+
+ex:CV037_LIMIT a si2c:Term_CA_UM_LIMIT ;
+    rdfs:comment "Selected" ;
+    si2c:value 30000 .
+
+ex:CV038_DED a si2c:Term_CA_COLL_DED ;
+    rdfs:comment "Default" ;
+    si2c:value 1000 .
+
+ex:CV039_DED a si2c:Term_CA_COMP_DED ;
+    rdfs:comment "Default" ;
+    si2c:value 1000 .
+
+ex:CV040_DED a si2c:Term_CA_COLL_DED ;
+    rdfs:comment "Default" ;
+    si2c:value 1000 .
+
+ex:CV041_DED a si2c:Term_CA_COMP_DED ;
+    rdfs:comment "Default" ;
+    si2c:value 1000 .
+
+ex:CV042_AOP_DED a si2c:Term_CP_BLDG_AOP_DED ;
+    rdfs:comment "Selected" ;
+    si2c:value 10000 .
+
+ex:CV042_COINS a si2c:Term_CP_BLDG_COINS ;
+    rdfs:comment "Default" ;
+    si2c:value 90 .
+
+ex:CV042_LIMIT a si2c:Term_CP_BLDG_LIMIT ;
+    rdfs:comment "Selected" ;
+    si2c:value 8100000 .
+
+ex:CV042_VALUATION a si2c:Term_CP_BLDG_VALUATION ;
+    rdfs:comment "Default" ;
+    si2c:value "RC" .
+
+ex:CV043_EACH_OCC a si2c:Term_GL_OCC_EACH_OCC ;
+    rdfs:comment "Default" ;
+    si2c:value 1000000 .
+
+ex:CV043_GEN_AGG a si2c:Term_GL_OCC_GEN_AGG ;
+    rdfs:comment "Rule" ;
+    si2c:value 2000000 .
+
+ex:CV044_LIMIT a si2c:Term_GL_PAI_LIMIT ;
+    rdfs:comment "Rule" ;
+    si2c:value 1000000 .
+
+ex:CV045_AGG a si2c:Term_GL_PCO_AGG ;
+    rdfs:comment "Rule" ;
+    si2c:value 2000000 .
+
+ex:CV046_LIMIT a si2c:Term_WC_PART1_LIMIT ;
+    rdfs:comment "Statutory" ;
+    si2c:value "STATUTORY" .
+
+ex:CV047_DIS_EE a si2c:Term_WC_EL_DIS_EE ;
+    rdfs:comment "Rule" ;
+    si2c:value 1000000 .
+
+ex:CV047_DIS_POL a si2c:Term_WC_EL_DIS_POL ;
+    rdfs:comment "Rule" ;
+    si2c:value 1000000 .
+
+ex:CV047_EACH_ACC a si2c:Term_WC_EL_EACH_ACC ;
+    rdfs:comment "Default" ;
+    si2c:value 1000000 .
+
+ex:GL2026001 a si2c:Policy ;
+    rdfs:label "Empire Ridge Builders" ;
+    si2c:key_company "SI2-ADM" ;
+    si2c:key_product "GL-Std 2025" ;
+    si2c:key_state "NY" .
+
+ex:HO2026002 a si2c:Policy ;
+    rdfs:label "Nguyen Household" ;
+    si2c:key_company "SI2-ADM" ;
+    si2c:key_product "HO-3 2024" ;
+    si2c:key_state "CA" .
+
+ex:HO2026003 a si2c:Policy ;
+    rdfs:label "Baker Household" ;
+    si2c:key_company "SI2-ADM" ;
+    si2c:key_product "HO-3 2024" ;
+    si2c:key_state "OH" .
+
+ex:LN005 a si2c:PolicyLine ;
+    si2c:attachesTo ex:CPP2026001 ;
+    si2c:lob "CP" .
+
+ex:LN008 a si2c:PolicyLine ;
+    si2c:attachesTo ex:CP2026001 ;
+    si2c:lob "CP" .
+
+ex:OB001 a si2c:Dwelling ;
+    rdfs:label "Single-family dwelling, FL" ;
+    si2c:inLine ex:LN001 .
+
+ex:OB002 a si2c:Dwelling ;
+    rdfs:label "Single-family dwelling, CA" ;
+    si2c:inLine ex:LN002 .
+
+ex:OB003 a si2c:Dwelling ;
+    rdfs:label "Single-family dwelling, OH" ;
+    si2c:inLine ex:LN003 .
+
+ex:PA2026001 a si2c:Policy ;
+    rdfs:label "Shah Household" ;
+    si2c:key_company "SI2-ADM" ;
+    si2c:key_product "PA-Std 2024" ;
+    si2c:key_state "NY" .
+
+ex:WC2026001 a si2c:Policy ;
+    rdfs:label "Keystone Plumbing" ;
+    si2c:key_company "SI2-ADM" ;
+    si2c:key_product "WC-Std 2025" ;
+    si2c:key_state "PA" .
+
+ex:OB004 a si2c:Vehicle ;
+    rdfs:label "2023 sedan" ;
+    si2c:inLine ex:LN004 .
+
+ex:OB005 a si2c:Vehicle ;
+    rdfs:label "2021 SUV" ;
+    si2c:inLine ex:LN004 .
+
+ex:OB006 a si2c:Building ;
+    rdfs:label "Plant, Houston" ;
+    si2c:inLine ex:LN005 .
+
+ex:OB007 a si2c:Vehicle ;
+    rdfs:label "Heavy truck VEH0005" ;
+    si2c:inLine ex:LN007 .
+
+ex:OB008 a si2c:Vehicle ;
+    rdfs:label "Light truck VEH0006" ;
+    si2c:inLine ex:LN007 .
+
+ex:OB009 a si2c:Building ;
+    rdfs:label "Office, Miami" ;
+    si2c:inLine ex:LN008 .
+
+ex:CPP2026001 a si2c:Policy ;
+    rdfs:label "Lone Star Fabrication" ;
+    si2c:key_company "SI2-ADM" ;
+    si2c:key_product "CPP 2025" ;
+    si2c:key_state "TX" .
+
+ex:CV015 a si2c:Cov_HO_A ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesTo ex:OB003 ;
+    si2c:hasTerm ex:CV015_AOP_DED,
+        ex:CV015_LIMIT,
+        ex:CV015_VALUATION ;
+    si2c:writtenPremium 1410 .
+
+ex:LN001 a si2c:PolicyLine ;
+    si2c:attachesTo ex:HO2026001 ;
+    si2c:lob "HO" .
+
+ex:LN002 a si2c:PolicyLine ;
+    si2c:attachesTo ex:HO2026002 ;
+    si2c:lob "HO" .
+
+ex:LN003 a si2c:PolicyLine ;
+    si2c:attachesTo ex:HO2026003 ;
+    si2c:lob "HO" .
+
+ex:CV001 a si2c:Cov_HO_A ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesTo ex:OB001 ;
+    si2c:hasTerm ex:CV001_AOP_DED,
+        ex:CV001_HURR_DED,
+        ex:CV001_LIMIT,
+        ex:CV001_VALUATION ;
+    si2c:writtenPremium 6120 .
+
+ex:HO2026001 a si2c:Policy ;
+    rdfs:label "Rivera Household" ;
+    si2c:key_company "SI2-ADM" ;
+    si2c:key_product "HO-3 2024" ;
+    si2c:key_state "FL" .
+
+ex:LN006 a si2c:PolicyLine ;
+    si2c:attachesTo ex:CPP2026001 ;
+    si2c:lob "GL" .
+
+ex:LN010 a si2c:PolicyLine ;
+    si2c:attachesTo ex:WC2026001 ;
+    si2c:lob "WC" .
+
+ex:LN009 a si2c:PolicyLine ;
+    si2c:attachesTo ex:GL2026001 ;
+    si2c:lob "GL" .
+
+ex:CV008 a si2c:Cov_HO_A ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesTo ex:OB002 ;
+    si2c:hasTerm ex:CV008_AOP_DED,
+        ex:CV008_LIMIT,
+        ex:CV008_VALUATION ;
+    si2c:writtenPremium 2950 .
+
+ex:LN004 a si2c:PolicyLine ;
+    si2c:attachesTo ex:PA2026001 ;
+    si2c:lob "PA" .
+
+ex:LN007 a si2c:PolicyLine ;
+    si2c:attachesTo ex:CPP2026001 ;
+    si2c:lob "CA" .
+

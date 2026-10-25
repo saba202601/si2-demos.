@@ -1,0 +1,1781 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix si2c: <https://si2insure.com/ontology/coverage#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+<https://si2insure.com/ontology/coverage> a owl:Ontology ;
+    dcterms:title "SI² Coverage Ontology: classes, catalog, terms and endorsements" ;
+    owl:versionInfo "2026.10" .
+
+si2c:CA001 a si2c:CoverageApplicability ;
+    rdfs:comment "Base coverage of the HO-3 form." ;
+    si2c:appliesTo si2c:Cov_HO_A ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "HO" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "HO-3 2024" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA002 a si2c:CoverageApplicability ;
+    rdfs:comment "Follows Coverage A." ;
+    si2c:appliesTo si2c:Cov_HO_B ;
+    si2c:defaultValue "10% of HO_A" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "HO" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA003 a si2c:CoverageApplicability ;
+    rdfs:comment "Follows Coverage A." ;
+    si2c:appliesTo si2c:Cov_HO_C ;
+    si2c:defaultValue "50% of HO_A" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "HO" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA004 a si2c:CoverageApplicability ;
+    rdfs:comment "Follows Coverage A." ;
+    si2c:appliesTo si2c:Cov_HO_D ;
+    si2c:defaultValue "20% of HO_A" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "HO" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA005 a si2c:CoverageApplicability ;
+    rdfs:comment "Section II liability." ;
+    si2c:appliesTo si2c:Cov_HO_E ;
+    si2c:defaultValue "300000" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "HO" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA006 a si2c:CoverageApplicability ;
+    rdfs:comment "Section II medical payments." ;
+    si2c:appliesTo si2c:Cov_HO_F ;
+    si2c:defaultValue "5000" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "HO" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA007 a si2c:CoverageApplicability ;
+    rdfs:comment "By endorsement." ;
+    si2c:appliesTo si2c:Cov_HO_SPP ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "HO" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Offered" .
+
+si2c:CA008 a si2c:CoverageApplicability ;
+    rdfs:comment "Not offered countrywide in this illustration." ;
+    si2c:appliesTo si2c:Cov_HO_EQ ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "HO" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Not available" .
+
+si2c:CA009 a si2c:CoverageApplicability ;
+    rdfs:comment "Earthquake must be offered in California." ;
+    si2c:appliesTo si2c:Cov_HO_EQ ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "HO" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "CA" ;
+    si2c:offerStatus "Offered" .
+
+si2c:CA010 a si2c:CoverageApplicability ;
+    rdfs:comment "No hurricane deductible outside listed states." ;
+    si2c:appliesTo si2c:Term_HO_A_HURR_DED ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "HO" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Not available" .
+
+si2c:CA011 a si2c:CoverageApplicability ;
+    rdfs:comment "Florida hurricane deductible, policy level." ;
+    si2c:appliesTo si2c:Term_HO_A_HURR_DED ;
+    si2c:defaultValue "2" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "HO" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "FL" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA012 a si2c:CoverageApplicability ;
+    rdfs:comment "Coastal windstorm deductible." ;
+    si2c:appliesTo si2c:Term_HO_A_HURR_DED ;
+    si2c:defaultValue "2" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "HO" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "TX" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA013 a si2c:CoverageApplicability ;
+    rdfs:comment "Financial responsibility law." ;
+    si2c:appliesTo si2c:Cov_PA_BI ;
+    si2c:defaultValue "25000/50000" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "PA" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA014 a si2c:CoverageApplicability ;
+    rdfs:comment "Financial responsibility law." ;
+    si2c:appliesTo si2c:Cov_PA_PD ;
+    si2c:defaultValue "25000" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "PA" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA015 a si2c:CoverageApplicability ;
+    rdfs:comment "Rejection must be signed where allowed." ;
+    si2c:appliesTo si2c:Cov_PA_UM ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "PA" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Offered" .
+
+si2c:CA016 a si2c:CoverageApplicability ;
+    rdfs:comment "Not a no-fault state." ;
+    si2c:appliesTo si2c:Cov_PA_PIP ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "PA" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Not available" .
+
+si2c:CA017 a si2c:CoverageApplicability ;
+    rdfs:comment "Florida no-fault." ;
+    si2c:appliesTo si2c:Cov_PA_PIP ;
+    si2c:defaultValue "10000" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "PA" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "FL" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA018 a si2c:CoverageApplicability ;
+    rdfs:comment "New York no-fault." ;
+    si2c:appliesTo si2c:Cov_PA_PIP ;
+    si2c:defaultValue "50000" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "PA" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "NY" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA019 a si2c:CoverageApplicability ;
+    rdfs:comment "Michigan no-fault; levels chosen by the insured." ;
+    si2c:appliesTo si2c:Cov_PA_PIP ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "PA" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "MI" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA020 a si2c:CoverageApplicability ;
+    rdfs:comment "New Jersey no-fault." ;
+    si2c:appliesTo si2c:Cov_PA_PIP ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "PA" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "NJ" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA021 a si2c:CoverageApplicability ;
+    rdfs:comment "Optional physical damage." ;
+    si2c:appliesTo si2c:Cov_PA_COLL ;
+    si2c:defaultValue "500" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "PA" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Offered" .
+
+si2c:CA022 a si2c:CoverageApplicability ;
+    rdfs:comment "Optional physical damage." ;
+    si2c:appliesTo si2c:Cov_PA_COMP ;
+    si2c:defaultValue "250" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Personal" ;
+    si2c:key_lob "PA" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Offered" .
+
+si2c:CA023 a si2c:CoverageApplicability ;
+    rdfs:comment "Building or contents, at least one." ;
+    si2c:appliesTo si2c:Cov_CP_BLDG ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "CP" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Offered" .
+
+si2c:CA024 a si2c:CoverageApplicability ;
+    rdfs:comment "Building or contents, at least one." ;
+    si2c:appliesTo si2c:Cov_CP_BPP ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "CP" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Offered" .
+
+si2c:CA025 a si2c:CoverageApplicability ;
+    rdfs:comment "Time element." ;
+    si2c:appliesTo si2c:Cov_CP_BI ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "CP" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Offered" .
+
+si2c:CA026 a si2c:CoverageApplicability ;
+    rdfs:comment "Optional elsewhere." ;
+    si2c:appliesTo si2c:Term_CP_BLDG_WIND_DED ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "CP" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Offered" .
+
+si2c:CA027 a si2c:CoverageApplicability ;
+    rdfs:comment "Texas coastal wind and hail." ;
+    si2c:appliesTo si2c:Term_CP_BLDG_WIND_DED ;
+    si2c:defaultValue "2" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "CP" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "TX" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA028 a si2c:CoverageApplicability ;
+    rdfs:comment "Florida named storm." ;
+    si2c:appliesTo si2c:Term_CP_BLDG_WIND_DED ;
+    si2c:defaultValue "2" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "CP" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "FL" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA029 a si2c:CoverageApplicability ;
+    rdfs:comment "Coverage A." ;
+    si2c:appliesTo si2c:Cov_GL_OCC ;
+    si2c:defaultValue "1000000" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "GL" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA030 a si2c:CoverageApplicability ;
+    rdfs:comment "Coverage B." ;
+    si2c:appliesTo si2c:Cov_GL_PAI ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "GL" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA031 a si2c:CoverageApplicability ;
+    rdfs:comment "Coverage C." ;
+    si2c:appliesTo si2c:Cov_GL_MED ;
+    si2c:defaultValue "5000" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "GL" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Offered" .
+
+si2c:CA032 a si2c:CoverageApplicability ;
+    rdfs:comment "Products-completed operations aggregate." ;
+    si2c:appliesTo si2c:Cov_GL_PCO ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "GL" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA033 a si2c:CoverageApplicability ;
+    rdfs:comment "Auto liability." ;
+    si2c:appliesTo si2c:Cov_CA_LIAB ;
+    si2c:defaultValue "1000000" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "CA" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA034 a si2c:CoverageApplicability ;
+    rdfs:comment "Rejection must be signed where allowed." ;
+    si2c:appliesTo si2c:Cov_CA_UM ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "CA" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Offered" .
+
+si2c:CA035 a si2c:CoverageApplicability ;
+    rdfs:comment "Not a no-fault state." ;
+    si2c:appliesTo si2c:Cov_CA_PIP ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "CA" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Not available" .
+
+si2c:CA036 a si2c:CoverageApplicability ;
+    rdfs:comment "Florida no-fault." ;
+    si2c:appliesTo si2c:Cov_CA_PIP ;
+    si2c:defaultValue "10000" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "CA" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "FL" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA037 a si2c:CoverageApplicability ;
+    rdfs:comment "New York no-fault." ;
+    si2c:appliesTo si2c:Cov_CA_PIP ;
+    si2c:defaultValue "50000" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "CA" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "NY" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA038 a si2c:CoverageApplicability ;
+    rdfs:comment "Optional physical damage." ;
+    si2c:appliesTo si2c:Cov_CA_COLL ;
+    si2c:defaultValue "1000" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "CA" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Offered" .
+
+si2c:CA039 a si2c:CoverageApplicability ;
+    rdfs:comment "Optional physical damage." ;
+    si2c:appliesTo si2c:Cov_CA_COMP ;
+    si2c:defaultValue "1000" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "CA" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Offered" .
+
+si2c:CA040 a si2c:CoverageApplicability ;
+    rdfs:comment "Statutory benefits." ;
+    si2c:appliesTo si2c:Cov_WC_PART1 ;
+    si2c:defaultValue "STATUTORY" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "WC" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA041 a si2c:CoverageApplicability ;
+    rdfs:comment "Monopolistic state fund." ;
+    si2c:appliesTo si2c:Cov_WC_PART1 ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "WC" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "OH" ;
+    si2c:offerStatus "Not available" .
+
+si2c:CA042 a si2c:CoverageApplicability ;
+    rdfs:comment "Monopolistic state fund." ;
+    si2c:appliesTo si2c:Cov_WC_PART1 ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "WC" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "WA" ;
+    si2c:offerStatus "Not available" .
+
+si2c:CA043 a si2c:CoverageApplicability ;
+    rdfs:comment "Monopolistic state fund." ;
+    si2c:appliesTo si2c:Cov_WC_PART1 ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "WC" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "ND" ;
+    si2c:offerStatus "Not available" .
+
+si2c:CA044 a si2c:CoverageApplicability ;
+    rdfs:comment "Monopolistic state fund." ;
+    si2c:appliesTo si2c:Cov_WC_PART1 ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "WC" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "WY" ;
+    si2c:offerStatus "Not available" .
+
+si2c:CA045 a si2c:CoverageApplicability ;
+    rdfs:comment "Part Two." ;
+    si2c:appliesTo si2c:Cov_WC_EL ;
+    si2c:defaultValue "1000000" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "WC" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "*" ;
+    si2c:offerStatus "Mandatory" .
+
+si2c:CA046 a si2c:CoverageApplicability ;
+    rdfs:comment "Stop-gap employers liability only." ;
+    si2c:appliesTo si2c:Cov_WC_EL ;
+    si2c:defaultValue "1000000" ;
+    si2c:key_company "*" ;
+    si2c:key_country "*" ;
+    si2c:key_effective_from "2025-01-01" ;
+    si2c:key_effective_to "9999-12-31" ;
+    si2c:key_line "Commercial" ;
+    si2c:key_lob "WC" ;
+    si2c:key_module "*" ;
+    si2c:key_object "*" ;
+    si2c:key_product "*" ;
+    si2c:key_state "OH" ;
+    si2c:offerStatus "Offered" .
+
+si2c:Classification a owl:Class ;
+    rdfs:label "Classification" ;
+    rdfs:subClassOf si2c:InsuredObject .
+
+si2c:Cov_PA_MED a owl:Class ;
+    rdfs:label "Medical Payments" ;
+    rdfs:subClassOf si2c:MedicalPaymentsCoverage ;
+    skos:notation "PA_MED" ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasTermType si2c:Term_PA_MED_LIMIT ;
+    si2c:lob "PA" .
+
+si2c:End_END_CA_HNOA a owl:Class ;
+    rdfs:label "Hired and non-owned auto" ;
+    rdfs:subClassOf si2c:AddCoverageEndorsement ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasEffect si2c:Eff_END_CA_HNOA_1 ;
+    si2c:lob "CA" .
+
+si2c:End_END_CA_TX_AMEND a owl:Class ;
+    rdfs:label "Texas changes" ;
+    rdfs:subClassOf si2c:StateAmendatoryEndorsement ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasEffect si2c:Eff_END_CA_TX_AMEND_1 ;
+    si2c:key_state "TX" ;
+    si2c:lob "CA" .
+
+si2c:End_END_CP_WIND_EXCL a owl:Class ;
+    rdfs:label "Windstorm or hail exclusion" ;
+    rdfs:subClassOf si2c:ExclusionEndorsement ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:hasEffect si2c:Eff_END_CP_WIND_EXCL_1 ;
+    si2c:lob "CP" .
+
+si2c:End_END_GL_AI_OWNER a owl:Class ;
+    rdfs:label "Additional insured - owner (scheduled)" ;
+    rdfs:subClassOf si2c:BroadenEndorsement ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:hasEffect si2c:Eff_END_GL_AI_OWNER_1 ;
+    si2c:lob "GL" .
+
+si2c:End_END_GL_DESIG_OPS a owl:Class ;
+    rdfs:label "Designated operations exclusion" ;
+    rdfs:subClassOf si2c:ExclusionEndorsement ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasEffect si2c:Eff_END_GL_DESIG_OPS_1 ;
+    si2c:lob "GL" .
+
+si2c:End_END_HO_CINC a owl:Class ;
+    rdfs:label "Increased Coverage C" ;
+    rdfs:subClassOf si2c:ModifyTermEndorsement ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:hasEffect si2c:Eff_END_HO_CINC_1 ;
+    si2c:lob "HO" .
+
+si2c:End_END_HO_EQ a owl:Class ;
+    rdfs:label "Earthquake" ;
+    rdfs:subClassOf si2c:AddCoverageEndorsement ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:hasEffect si2c:Eff_END_HO_EQ_1,
+        si2c:Eff_END_HO_EQ_2 ;
+    si2c:key_state "CA" ;
+    si2c:lob "HO" .
+
+si2c:End_END_HO_FL_AMEND a owl:Class ;
+    rdfs:label "Special provisions - Florida" ;
+    rdfs:subClassOf si2c:StateAmendatoryEndorsement ;
+    si2c:attachLevel si2c:Level_Policy ;
+    si2c:hasEffect si2c:Eff_END_HO_FL_AMEND_1 ;
+    si2c:key_state "FL" ;
+    si2c:lob "HO" .
+
+si2c:End_END_HO_ROOF_ACV a owl:Class ;
+    rdfs:label "Roof surfacing at actual cash value" ;
+    rdfs:subClassOf si2c:RestrictEndorsement ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:hasEffect si2c:Eff_END_HO_ROOF_ACV_1 ;
+    si2c:lob "HO" .
+
+si2c:End_END_HO_SPP a owl:Class ;
+    rdfs:label "Scheduled personal property" ;
+    rdfs:subClassOf si2c:AddCoverageEndorsement ;
+    si2c:attachLevel si2c:Level_Policy ;
+    si2c:hasEffect si2c:Eff_END_HO_SPP_1 ;
+    si2c:lob "HO" .
+
+si2c:End_END_WC_OTHER_STATES a owl:Class ;
+    rdfs:label "Other states insurance (3.C)" ;
+    rdfs:subClassOf si2c:BroadenEndorsement ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasEffect si2c:Eff_END_WC_OTHER_STATES_1 ;
+    si2c:lob "WC" .
+
+si2c:Level_Endorsement a skos:Concept ;
+    skos:definition "Changes coverage at any of the other levels" ;
+    skos:inScheme si2c:AttachLevels ;
+    skos:prefLabel "Endorsement" .
+
+si2c:Policy a owl:Class ;
+    rdfs:label "Policy" .
+
+si2c:PolicyLine a owl:Class ;
+    rdfs:label "Policy line" .
+
+si2c:appliesTo a owl:ObjectProperty ;
+    rdfs:label "applies to" .
+
+si2c:attachLevel a owl:ObjectProperty ;
+    rdfs:label "attach level" .
+
+si2c:attachesTo a owl:ObjectProperty ;
+    rdfs:label "attaches to (policy, line, coverage or object)" .
+
+si2c:attachesToObjectType a owl:ObjectProperty ;
+    rdfs:label "attaches to object type" .
+
+si2c:defaultValue a owl:DatatypeProperty ;
+    rdfs:label "default value" .
+
+si2c:effectType a owl:DatatypeProperty ;
+    rdfs:label "effect type" .
+
+si2c:hasEffect a owl:ObjectProperty ;
+    rdfs:label "has effect" .
+
+si2c:hasTerm a owl:ObjectProperty ;
+    rdfs:label "has term" .
+
+si2c:hasTermType a owl:ObjectProperty ;
+    rdfs:label "has term type" .
+
+si2c:inLine a owl:ObjectProperty ;
+    rdfs:label "in line" .
+
+si2c:key_company a owl:DatatypeProperty ;
+    rdfs:label "company" .
+
+si2c:key_country a owl:DatatypeProperty ;
+    rdfs:label "country" .
+
+si2c:key_effective_from a owl:DatatypeProperty ;
+    rdfs:label "effective_from" .
+
+si2c:key_effective_to a owl:DatatypeProperty ;
+    rdfs:label "effective_to" .
+
+si2c:key_line a owl:DatatypeProperty ;
+    rdfs:label "line" .
+
+si2c:key_lob a owl:DatatypeProperty ;
+    rdfs:label "lob" .
+
+si2c:key_module a owl:DatatypeProperty ;
+    rdfs:label "module" .
+
+si2c:key_object a owl:DatatypeProperty ;
+    rdfs:label "object" .
+
+si2c:key_product a owl:DatatypeProperty ;
+    rdfs:label "product" .
+
+si2c:key_state a owl:DatatypeProperty ;
+    rdfs:label "state" .
+
+si2c:lob a owl:DatatypeProperty ;
+    rdfs:label "line of business" .
+
+si2c:offerStatus a owl:DatatypeProperty ;
+    rdfs:label "offer status" .
+
+si2c:options a owl:DatatypeProperty ;
+    rdfs:label "options" .
+
+si2c:parentCoverage a owl:ObjectProperty ;
+    rdfs:label "follows coverage" .
+
+si2c:rule a owl:DatatypeProperty ;
+    rdfs:label "rule" .
+
+si2c:targetCoverage a owl:ObjectProperty ;
+    rdfs:label "target coverage" .
+
+si2c:termCode a owl:DatatypeProperty ;
+    rdfs:label "term code" .
+
+si2c:value a owl:DatatypeProperty ;
+    rdfs:label "value" .
+
+si2c:writtenPremium a owl:DatatypeProperty ;
+    rdfs:label "written premium" .
+
+si2c:BusinessIncomeCoverage a owl:Class ;
+    rdfs:label "BusinessIncomeCoverage" ;
+    rdfs:subClassOf si2c:TimeElementCoverage ;
+    skos:definition "Lost income and extra expense of a business." .
+
+si2c:BusinessPersonalPropertyCoverage a owl:Class ;
+    rdfs:label "BusinessPersonalPropertyCoverage" ;
+    rdfs:subClassOf si2c:PropertyCoverage ;
+    skos:definition "Contents, stock and equipment of a business." .
+
+si2c:Coinsurance a owl:Class ;
+    rdfs:label "Coinsurance" ;
+    rdfs:subClassOf si2c:CoverageTerm ;
+    skos:definition "Share of value the insured must carry." .
+
+si2c:CommercialBuildingCoverage a owl:Class ;
+    rdfs:label "CommercialBuildingCoverage" ;
+    rdfs:subClassOf si2c:PropertyCoverage ;
+    skos:definition "A commercial building." .
+
+si2c:Cov_CA_COLL a owl:Class ;
+    rdfs:label "Collision" ;
+    rdfs:subClassOf si2c:CollisionCoverage ;
+    skos:notation "CA_COLL" ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesToObjectType si2c:Vehicle ;
+    si2c:hasTermType si2c:Term_CA_COLL_DED ;
+    si2c:lob "CA" .
+
+si2c:Cov_CA_COMP a owl:Class ;
+    rdfs:label "Comprehensive" ;
+    rdfs:subClassOf si2c:ComprehensiveCoverage ;
+    skos:notation "CA_COMP" ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesToObjectType si2c:Vehicle ;
+    si2c:hasTermType si2c:Term_CA_COMP_DED ;
+    si2c:lob "CA" .
+
+si2c:Cov_CA_UM a owl:Class ;
+    rdfs:label "Uninsured Motorists" ;
+    rdfs:subClassOf si2c:UninsuredMotoristsCoverage ;
+    skos:notation "CA_UM" ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasTermType si2c:Term_CA_UM_LIMIT ;
+    si2c:lob "CA" .
+
+si2c:Cov_CP_BI a owl:Class ;
+    rdfs:label "Business Income and Extra Expense" ;
+    rdfs:subClassOf si2c:BusinessIncomeCoverage ;
+    skos:notation "CP_BI" ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:hasTermType si2c:Term_CP_BI_LIMIT,
+        si2c:Term_CP_BI_WAITING ;
+    si2c:lob "CP" ;
+    si2c:parentCoverage si2c:Cov_CP_BLDG .
+
+si2c:Cov_CP_BPP a owl:Class ;
+    rdfs:label "Business Personal Property" ;
+    rdfs:subClassOf si2c:BusinessPersonalPropertyCoverage ;
+    skos:notation "CP_BPP" ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesToObjectType si2c:Building ;
+    si2c:hasTermType si2c:Term_CP_BPP_LIMIT ;
+    si2c:lob "CP" .
+
+si2c:Cov_GL_MED a owl:Class ;
+    rdfs:label "Coverage C - Medical Payments" ;
+    rdfs:subClassOf si2c:MedicalPaymentsCoverage ;
+    skos:notation "GL_MED" ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasTermType si2c:Term_GL_MED_LIMIT ;
+    si2c:lob "GL" .
+
+si2c:Cov_GL_PAI a owl:Class ;
+    rdfs:label "Coverage B - Personal and Advertising Injury" ;
+    rdfs:subClassOf si2c:PersonalAdvertisingInjuryLiability ;
+    skos:notation "GL_PAI" ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasTermType si2c:Term_GL_PAI_LIMIT ;
+    si2c:lob "GL" .
+
+si2c:Cov_GL_PCO a owl:Class ;
+    rdfs:label "Products-Completed Operations" ;
+    rdfs:subClassOf si2c:ProductsCompletedOperationsLiability ;
+    skos:notation "GL_PCO" ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasTermType si2c:Term_GL_PCO_AGG ;
+    si2c:lob "GL" .
+
+si2c:Cov_HO_B a owl:Class ;
+    rdfs:label "Coverage B - Other Structures" ;
+    rdfs:subClassOf si2c:DwellingCoverage ;
+    skos:notation "HO_B" ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:hasTermType si2c:Term_HO_B_LIMIT ;
+    si2c:lob "HO" ;
+    si2c:parentCoverage si2c:Cov_HO_A .
+
+si2c:Cov_HO_D a owl:Class ;
+    rdfs:label "Coverage D - Loss of Use" ;
+    rdfs:subClassOf si2c:LossOfUseCoverage ;
+    skos:notation "HO_D" ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:hasTermType si2c:Term_HO_D_LIMIT ;
+    si2c:lob "HO" ;
+    si2c:parentCoverage si2c:Cov_HO_A .
+
+si2c:Cov_HO_E a owl:Class ;
+    rdfs:label "Coverage E - Personal Liability" ;
+    rdfs:subClassOf si2c:PersonalLiability ;
+    skos:notation "HO_E" ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasTermType si2c:Term_HO_E_LIMIT ;
+    si2c:lob "HO" .
+
+si2c:Cov_HO_F a owl:Class ;
+    rdfs:label "Coverage F - Medical Payments to Others" ;
+    rdfs:subClassOf si2c:MedicalPaymentsCoverage ;
+    skos:notation "HO_F" ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasTermType si2c:Term_HO_F_LIMIT ;
+    si2c:lob "HO" .
+
+si2c:Cov_PA_BI a owl:Class ;
+    rdfs:label "Bodily Injury Liability" ;
+    rdfs:subClassOf si2c:AutoLiability ;
+    skos:notation "PA_BI" ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasTermType si2c:Term_PA_BI_PER_ACCIDENT,
+        si2c:Term_PA_BI_PER_PERSON ;
+    si2c:lob "PA" .
+
+si2c:Cov_PA_COLL a owl:Class ;
+    rdfs:label "Collision" ;
+    rdfs:subClassOf si2c:CollisionCoverage ;
+    skos:notation "PA_COLL" ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesToObjectType si2c:Vehicle ;
+    si2c:hasTermType si2c:Term_PA_COLL_DED ;
+    si2c:lob "PA" .
+
+si2c:Cov_PA_COMP a owl:Class ;
+    rdfs:label "Comprehensive" ;
+    rdfs:subClassOf si2c:ComprehensiveCoverage ;
+    skos:notation "PA_COMP" ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesToObjectType si2c:Vehicle ;
+    si2c:hasTermType si2c:Term_PA_COMP_DED ;
+    si2c:lob "PA" .
+
+si2c:Cov_PA_PD a owl:Class ;
+    rdfs:label "Property Damage Liability" ;
+    rdfs:subClassOf si2c:AutoLiability ;
+    skos:notation "PA_PD" ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasTermType si2c:Term_PA_PD_LIMIT ;
+    si2c:lob "PA" .
+
+si2c:Cov_PA_UM a owl:Class ;
+    rdfs:label "Uninsured Motorists" ;
+    rdfs:subClassOf si2c:UninsuredMotoristsCoverage ;
+    skos:notation "PA_UM" ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasTermType si2c:Term_PA_UM_PER_PERSON ;
+    si2c:lob "PA" .
+
+si2c:Dwelling a owl:Class ;
+    rdfs:label "Dwelling" ;
+    rdfs:subClassOf si2c:InsuredObject .
+
+si2c:EarthquakeDeductible a owl:Class ;
+    rdfs:label "EarthquakeDeductible" ;
+    rdfs:subClassOf si2c:PercentDeductible ;
+    skos:definition "Percentage deductible for earthquake." .
+
+si2c:Eff_END_CA_HNOA_1 a si2c:EndorsementEffect ;
+    si2c:effectType "Add" ;
+    si2c:targetCoverage si2c:Cov_CA_LIAB ;
+    si2c:value "Symbols 8 and 9" .
+
+si2c:Eff_END_CA_TX_AMEND_1 a si2c:EndorsementEffect ;
+    si2c:effectType "Modify condition" ;
+    si2c:value "Texas conditions" .
+
+si2c:Eff_END_CP_WIND_EXCL_1 a si2c:EndorsementEffect ;
+    si2c:effectType "Exclude" ;
+    si2c:targetCoverage si2c:Cov_CP_BLDG ;
+    si2c:value "Windstorm or hail" .
+
+si2c:Eff_END_GL_AI_OWNER_1 a si2c:EndorsementEffect ;
+    si2c:effectType "Broaden" ;
+    si2c:targetCoverage si2c:Cov_GL_OCC ;
+    si2c:value "Scheduled owner as additional insured" .
+
+si2c:Eff_END_GL_DESIG_OPS_1 a si2c:EndorsementEffect ;
+    si2c:effectType "Exclude" ;
+    si2c:targetCoverage si2c:Cov_GL_OCC ;
+    si2c:value "Scheduled operations" .
+
+si2c:Eff_END_HO_CINC_1 a si2c:EndorsementEffect ;
+    si2c:effectType "Modify term" ;
+    si2c:targetCoverage si2c:Cov_HO_C ;
+    si2c:termCode "LIMIT" ;
+    si2c:value "70% of HO_A" .
+
+si2c:Eff_END_HO_EQ_1 a si2c:EndorsementEffect ;
+    si2c:effectType "Add" ;
+    si2c:targetCoverage si2c:Cov_HO_EQ .
+
+si2c:Eff_END_HO_EQ_2 a si2c:EndorsementEffect ;
+    si2c:effectType "Modify term" ;
+    si2c:targetCoverage si2c:Cov_HO_EQ ;
+    si2c:termCode "EQ_DED" ;
+    si2c:value "15" .
+
+si2c:Eff_END_HO_FL_AMEND_1 a si2c:EndorsementEffect ;
+    si2c:effectType "Modify condition" ;
+    si2c:value "Cancellation and notice per state law" .
+
+si2c:Eff_END_HO_ROOF_ACV_1 a si2c:EndorsementEffect ;
+    si2c:effectType "Restrict" ;
+    si2c:targetCoverage si2c:Cov_HO_A ;
+    si2c:termCode "VALUATION" ;
+    si2c:value "ACV for roof surfacing" .
+
+si2c:Eff_END_HO_SPP_1 a si2c:EndorsementEffect ;
+    si2c:effectType "Add" ;
+    si2c:targetCoverage si2c:Cov_HO_SPP ;
+    si2c:value "schedule" .
+
+si2c:Eff_END_WC_OTHER_STATES_1 a si2c:EndorsementEffect ;
+    si2c:effectType "Broaden" ;
+    si2c:targetCoverage si2c:Cov_WC_PART1 ;
+    si2c:value "States listed in 3.C" .
+
+si2c:EmployersLiability a owl:Class ;
+    rdfs:label "EmployersLiability" ;
+    rdfs:subClassOf si2c:LiabilityCoverage ;
+    skos:definition "Employee injury claims outside workers' compensation." .
+
+si2c:HurricaneDeductible a owl:Class ;
+    rdfs:label "HurricaneDeductible" ;
+    rdfs:subClassOf si2c:PercentDeductible ;
+    skos:definition "Percentage deductible for a hurricane or named storm." .
+
+si2c:LossOfUseCoverage a owl:Class ;
+    rdfs:label "LossOfUseCoverage" ;
+    rdfs:subClassOf si2c:TimeElementCoverage ;
+    skos:definition "Additional living expense and fair rental value." .
+
+si2c:ModifyTermEndorsement a owl:Class ;
+    rdfs:label "ModifyTermEndorsement" ;
+    rdfs:subClassOf si2c:Endorsement ;
+    skos:definition "Changes a limit, deductible or other term." .
+
+si2c:PersonalAdvertisingInjuryLiability a owl:Class ;
+    rdfs:label "PersonalAdvertisingInjuryLiability" ;
+    rdfs:subClassOf si2c:LiabilityCoverage ;
+    skos:definition "Libel, slander, false arrest, advertising injury." .
+
+si2c:PersonalLiability a owl:Class ;
+    rdfs:label "PersonalLiability" ;
+    rdfs:subClassOf si2c:BodilyInjuryPropertyDamageLiability ;
+    skos:definition "Liability of a household." .
+
+si2c:PremisesOperationsLiability a owl:Class ;
+    rdfs:label "PremisesOperationsLiability" ;
+    rdfs:subClassOf si2c:BodilyInjuryPropertyDamageLiability ;
+    skos:definition "Liability from premises and operations." .
+
+si2c:ProductsCompletedOperationsLiability a owl:Class ;
+    rdfs:label "ProductsCompletedOperationsLiability" ;
+    rdfs:subClassOf si2c:LiabilityCoverage ;
+    skos:definition "Liability from products and completed work." .
+
+si2c:RestrictEndorsement a owl:Class ;
+    rdfs:label "RestrictEndorsement" ;
+    rdfs:subClassOf si2c:Endorsement ;
+    skos:definition "Narrows a coverage or its valuation." .
+
+si2c:StatutoryBenefitsCoverage a owl:Class ;
+    rdfs:label "StatutoryBenefitsCoverage" ;
+    rdfs:subClassOf si2c:Coverage ;
+    skos:definition "Benefits set by statute." .
+
+si2c:Term_CA_COLL_DED a owl:Class ;
+    rdfs:label "Collision: DED" ;
+    rdfs:subClassOf si2c:FlatDeductible ;
+    si2c:options "500, 1000, 2500" ;
+    si2c:rule "Default 1000" ;
+    si2c:termCode "DED" .
+
+si2c:Term_CA_COMP_DED a owl:Class ;
+    rdfs:label "Comprehensive: DED" ;
+    rdfs:subClassOf si2c:FlatDeductible ;
+    si2c:options "500, 1000, 2500" ;
+    si2c:rule "Default 1000" ;
+    si2c:termCode "DED" .
+
+si2c:Term_CA_LIAB_CSL a owl:Class ;
+    rdfs:label "Auto Liability: CSL" ;
+    rdfs:subClassOf si2c:CombinedSingleLimit ;
+    si2c:options "500000, 1000000, 2000000" ;
+    si2c:rule "Default 1000000" ;
+    si2c:termCode "CSL" .
+
+si2c:Term_CA_PIP_LIMIT a owl:Class ;
+    rdfs:label "Personal Injury Protection: LIMIT" ;
+    rdfs:subClassOf si2c:PerPersonLimit ;
+    si2c:rule "State minimum" ;
+    si2c:termCode "LIMIT" .
+
+si2c:Term_CA_UM_LIMIT a owl:Class ;
+    rdfs:label "Uninsured Motorists: LIMIT" ;
+    rdfs:subClassOf si2c:CombinedSingleLimit ;
+    si2c:rule "Up to CSL" ;
+    si2c:termCode "LIMIT" .
+
+si2c:Term_CP_BI_LIMIT a owl:Class ;
+    rdfs:label "Business Income and Extra Expense: LIMIT" ;
+    rdfs:subClassOf si2c:Limit ;
+    si2c:rule "12 months of income" ;
+    si2c:termCode "LIMIT" .
+
+si2c:Term_CP_BI_WAITING a owl:Class ;
+    rdfs:label "Business Income and Extra Expense: WAITING" ;
+    rdfs:subClassOf si2c:WaitingPeriod ;
+    si2c:options "24, 72" ;
+    si2c:rule "Default 72" ;
+    si2c:termCode "WAITING" .
+
+si2c:Term_CP_BLDG_AOP_DED a owl:Class ;
+    rdfs:label "Building: AOP_DED" ;
+    rdfs:subClassOf si2c:FlatDeductible ;
+    si2c:options "1000, 5000, 10000, 25000" ;
+    si2c:rule "Default 5000" ;
+    si2c:termCode "AOP_DED" .
+
+si2c:Term_CP_BLDG_COINS a owl:Class ;
+    rdfs:label "Building: COINS" ;
+    rdfs:subClassOf si2c:Coinsurance ;
+    si2c:options "80, 90, 100" ;
+    si2c:rule "Default 90" ;
+    si2c:termCode "COINS" .
+
+si2c:Term_CP_BLDG_LIMIT a owl:Class ;
+    rdfs:label "Building: LIMIT" ;
+    rdfs:subClassOf si2c:Limit ;
+    si2c:rule "Insured value" ;
+    si2c:termCode "LIMIT" .
+
+si2c:Term_CP_BLDG_VALUATION a owl:Class ;
+    rdfs:label "Building: VALUATION" ;
+    rdfs:subClassOf si2c:Valuation ;
+    si2c:options "RC, ACV, AGREED" ;
+    si2c:rule "Default RC" ;
+    si2c:termCode "VALUATION" .
+
+si2c:Term_CP_BPP_LIMIT a owl:Class ;
+    rdfs:label "Business Personal Property: LIMIT" ;
+    rdfs:subClassOf si2c:Limit ;
+    si2c:rule "Insured value" ;
+    si2c:termCode "LIMIT" .
+
+si2c:Term_GL_MED_LIMIT a owl:Class ;
+    rdfs:label "Coverage C - Medical Payments: LIMIT" ;
+    rdfs:subClassOf si2c:PerPersonLimit ;
+    si2c:options "5000, 10000" ;
+    si2c:rule "Default 5000" ;
+    si2c:termCode "LIMIT" .
+
+si2c:Term_GL_OCC_EACH_OCC a owl:Class ;
+    rdfs:label "Coverage A - Bodily Injury and Property Damage: EACH_OCC" ;
+    rdfs:subClassOf si2c:PerOccurrenceLimit ;
+    si2c:options "500000, 1000000, 2000000" ;
+    si2c:rule "Default 1000000" ;
+    si2c:termCode "EACH_OCC" .
+
+si2c:Term_GL_OCC_GEN_AGG a owl:Class ;
+    rdfs:label "Coverage A - Bodily Injury and Property Damage: GEN_AGG" ;
+    rdfs:subClassOf si2c:AggregateLimit ;
+    si2c:rule "2 x each occurrence" ;
+    si2c:termCode "GEN_AGG" .
+
+si2c:Term_GL_PAI_LIMIT a owl:Class ;
+    rdfs:label "Coverage B - Personal and Advertising Injury: LIMIT" ;
+    rdfs:subClassOf si2c:PerPersonLimit ;
+    si2c:rule "Equal to each occurrence" ;
+    si2c:termCode "LIMIT" .
+
+si2c:Term_GL_PCO_AGG a owl:Class ;
+    rdfs:label "Products-Completed Operations: AGG" ;
+    rdfs:subClassOf si2c:AggregateLimit ;
+    si2c:rule "Equal to general aggregate" ;
+    si2c:termCode "AGG" .
+
+si2c:Term_HO_A_AOP_DED a owl:Class ;
+    rdfs:label "Coverage A - Dwelling: AOP_DED" ;
+    rdfs:subClassOf si2c:FlatDeductible ;
+    si2c:options "500, 1000, 2500, 5000" ;
+    si2c:rule "Default 1000" ;
+    si2c:termCode "AOP_DED" .
+
+si2c:Term_HO_A_LIMIT a owl:Class ;
+    rdfs:label "Coverage A - Dwelling: LIMIT" ;
+    rdfs:subClassOf si2c:Limit ;
+    si2c:rule "Insured to replacement cost" ;
+    si2c:termCode "LIMIT" .
+
+si2c:Term_HO_A_VALUATION a owl:Class ;
+    rdfs:label "Coverage A - Dwelling: VALUATION" ;
+    rdfs:subClassOf si2c:Valuation ;
+    si2c:options "RC, ACV" ;
+    si2c:rule "Default RC" ;
+    si2c:termCode "VALUATION" .
+
+si2c:Term_HO_B_LIMIT a owl:Class ;
+    rdfs:label "Coverage B - Other Structures: LIMIT" ;
+    rdfs:subClassOf si2c:Sublimit ;
+    si2c:rule "10% of HO_A" ;
+    si2c:termCode "LIMIT" .
+
+si2c:Term_HO_C_LIMIT a owl:Class ;
+    rdfs:label "Coverage C - Personal Property: LIMIT" ;
+    rdfs:subClassOf si2c:Sublimit ;
+    si2c:rule "50% of HO_A" ;
+    si2c:termCode "LIMIT" .
+
+si2c:Term_HO_D_LIMIT a owl:Class ;
+    rdfs:label "Coverage D - Loss of Use: LIMIT" ;
+    rdfs:subClassOf si2c:Sublimit ;
+    si2c:rule "20% of HO_A" ;
+    si2c:termCode "LIMIT" .
+
+si2c:Term_HO_EQ_EQ_DED a owl:Class ;
+    rdfs:label "Earthquake: EQ_DED" ;
+    rdfs:subClassOf si2c:EarthquakeDeductible ;
+    si2c:options "10, 15, 20" ;
+    si2c:rule "Default 15" ;
+    si2c:termCode "EQ_DED" .
+
+si2c:Term_HO_E_LIMIT a owl:Class ;
+    rdfs:label "Coverage E - Personal Liability: LIMIT" ;
+    rdfs:subClassOf si2c:PerOccurrenceLimit ;
+    si2c:options "100000, 300000, 500000" ;
+    si2c:rule "Default 300000" ;
+    si2c:termCode "LIMIT" .
+
+si2c:Term_HO_F_LIMIT a owl:Class ;
+    rdfs:label "Coverage F - Medical Payments to Others: LIMIT" ;
+    rdfs:subClassOf si2c:PerPersonLimit ;
+    si2c:options "1000, 5000" ;
+    si2c:rule "Default 5000" ;
+    si2c:termCode "LIMIT" .
+
+si2c:Term_HO_SPP_LIMIT a owl:Class ;
+    rdfs:label "Scheduled Personal Property: LIMIT" ;
+    rdfs:subClassOf si2c:Limit ;
+    si2c:rule "Sum of scheduled items" ;
+    si2c:termCode "LIMIT" .
+
+si2c:Term_PA_BI_PER_ACCIDENT a owl:Class ;
+    rdfs:label "Bodily Injury Liability: PER_ACCIDENT" ;
+    rdfs:subClassOf si2c:PerOccurrenceLimit ;
+    si2c:options "50000, 100000, 300000, 500000" ;
+    si2c:termCode "PER_ACCIDENT" .
+
+si2c:Term_PA_BI_PER_PERSON a owl:Class ;
+    rdfs:label "Bodily Injury Liability: PER_PERSON" ;
+    rdfs:subClassOf si2c:PerPersonLimit ;
+    si2c:options "25000, 50000, 100000, 250000" ;
+    si2c:termCode "PER_PERSON" .
+
+si2c:Term_PA_COLL_DED a owl:Class ;
+    rdfs:label "Collision: DED" ;
+    rdfs:subClassOf si2c:FlatDeductible ;
+    si2c:options "250, 500, 1000" ;
+    si2c:rule "Default 500" ;
+    si2c:termCode "DED" .
+
+si2c:Term_PA_COMP_DED a owl:Class ;
+    rdfs:label "Comprehensive: DED" ;
+    rdfs:subClassOf si2c:FlatDeductible ;
+    si2c:options "100, 250, 500, 1000" ;
+    si2c:rule "Default 250" ;
+    si2c:termCode "DED" .
+
+si2c:Term_PA_MED_LIMIT a owl:Class ;
+    rdfs:label "Medical Payments: LIMIT" ;
+    rdfs:subClassOf si2c:PerPersonLimit ;
+    si2c:options "1000, 5000, 10000" ;
+    si2c:termCode "LIMIT" .
+
+si2c:Term_PA_PD_LIMIT a owl:Class ;
+    rdfs:label "Property Damage Liability: LIMIT" ;
+    rdfs:subClassOf si2c:PerOccurrenceLimit ;
+    si2c:options "25000, 50000, 100000" ;
+    si2c:termCode "LIMIT" .
+
+si2c:Term_PA_PIP_LIMIT a owl:Class ;
+    rdfs:label "Personal Injury Protection: LIMIT" ;
+    rdfs:subClassOf si2c:PerPersonLimit ;
+    si2c:rule "State minimum" ;
+    si2c:termCode "LIMIT" .
+
+si2c:Term_PA_UM_PER_PERSON a owl:Class ;
+    rdfs:label "Uninsured Motorists: PER_PERSON" ;
+    rdfs:subClassOf si2c:PerPersonLimit ;
+    si2c:rule "Up to BI limits" ;
+    si2c:termCode "PER_PERSON" .
+
+si2c:Term_WC_EL_DIS_EE a owl:Class ;
+    rdfs:label "Part Two - Employers Liability: DIS_EE" ;
+    rdfs:subClassOf si2c:PerPersonLimit ;
+    si2c:rule "Equal to each accident" ;
+    si2c:termCode "DIS_EE" .
+
+si2c:Term_WC_EL_DIS_POL a owl:Class ;
+    rdfs:label "Part Two - Employers Liability: DIS_POL" ;
+    rdfs:subClassOf si2c:AggregateLimit ;
+    si2c:rule "Equal to each accident" ;
+    si2c:termCode "DIS_POL" .
+
+si2c:Term_WC_EL_EACH_ACC a owl:Class ;
+    rdfs:label "Part Two - Employers Liability: EACH_ACC" ;
+    rdfs:subClassOf si2c:PerOccurrenceLimit ;
+    si2c:options "100000, 500000, 1000000" ;
+    si2c:rule "Default 1000000" ;
+    si2c:termCode "EACH_ACC" .
+
+si2c:Term_WC_PART1_LIMIT a owl:Class ;
+    rdfs:label "Part One - Workers' Compensation: LIMIT" ;
+    rdfs:subClassOf si2c:Limit ;
+    si2c:options "STATUTORY" ;
+    si2c:rule "Statutory" ;
+    si2c:termCode "LIMIT" .
+
+si2c:WaitingPeriod a owl:Class ;
+    rdfs:label "WaitingPeriod" ;
+    rdfs:subClassOf si2c:CoverageTerm ;
+    skos:definition "Time before a time-element coverage starts." .
+
+si2c:WindHailDeductible a owl:Class ;
+    rdfs:label "WindHailDeductible" ;
+    rdfs:subClassOf si2c:PercentDeductible ;
+    skos:definition "Percentage deductible for windstorm or hail." .
+
+si2c:WorkersCompensationBenefits a owl:Class ;
+    rdfs:label "WorkersCompensationBenefits" ;
+    rdfs:subClassOf si2c:StatutoryBenefitsCoverage ;
+    skos:definition "Benefits under the workers' compensation law of a state." .
+
+si2c:AutoPhysicalDamageCoverage a owl:Class ;
+    rdfs:label "AutoPhysicalDamageCoverage" ;
+    rdfs:subClassOf si2c:PropertyCoverage ;
+    skos:definition "Damage to a covered vehicle." .
+
+si2c:BroadenEndorsement a owl:Class ;
+    rdfs:label "BroadenEndorsement" ;
+    rdfs:subClassOf si2c:Endorsement ;
+    skos:definition "Widens what a coverage covers or who is insured." .
+
+si2c:Building a owl:Class ;
+    rdfs:label "Building" ;
+    rdfs:subClassOf si2c:InsuredObject .
+
+si2c:CollisionCoverage a owl:Class ;
+    rdfs:label "CollisionCoverage" ;
+    rdfs:subClassOf si2c:AutoPhysicalDamageCoverage ;
+    skos:definition "Collision with another object or upset." .
+
+si2c:CombinedSingleLimit a owl:Class ;
+    rdfs:label "CombinedSingleLimit" ;
+    rdfs:subClassOf si2c:Limit ;
+    skos:definition "One limit for bodily injury and property damage." .
+
+si2c:ComprehensiveCoverage a owl:Class ;
+    rdfs:label "ComprehensiveCoverage" ;
+    rdfs:subClassOf si2c:AutoPhysicalDamageCoverage ;
+    skos:definition "Other than collision: theft, fire, hail, glass." .
+
+si2c:Cov_CA_LIAB a owl:Class ;
+    rdfs:label "Auto Liability" ;
+    rdfs:subClassOf si2c:AutoLiability ;
+    skos:notation "CA_LIAB" ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasTermType si2c:Term_CA_LIAB_CSL ;
+    si2c:lob "CA" .
+
+si2c:Cov_HO_C a owl:Class ;
+    rdfs:label "Coverage C - Personal Property" ;
+    rdfs:subClassOf si2c:PersonalPropertyCoverage ;
+    skos:notation "HO_C" ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:hasTermType si2c:Term_HO_C_LIMIT ;
+    si2c:lob "HO" ;
+    si2c:parentCoverage si2c:Cov_HO_A .
+
+si2c:Cov_HO_SPP a owl:Class ;
+    rdfs:label "Scheduled Personal Property" ;
+    rdfs:subClassOf si2c:PersonalPropertyCoverage ;
+    skos:notation "HO_SPP" ;
+    si2c:attachLevel si2c:Level_Policy ;
+    si2c:hasTermType si2c:Term_HO_SPP_LIMIT ;
+    si2c:lob "HO" .
+
+si2c:Cov_WC_EL a owl:Class ;
+    rdfs:label "Part Two - Employers Liability" ;
+    rdfs:subClassOf si2c:EmployersLiability ;
+    skos:notation "WC_EL" ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasTermType si2c:Term_WC_EL_DIS_EE,
+        si2c:Term_WC_EL_DIS_POL,
+        si2c:Term_WC_EL_EACH_ACC ;
+    si2c:lob "WC" .
+
+si2c:Deductible a owl:Class ;
+    rdfs:label "Deductible" ;
+    rdfs:subClassOf si2c:CoverageTerm ;
+    skos:definition "Amount the insured bears before the coverage pays." .
+
+si2c:ExclusionEndorsement a owl:Class ;
+    rdfs:label "ExclusionEndorsement" ;
+    rdfs:subClassOf si2c:Endorsement ;
+    skos:definition "Removes a cause of loss, object or activity." .
+
+si2c:FirstPartyInjuryCoverage a owl:Class ;
+    rdfs:label "FirstPartyInjuryCoverage" ;
+    rdfs:subClassOf si2c:FirstPartyCoverage ;
+    skos:definition "Medical and income benefits regardless of fault." .
+
+si2c:PersonalInjuryProtection a owl:Class ;
+    rdfs:label "PersonalInjuryProtection" ;
+    rdfs:subClassOf si2c:FirstPartyInjuryCoverage ;
+    skos:definition "No-fault benefits required in some states." .
+
+si2c:PersonalPropertyCoverage a owl:Class ;
+    rdfs:label "PersonalPropertyCoverage" ;
+    rdfs:subClassOf si2c:PropertyCoverage ;
+    skos:definition "Contents and belongings of a household." .
+
+si2c:StateAmendatoryEndorsement a owl:Class ;
+    rdfs:label "StateAmendatoryEndorsement" ;
+    rdfs:subClassOf si2c:Endorsement ;
+    skos:definition "Changes conditions to meet a state's law." .
+
+si2c:TimeElementCoverage a owl:Class ;
+    rdfs:label "TimeElementCoverage" ;
+    rdfs:subClassOf si2c:FirstPartyCoverage ;
+    skos:definition "Loss that grows with time after property damage." .
+
+si2c:UninsuredMotoristsCoverage a owl:Class ;
+    rdfs:label "UninsuredMotoristsCoverage" ;
+    rdfs:subClassOf si2c:Coverage ;
+    skos:definition "Injury caused by an uninsured or underinsured driver." .
+
+si2c:Valuation a owl:Class ;
+    rdfs:label "Valuation" ;
+    rdfs:subClassOf si2c:CoverageTerm ;
+    skos:definition "How a loss is valued." .
+
+si2c:AddCoverageEndorsement a owl:Class ;
+    rdfs:label "AddCoverageEndorsement" ;
+    rdfs:subClassOf si2c:Endorsement ;
+    skos:definition "Adds a coverage." .
+
+si2c:AggregateLimit a owl:Class ;
+    rdfs:label "AggregateLimit" ;
+    rdfs:subClassOf si2c:Limit ;
+    skos:definition "Most paid in the policy term." .
+
+si2c:AutoLiability a owl:Class ;
+    rdfs:label "AutoLiability" ;
+    rdfs:subClassOf si2c:BodilyInjuryPropertyDamageLiability ;
+    skos:definition "Liability from owning or using autos." .
+
+si2c:BodilyInjuryPropertyDamageLiability a owl:Class ;
+    rdfs:label "BodilyInjuryPropertyDamageLiability" ;
+    rdfs:subClassOf si2c:LiabilityCoverage ;
+    skos:definition "Bodily injury and property damage to others." .
+
+si2c:Cov_CA_PIP a owl:Class ;
+    rdfs:label "Personal Injury Protection" ;
+    rdfs:subClassOf si2c:PersonalInjuryProtection ;
+    skos:notation "CA_PIP" ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasTermType si2c:Term_CA_PIP_LIMIT ;
+    si2c:lob "CA" .
+
+si2c:Cov_CP_BLDG a owl:Class ;
+    rdfs:label "Building" ;
+    rdfs:subClassOf si2c:CommercialBuildingCoverage ;
+    skos:notation "CP_BLDG" ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesToObjectType si2c:Building ;
+    si2c:hasTermType si2c:Term_CP_BLDG_AOP_DED,
+        si2c:Term_CP_BLDG_COINS,
+        si2c:Term_CP_BLDG_LIMIT,
+        si2c:Term_CP_BLDG_VALUATION,
+        si2c:Term_CP_BLDG_WIND_DED ;
+    si2c:lob "CP" .
+
+si2c:Cov_GL_OCC a owl:Class ;
+    rdfs:label "Coverage A - Bodily Injury and Property Damage" ;
+    rdfs:subClassOf si2c:PremisesOperationsLiability ;
+    skos:notation "GL_OCC" ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasTermType si2c:Term_GL_OCC_EACH_OCC,
+        si2c:Term_GL_OCC_GEN_AGG ;
+    si2c:lob "GL" .
+
+si2c:DwellingCoverage a owl:Class ;
+    rdfs:label "DwellingCoverage" ;
+    rdfs:subClassOf si2c:PropertyCoverage ;
+    skos:definition "The home and structures on a residence premises." .
+
+si2c:FirstPartyCoverage a owl:Class ;
+    rdfs:label "FirstPartyCoverage" ;
+    rdfs:subClassOf si2c:Coverage ;
+    skos:definition "Pays the insured for its own loss." .
+
+si2c:Level_Policy a skos:Concept ;
+    skos:definition "Applies to the whole policy term" ;
+    skos:inScheme si2c:AttachLevels ;
+    skos:prefLabel "Policy" .
+
+si2c:MedicalPaymentsCoverage a owl:Class ;
+    rdfs:label "MedicalPaymentsCoverage" ;
+    rdfs:subClassOf si2c:FirstPartyInjuryCoverage ;
+    skos:definition "Medical expenses of others or occupants, regardless of fault." .
+
+si2c:PercentDeductible a owl:Class ;
+    rdfs:label "PercentDeductible" ;
+    rdfs:subClassOf si2c:Deductible ;
+    skos:definition "A percentage of a stated value." .
+
+si2c:Sublimit a owl:Class ;
+    rdfs:label "Sublimit" ;
+    rdfs:subClassOf si2c:Limit ;
+    skos:definition "A smaller limit inside a parent limit." .
+
+si2c:Cov_HO_EQ a owl:Class ;
+    rdfs:label "Earthquake" ;
+    rdfs:subClassOf si2c:DwellingCoverage ;
+    skos:notation "HO_EQ" ;
+    si2c:attachLevel si2c:Level_Coverage ;
+    si2c:hasTermType si2c:Term_HO_EQ_EQ_DED ;
+    si2c:lob "HO" ;
+    si2c:parentCoverage si2c:Cov_HO_A .
+
+si2c:Coverage a owl:Class ;
+    rdfs:label "Coverage" ;
+    skos:definition "A promise to pay or defend for a defined loss, under stated terms." .
+
+si2c:InsuredObject a owl:Class ;
+    rdfs:label "Insured object" .
+
+si2c:LiabilityCoverage a owl:Class ;
+    rdfs:label "LiabilityCoverage" ;
+    rdfs:subClassOf si2c:Coverage ;
+    skos:definition "Pays others for injury or damage the insured is legally liable for, and defends." .
+
+si2c:Term_CP_BLDG_WIND_DED a owl:Class ;
+    rdfs:label "Building: WIND_DED" ;
+    rdfs:subClassOf si2c:WindHailDeductible ;
+    si2c:options "1, 2, 5" ;
+    si2c:rule "Where mandatory" ;
+    si2c:termCode "WIND_DED" .
+
+si2c:Term_HO_A_HURR_DED a owl:Class ;
+    rdfs:label "Coverage A - Dwelling: HURR_DED" ;
+    rdfs:subClassOf si2c:HurricaneDeductible ;
+    si2c:options "2, 5, 10" ;
+    si2c:rule "Policy level where mandatory" ;
+    si2c:termCode "HURR_DED" .
+
+si2c:Vehicle a owl:Class ;
+    rdfs:label "Vehicle" ;
+    rdfs:subClassOf si2c:InsuredObject .
+
+si2c:AttachLevels a skos:ConceptScheme ;
+    rdfs:label "Coverage attachment levels" .
+
+si2c:Cov_PA_PIP a owl:Class ;
+    rdfs:label "Personal Injury Protection" ;
+    rdfs:subClassOf si2c:PersonalInjuryProtection ;
+    skos:notation "PA_PIP" ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasTermType si2c:Term_PA_PIP_LIMIT ;
+    si2c:lob "PA" .
+
+si2c:CoverageTerm a owl:Class ;
+    rdfs:label "CoverageTerm" ;
+    skos:definition "A value that defines how much or how a coverage pays." .
+
+si2c:PerOccurrenceLimit a owl:Class ;
+    rdfs:label "PerOccurrenceLimit" ;
+    rdfs:subClassOf si2c:Limit ;
+    skos:definition "Most paid for one occurrence." .
+
+si2c:PropertyCoverage a owl:Class ;
+    rdfs:label "PropertyCoverage" ;
+    rdfs:subClassOf si2c:FirstPartyCoverage ;
+    skos:definition "Direct physical loss to property." .
+
+si2c:Cov_HO_A a owl:Class ;
+    rdfs:label "Coverage A - Dwelling" ;
+    rdfs:subClassOf si2c:DwellingCoverage ;
+    skos:notation "HO_A" ;
+    si2c:attachLevel si2c:Level_Object ;
+    si2c:attachesToObjectType si2c:Dwelling ;
+    si2c:hasTermType si2c:Term_HO_A_AOP_DED,
+        si2c:Term_HO_A_HURR_DED,
+        si2c:Term_HO_A_LIMIT,
+        si2c:Term_HO_A_VALUATION ;
+    si2c:lob "HO" .
+
+si2c:Cov_WC_PART1 a owl:Class ;
+    rdfs:label "Part One - Workers' Compensation" ;
+    rdfs:subClassOf si2c:WorkersCompensationBenefits ;
+    skos:notation "WC_PART1" ;
+    si2c:attachLevel si2c:Level_Line ;
+    si2c:hasTermType si2c:Term_WC_PART1_LIMIT ;
+    si2c:lob "WC" .
+
+si2c:Endorsement a owl:Class ;
+    rdfs:label "Endorsement" ;
+    skos:definition "A form that changes the policy." .
+
+si2c:FlatDeductible a owl:Class ;
+    rdfs:label "FlatDeductible" ;
+    rdfs:subClassOf si2c:Deductible ;
+    skos:definition "A fixed amount." .
+
+si2c:Level_Object a skos:Concept ;
+    skos:definition "Attaches to one insured object" ;
+    skos:inScheme si2c:AttachLevels ;
+    skos:prefLabel "Object" .
+
+si2c:Level_Coverage a skos:Concept ;
+    skos:definition "Attaches to another coverage and follows it" ;
+    skos:inScheme si2c:AttachLevels ;
+    skos:prefLabel "Coverage" .
+
+si2c:PerPersonLimit a owl:Class ;
+    rdfs:label "PerPersonLimit" ;
+    rdfs:subClassOf si2c:Limit ;
+    skos:definition "Most paid for one person." .
+
+si2c:Limit a owl:Class ;
+    rdfs:label "Limit" ;
+    rdfs:subClassOf si2c:CoverageTerm ;
+    skos:definition "Most the coverage pays." .
+
+si2c:EndorsementEffect a owl:Class ;
+    rdfs:label "Endorsement effect" .
+
+si2c:Level_Line a skos:Concept ;
+    skos:definition "Applies to one line or coverage part in the policy" ;
+    skos:inScheme si2c:AttachLevels ;
+    skos:prefLabel "Line" .
+
+si2c:CoverageApplicability a owl:Class ;
+    rdfs:label "Coverage applicability" .
+
